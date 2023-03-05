@@ -1,55 +1,81 @@
 #include "Computer.h"
 
+
+
 Computer::Computer()
 {
-	m_sProductName = "Atents";
-	m_sCurrentStatus = "ON";
-	m_sGraphicCard = "GTX990";
-	m_iCPU = 17;
-	m_sMemory = "8G";
+	m_strname = "Atents";
+	m_strgr = "GTX990";
+	m_strcpu = "I7";
+	m_strmemo = "8G";
 }
 
 
-int Computer::Menu()
+void Computer::display()
 {
-	int select;
-
-	cout << "===== 환 영 합 니 다 =====\n";
-	cout << "1.컴퓨터 상태\n";
-	cout << "2.기능\n";
-	cout << "3.off\n";
-	cout << "입력 >>>> ";
-	cin >> select;
-
-	return select;
+	int isel;
+	system("cls");
+	while (true) {
+		cout << "===== 환 영 합 니 다 =====" << endl;
+		cout << "1.컴퓨터 상태" << endl;
+		cout << "2.기 능" << endl;
+		cout << "3.off" << endl;
+		cout << "입력 >>>> ";
+		cin >> isel;
+		switch (isel) {
+		case 1:
+			condition();
+			break;
+		case 2:
+			function();
+			break;
+		case 3:
+			exit();
+			return;
+		}
+		system("pause");
+		system("cls");
+	}
 }
 
-void Computer::ComStatus()
+void Computer::exit()
+{//주의
+	int oldclock = clock();
+	int second = 5;
+	cout << "off " << second << " 초전" << endl;
+	while (second >= 1)
+	{
+		if (clock() - oldclock >= 1000)
+		{
+			second--;
+			if(second != 0)
+				cout << "off " << second << " 초전" << endl;
+			oldclock = clock();
+		}
+	}
+}
+
+void Computer::condition()
 {
 	system("cls");
-	cout << "제 품 명 : " << m_sProductName << "\n";
-	cout << "현재 상태 : " << m_sCurrentStatus << "\n";
-	cout << "그래픽카드 : " << m_sGraphicCard << "\n";
-	cout << "C P U : " << m_iCPU << "\n";
-	cout << "메모리 : " << m_sMemory << "\n";
+	cout << "제 품 명 : " << m_strname << endl;
+	cout << "현재 상태 : ON " << endl;
+	cout << "그래픽카드 : " << m_strgr << endl;
+	cout << "C P U : " << m_strcpu << endl;
+	cout << "메 모 리 : " << m_strmemo << endl;
 }
 
-void Computer::Function()
+void Computer::function()
 {
-	int select;
-
-	while (true)
-	{
-		system("cls");
-		cout << "1.계 산 기\n";
-		cout << "2.메 모 장\n";
-		cout << "3.그 림 판\n";
-		cout << "4.돌아가기\n";
-		cout << "선택 >>>> ";
-		cin >> select;
-
-		switch (select)
-		{
+	int i;
+	system("cls");
+	while (true) {
+		cout << "1.계 산 기" << endl;
+		cout << "2.메 모 장" << endl;
+		cout << "3.그 림 판" << endl;
+		cout << "4.돌아가기" << endl;
+		cout << "선택 >>>>"; cin >> i;
+		switch (i) {
 		case 1:
 			system("calc");
 			break;
@@ -59,46 +85,13 @@ void Computer::Function()
 		case 3:
 			system("mspaint");
 			break;
-		case 4:
+		default:
 			return;
 		}
+		system("pause"); system("cls");
 	}
 }
 
-void Computer::Off(int oldClock)
+Computer::~Computer()
 {
-	int count = 0;
-
-	while (count < MAX_COUNT)
-	{
-		if (clock() - oldClock >= SEC)
-		{
-			cout << "off " << MAX_COUNT - count << " 전\n";
-			count++;
-			oldClock = clock();
-		}
-	}
-}
-
-void Computer::Main()
-{
-	int oldClock = clock();
-
-	while (true)
-	{
-		switch (Menu())
-		{
-		case 1:
-			ComStatus();
-			break;
-		case 2:
-			Function();
-			break;
-		case 3:
-			Off(oldClock);
-			return;
-		}
-		system("pause");
-		system("cls");
-	}
 }
