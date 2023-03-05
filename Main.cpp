@@ -1,7 +1,7 @@
-#include "CarManager.h"
+#include "Manager.h"
 
 void main()
 {
-	CarManager carManager;
-	carManager.CarsManager();
+	Manager manager;
+	manager.Menu();
 }
