@@ -1,7 +1,7 @@
-#include"Computer.h"
+#include"PhoneNumber.h"
 
 void main()
 {
-	Computer computer;
-	computer.Main();
+	PhoneNumber phoneNumber;
+	phoneNumber.Main();
 }
