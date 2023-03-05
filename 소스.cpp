@@ -1,7 +1,9 @@
-#include"Computer.h"
+#include"Mecro.h"
+#include"MapDraw.h"
+#include"Map.h"
 
 void main()
 {
-	Computer Com;
-	Com.display();
+	Map map;
+	map.MapDraw();
 }
