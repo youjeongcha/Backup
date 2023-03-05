@@ -1,12 +1,12 @@
 #pragma once
-
 #include<iostream>
 #include<string>
 #include<conio.h>
-#include<iomanip>
+#include<iomanip>//
 #include<Windows.h>
 using namespace std;
 
+//¿©±â ¿Ö
 struct Position
 {
 	int m_ix;
