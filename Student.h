@@ -1,6 +1,7 @@
 #pragma once
 #include<iostream>
 #include<string>
+#include<Windows.h>
 using namespace std;
 
 enum GENDER
@@ -21,23 +22,21 @@ enum CLASS
 class Student
 {
 private:
-	string m_strName;	
+	string m_strName;
 	int m_iAge;
-	GENDER m_eGender;
 	CLASS m_eClass;
+	GENDER m_eGender;
 	int m_iNumber;
 public:
 	void SetStudent(int Number);
 	void ShowStudent();
-	inline string GetName()
+	string GetName()
 	{
 		return m_strName;
 	}
-	inline CLASS GetClass()
+	CLASS GetClass()
 	{
 		return m_eClass;
 	}
-	Student();
-	~Student();
 };
 

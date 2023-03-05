@@ -1,6 +1,6 @@
 #pragma once
-#include"Student.h"
 #include<list>
+#include"Student.h"
 
 #define STUDENT_MAX 10
 
@@ -9,20 +9,14 @@ class StudentManager
 private:
 	list<Student> m_StudentList;
 public:
-
-	void MainMenu();
-
-	void AddStudent();
-	void ShowStudentList();
-	inline int GetStudentCount()
-	{
+	void Menu();
+	int GetStudentCsount()
+	{//size
 		return m_StudentList.size();
 	}
-	bool FindStudentName(string Name);
-	bool ShowStudentClass(CLASS Class);
-	void DeleteStudent();
-	void ClearStudent();
-	StudentManager();
-	~StudentManager();
+	void AddStudent();
+	void ShowStudentList_Num();
+	bool ShowStudentList_Class_Part(int searchClass, bool Flag);
+	void ShowStudentList_Class();
+	bool FindStudentName(string strName);
 };
-

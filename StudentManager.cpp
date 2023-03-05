@@ -1,142 +1,130 @@
 #include "StudentManager.h"
 
-
-
-StudentManager::StudentManager()
+void StudentManager::Menu()
 {
-}
-
-
-void StudentManager::MainMenu()
-{
-	int Select;
+	Student student;
+	int select;
 	string strTmp;
-	bool bTmp;
 	int iTmp;
-	while (1)
+
+	while (true)
 	{
-		system("cls");
-		cout << "======학생관리 프로그램======" << endl;
-		cout << "      1.학생 등록" << endl;
-		cout << "      2.학생 목록<번호순>" << endl;
-		cout << "      3.학생 목록<학년순>" << endl;
-		cout << "      4.학생 검색" << endl;
-		cout << "      5.학년 검색" << endl;
-		cout << "      6.마지막 학생 삭제" << endl;
-		cout << "      7.학생 전체 삭제" << endl;
-		cout << "      8.종료" << endl;
-		cout << "   (학생 수 : " << GetStudentCount() << ")" << endl;
+		cout << "======학생관리 프로그램======\n";
+		cout << "      1.학생 등록\n";
+		cout << "      2.학생 목록<번호순>\n";
+		cout << "      3.학생 목록<학년순>\n";
+		cout << "      4.학생 검색\n";
+		cout << "      5.학년 검색\n";
+		cout << "      6.마지막 학생 삭제\n";
+		cout << "      7.학생 전체 삭제\n";
+		cout << "      8.종료\n";
+		cout << "    (학생 수 : " << m_StudentList.size() << ")\n";
 		cout << "입력 : ";
-		cin >> Select;
+		cin >> select;
 		system("cls");
-		switch (Select)
+
+		switch (select)
 		{
-		case 1:
+		case 1://학생 등록
 			AddStudent();
 			break;
-		case 2:
-			ShowStudentList();
+		case 2://학생 목록<번호순>
+			ShowStudentList_Num();
 			break;
-		case 3:
-			for (int i = CLASS_START; i < CLASS_END; i++)
-			{
-				bTmp = ShowStudentClass((CLASS)i);
-				if (!bTmp)
-					cout << i << "학년 학생이 없습니다." << endl;
-			}
+		case 3://학생 목록<학년순>
+			ShowStudentList_Class();
 			break;
-		case 4:
+		case 4://학생 검색
 			cout << "이름 입력 : ";
 			cin >> strTmp;
-			bTmp = FindStudentName(strTmp);
-			if (bTmp == false)
-				cout << "해당 학생이 없습니다." << endl;
+			if (FindStudentName(strTmp) == false)
+				cout << "해당 학생이 없습니다.\n";
 			break;
-		case 5:
+		case 5://학년 검색
 			cout << "학년 입력 : ";
 			cin >> iTmp;
-			bTmp = ShowStudentClass((CLASS)iTmp);
-			if (!bTmp)
-				cout << iTmp << "학년 학생이 없습니다." << endl;
+			if (ShowStudentList_Class_Part(iTmp, false) == false)
+				cout << "해당 학생이 없습니다.\n";
 			break;
-		case 6:
-			DeleteStudent();
+		case 6://마지막 학생 삭제
+			m_StudentList.back().ShowStudent();
+			m_StudentList.pop_back();
+			cout << "삭제 완료\n";
 			break;
-		case 7:
-			ClearStudent();
+		case 7://학생 전체 삭제
+			m_StudentList.clear();
 			break;
-		case 8:
-			ClearStudent();
+		case 8://종료
+			m_StudentList.clear();
 			return;
 		}
 		system("pause");
+		system("cls");
 	}
 }
 
 void StudentManager::AddStudent()
 {
+	Student student;
+
 	if (m_StudentList.size() < STUDENT_MAX)
 	{
-		Student st;
-		st.SetStudent(m_StudentList.size());
-		m_StudentList.push_back(st);
+		student.SetStudent(m_StudentList.size() + 1);
+		m_StudentList.push_back(student);
 	}
 	else
-		cout << "더이상 학생을 등록할 수 없습니다." << endl;
+		cout << "더이상 학생을 등록할 수 없습니다.\n";
 }
 
-void StudentManager::ShowStudentList()
+void StudentManager::ShowStudentList_Num()
 {
 	for (list<Student>::iterator iter = m_StudentList.begin(); iter != m_StudentList.end(); iter++)
 		iter->ShowStudent();
 }
 
-bool StudentManager::FindStudentName(string Name)
+bool StudentManager::ShowStudentList_Class_Part(int searchClass, bool Flag)
 {
+	int iClass;
+
+	cout << "┌──────" << searchClass << " 학년──────┐\n";
 	for (list<Student>::iterator iter = m_StudentList.begin(); iter != m_StudentList.end(); iter++)
 	{
-		if (iter->GetName() == Name)
+		iClass = (int)(iter->GetClass()); //
+		if (iClass == searchClass) ///
 		{
 			iter->ShowStudent();
-			return true;
+			Flag = true;
 		}
 	}
-	return false;
+	cout << "└───────────────┘\n";
+
+	return Flag;
 }
 
-bool StudentManager::ShowStudentClass(CLASS Class)
+void StudentManager::ShowStudentList_Class()
 {
-	bool State = false;
-	cout << "┌─────" << (int)Class << " 학년─────┐" << endl;
+	bool Flag = false;
+
+	for (int searchClass = CLASS_START; searchClass < CLASS_END; searchClass++)
+	{
+		Flag = ShowStudentList_Class_Part(searchClass, Flag);
+		if (Flag == false)
+			cout << searchClass << "학년 학생이 없습니다.\n";
+	}
+}
+
+bool StudentManager::FindStudentName(string strName)
+{//동명이인 처리
+	bool Flag = false;
+
 	for (list<Student>::iterator iter = m_StudentList.begin(); iter != m_StudentList.end(); iter++)
 	{
-		if (iter->GetClass() == Class)
+		if (iter->GetName() == strName)
 		{
 			iter->ShowStudent();
-			State = true;
+			Flag = true; //return true;
 		}
 	}
-	cout << "└─────────────┘" << endl;
-	return State;
-}
 
-
-void StudentManager::DeleteStudent()
-{
-	if (m_StudentList.empty())
-		cout << "삭제할 학생이 없습니다." << endl;
-	else
-	{
-		m_StudentList.back().ShowStudent();
-		m_StudentList.pop_back();
-		cout << "삭제 완료" << endl;
-	}
-}
-void StudentManager::ClearStudent()
-{
-	m_StudentList.clear();
-}
-
-StudentManager::~StudentManager()
-{
+	return Flag; //return false;로 처리하는 것도 가능
 }

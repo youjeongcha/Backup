@@ -1,76 +1,68 @@
 #include "Student.h"
 
-
-
-Student::Student()
+void Student::SetStudent(int number)
 {
-}
+	int tmp;
+	bool state = true;
+	m_iNumber = number;
 
-
-void Student::SetStudent(int Number)
-{
-	int Tmp;
-	bool State = true;
-	m_iNumber = Number;
-	cout << Number << "번 학생 정보" << endl;
+	cout << m_iNumber << "번 학생 정보\n";
 	cout << "이름 : ";
 	cin >> m_strName;
 	cout << "나이 : ";
 	cin >> m_iAge;
-	State = true;
-	while (State)
+
+	while (state)
 	{
 		cout << "학년 : ";
-		cin >> Tmp;
-		m_eClass = (CLASS)Tmp;
+		cin >> tmp;
+		m_eClass = (CLASS)tmp;
 		switch (m_eClass)
 		{
 		case CLASS_1:
 		case CLASS_2:
 		case CLASS_3:
-			State = false;
+			state = false;
 			break;
 		default:
-			cout << "잘못 입력하셧습니다.(1~3)" << endl;
+			cout << "잘못 입력하셨습니다.(1~3)\n";
 			break;
 		}
 	}
-	State = true;
-	while (State)
+	state = true;
+
+	while (state)
 	{
-		cout << "성별(남자 0,여자 1) : ";
-		cin >> Tmp;
-		m_eGender = (GENDER)Tmp;
+		cout << "성별(남자 0, 여자 1) : ";
+		cin >> tmp;
+		m_eGender = (GENDER)tmp;
 		switch (m_eGender)
 		{
 		case GENDER_MAN:
 		case GENDER_WOMAN:
-			State = false;
+			state = false;
 			break;
 		default:
-			cout << "잘못 입력하셧습니다.(0,1)" << endl;
+			cout << "잘못 입력하셨습니다.(0,1)\n";
 			break;
 		}
 	}
 }
+
 void Student::ShowStudent()
 {
-	cout << "    ====" << m_iNumber << "번 학생====" << endl;
-	cout << "    이름 : " << m_strName << endl;
-	cout << "    나이 : " << m_iAge << endl;
+	cout << "    ====" << m_iNumber << "번 학생====\n";
+	cout << "    이름 : " << m_strName << "\n";
+	cout << "    나이 : " << m_iAge << "\n";
 	cout << "    성별 : ";
 	switch (m_eGender)
 	{
 	case GENDER_MAN:
-		cout << "남자" << endl;
+		cout << "남자\n";
 		break;
 	case GENDER_WOMAN:
-		cout << "여자" << endl;
+		cout << "여자\n";
 		break;
 	}
-	cout << "    학년 : " << (int)m_eClass << endl << endl;
-}
-
-Student::~Student()
-{
+	cout << "    학년 : " << (int)m_eClass << "\n\n";
 }
