@@ -1,0 +1,32 @@
+weaponCritical 사용 안 함
+
+-----------
+
+[SaveMonster.txt]
+
+총 몬스터 수량
+
+:조우시 알 수 있는 정보
+mName = _Name; //캐릭터의 이름을 가져올때 필요. 몬스터는 상관없음.
+
+:전투 해보면 알 수 있는 정보
+mAttack = _Attack;
+mMax_HP = _Max_HP;
+mNow_HP = _Now_HP;
+mLevel = _Level;
+
+:승리시 알 수 있는 정보
+mMax_EXP = _Max_EXP;
+mNow_EXP = _Now_EXP;
+mGetEXP = _GetEXP;
+mGold = _Gold;
+
+
+---------------------------------
+[SaveMonsterBook.txt]
+
+bool값으로 정보 열람 판별
+고블린[0], 오크[1], 웨어울프[2]
+0 0 0 - 조우 확인
+0 0 0 - 전투 확인
+0 0 0 - 승리 확인

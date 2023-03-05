@@ -1,287 +1,180 @@
 #include "Player.h"
-#include"GameManager.h"
+#include "MonsterManager.h"
+#include "WeaponShop.h"
 
-
-void Player::Init(int _iWidth, int _iHeight, PLAYERTYPE _ePlayerType,GameManager* _pGameManager, GAMETYPE _eGameType)
+Player::Player()
 {
-	m_ePlayerType = _ePlayerType;
-	switch (m_ePlayerType)
-	{
-	case PLAYERTYPE::WHITE:
-		m_strShape = WHITETEAMICON;
-		break;
-	case PLAYERTYPE::BLACK:
-	default:
-		m_strShape = BLACKTEAMICON;
-		break;
-	}
-	m_Cursor.SetPosition(_iWidth / 2, _iHeight / 2, m_strShape);
-	m_iUndoCount = MAX_UNDO_COUNT;
-	m_vecStoneList.clear();
-	m_pGameManager = _pGameManager;
-	m_undoStone.Disable(m_pGameManager->GetWidth(), m_pGameManager->GetHeight());
-	if (_eGameType == GAMETYPE::OTHELLO)
-	{
-		switch (m_ePlayerType)
-		{
-		case PLAYERTYPE::WHITE:
-			m_vecStoneList.push_back(Stone(_iWidth / 2 - 1, _iHeight / 2 - 1, m_strShape));
-			m_vecStoneList.back().DrawStone();
-			m_vecStoneList.push_back(Stone(_iWidth / 2, _iHeight / 2, m_strShape));
-			m_vecStoneList.back().DrawStone();
-			break;
-		case PLAYERTYPE::BLACK:
-			m_vecStoneList.push_back(Stone(_iWidth / 2 - 1, _iHeight / 2, m_strShape));
-			m_vecStoneList.back().DrawStone();
-			m_vecStoneList.push_back(Stone(_iWidth / 2, _iHeight / 2 - 1, m_strShape));
-			m_vecStoneList.back().DrawStone();
-			break;
-		default:
-			break;
-		}
-	}
+	mEntityType = ENTITYTYPE_HUMANS;
+	mMonsterType = MONSTER_NONE;
+	weapon = NULL;  //NULL로 판단한다면 초깃값 NULL 설정 필수
+}
+Player::~Player()
+{
 }
 
-void Player::DropStone()
+int Player::Recover()
 {
-	m_undoStone.Disable(m_pGameManager->GetWidth(), m_pGameManager->GetHeight(), true);
-	m_Cursor.DrawStone();
-	m_vecStoneList.push_back(m_Cursor);
+	int RecoveryHP = mMax_HP / 3;
+
+	//HP가 오버힐 되지 않게
+	mNow_HP = min(mMax_HP, mNow_HP + RecoveryHP);
+
+	//MAX HP 회복 안되도록
+	if (mNow_HP == mMax_HP)
+		return 0;
+
+	return RecoveryHP;
 }
 
-KEY Player::Input(Player* _enemyPlayer, int _iTurn, GAMETYPE _eGameType)
-{
-	if (_eGameType == GAMETYPE::OTHELLO && DropCheck(_enemyPlayer) == false)
-		return KEY::PASS;
-	while (true)
-	{
-		m_undoStone.DrawUndoStone();
-		m_Cursor.DrawStone();
-		char ch = getch();
-		if(CheckStoneList(m_Cursor,true) == false && _enemyPlayer->CheckStoneList(m_Cursor,true) == false)
-			m_Cursor.EraseStone(m_pGameManager->GetWidth(),m_pGameManager->GetHeight());
-		switch ((KEY)ch)
-		{
-		case KEY::LEFT:
-			if (m_Cursor.GetX() > 0)
-				m_Cursor.SetLeft();
-			break;
-		case KEY::RIGHT:
-			if (m_Cursor.GetX() < m_pGameManager->GetWidth() - 1)
-				m_Cursor.SetRight();
-			break;
-		case KEY::UP:
-			if (m_Cursor.GetY() > 0)
-				m_Cursor.SetUp();
-			break;
-		case KEY::DOWN:
-			if (m_Cursor.GetY() < m_pGameManager->GetHeight() - 1)
-				m_Cursor.SetDown();
-			break;
-		case KEY::ESC:
-			return KEY::ESC;
-		case KEY::DROP:
-			if (m_undoStone.Compare(m_Cursor) == false && CheckStoneList(m_Cursor) == false && _enemyPlayer->CheckStoneList(m_Cursor) == false)
-			{
-				switch (_eGameType)
-				{
-				case GAMETYPE::FIVE_IN_A_ROW:
-					DropStone();
-					if (FiveInARowCheck())
-						return KEY::WIN;
-					else
-						return KEY::DROP;
-					break;
-				case GAMETYPE::OTHELLO:
-					if (OthelloCheck(m_Cursor,_enemyPlayer))
-					{
-						DropStone();
-						return KEY::DROP;
-					}
-					break;
-				}
-			}
-			break;
-		case KEY::UNDO:
-			if (_eGameType == GAMETYPE::FIVE_IN_A_ROW && m_iUndoCount > 0 && _iTurn > 1)
-			{
-				m_iUndoCount--;
-				m_undoStone.Disable(m_pGameManager->GetWidth(), m_pGameManager->GetHeight(),true);
-				return KEY::UNDO;
-			}
-			break;
-		default:
-			break;
-		}
-	}
-}
+int Player::PlayeInitialSetting(bool newStart)
+{ //플레이어 태초 상태로 초기화하는 함수(이름은 GameOver 여부 따라)
+	bool tmp;
+	//이름 설정 케이스 구별
 
-bool Player::CheckStoneList(Stone _stone, bool _bDrawStatus)
-{
-	if (_bDrawStatus && m_undoStone.Compare(_stone))
-	{
-		m_undoStone.DrawUndoStone();
-		return true;
-	}
-	return StoneCheck(_stone, _bDrawStatus);
-}
+	mEntityType = ENTITYTYPE_HUMANS;
+	mPlayerGameOverCheck = false;
 
-void Player::UndoSet()
-{
-	if (m_vecStoneList.size() > 0)
-	{
-		m_undoStone = m_vecStoneList.back();
-		m_vecStoneList.pop_back();
-	}
-}
+	weapon = NULL;
 
-bool Player::OthelloCheck(Stone _cursor,Player* _enemyPlayer, bool Check)
-{
-	int count = 0;
-	count += OthelloLineCheck(_cursor,_enemyPlayer, -1, 0, Check);
-	count += OthelloLineCheck(_cursor, _enemyPlayer, 1, 0, Check);
-	count += OthelloLineCheck(_cursor, _enemyPlayer, 0, -1, Check);
-	count += OthelloLineCheck(_cursor, _enemyPlayer, 0, 1, Check);
-	count += OthelloLineCheck(_cursor, _enemyPlayer, -1, -1, Check);
-	count += OthelloLineCheck(_cursor, _enemyPlayer, 1, 1, Check);
-	count += OthelloLineCheck(_cursor, _enemyPlayer, -1, 1, Check);
-	count += OthelloLineCheck(_cursor, _enemyPlayer, 1, -1, Check);
-	if (count == 0)
-		return false;
+	mAttack = 5;
+	mMax_HP = 50;
+	mMax_EXP = 10;
+	mGetEXP = 30;
+	mGold = 2000;
+
+	mNow_HP = mMax_HP;
+	mMax_EXP = mMax_EXP;
+
+	mLevel = 1;
+	mNow_EXP = 0;
+
+	// ★ 다시 받아오는 것보다 bool 값으로 ContinueCheck == true 이런 식으로 변경(완)
+	if (newStart)
+		mName = "???";
 	else
-		return true;
-}
-
-bool Player::FiveInARowCheck()
-{
-	if (StoneLineCheck(m_Cursor,-1, 0).size() + StoneLineCheck(m_Cursor, 1, 0).size() == 4)
-		return true;
-	else if (StoneLineCheck(m_Cursor, 0, -1).size() + StoneLineCheck(m_Cursor, 0, 1).size() == 4)
-		return true;
-	else if (StoneLineCheck(m_Cursor, -1, -1).size() + StoneLineCheck(m_Cursor, 1, 1).size() == 4)
-		return true;
-	else if (StoneLineCheck(m_Cursor, 1, -1).size() + StoneLineCheck(m_Cursor, -1, 1).size() == 4)
-		return true;
-	else return false;
-}
-
-
-vector<Stone> Player::StoneLineCheck(Stone _cursor,int _addX, int _addY)
-{
-	vector<Stone> vecStoneList;
-	int iWidth = m_pGameManager->GetWidth();
-	int iHeight = m_pGameManager->GetHeight();
-	int iCount = 0;
-	for (int x = _cursor.GetX() + _addX, y = _cursor.GetY() + _addY;
-		(x >= 0 && x < iWidth) && (y >= 0 && y < iHeight);
-		x += _addX, y += _addY)
 	{
-		if (StoneCheck(x, y) == false)
-			break;
-		else
-			vecStoneList.push_back(Stone(x, y));
-	}
-	return vecStoneList;
-}
+		ifstream load;
+		load.open("SavePlayerInfo.txt");
 
-bool Player::StoneCheck(Stone _stone, bool _bDrawStatus)
-{
-
-	for (Stone st : m_vecStoneList)
-	{
-		if (st.Compare(_stone))
+		if (load.is_open())
 		{
-			if (_bDrawStatus)
-				st.DrawStone();
-			return true;
+			load >> tmp; //필요 없는 과정.
+			load >> mName;
 		}
+		load.close();
 	}
-	return false;
+
+	return 0; //GameManager쪽에 가면 SCENE으로 변환된다.
 }
-bool Player::StoneCheck(int _ix, int _iy)
+
+void Player::SavePlayerInfo(int mSceneNum, bool weaponSaveCheck)
 {
-	for (Stone st : m_vecStoneList)
+	ofstream save;
+	save.open("SavePlayerInfo.txt");
+
+	if (save.is_open())
 	{
-		if (st.Compare(_ix, _iy))
+		save << mPlayerGameOverCheck << endl;
+		save << mName << endl;
+
+		save << mSaveSeed << endl; //seed값 플레이어가 들고 있어야 한다.
+		save << mSceneNum << endl << endl;
+
+		save << mLevel << endl;
+
+		save << mAttack << endl;
+		save << mMax_HP << endl;
+		save << mNow_HP << endl;
+
+		save << mMax_EXP << endl;
+		save << mNow_EXP << endl;
+
+		save << mGetEXP << endl;
+		save << mGold << endl;
+
+		//if (mSceneNum > SCENE__PICKUPWEAPON) // bool 값으로 판단
+		if (weaponSaveCheck)
 		{
-			return true;
+			save << weapon->GetWeaponEnum() << endl; //DoubleSword의 enum을 받아온다.
+			save << weapon->GetName() << endl;
 		}
+		save.close();
 	}
-	return false;
+}
+
+void Player::SaveGameOverPlayerInfo()
+{
+	//플레이어가 저장을 하지 않았어도 죽으면 저장해줘야 한다.
+	//캐릭터 파일에 이름만 덮어씌우기
+	mPlayerGameOverCheck = true;
+
+	ofstream save;
+	save.open("SavePlayerInfo.txt");
+	save << mPlayerGameOverCheck << endl;
+	save << mName;
+	save.close();
+}
+
+int Player::LoadPlayerInfo()
+{
+	ifstream load;
+	int _sceneCheck; // 초기값 세팅 - 로드가 안되었을 경우 /
+	int tmp_WeaponType;
+	string tmp_WeaponName;
+	WeaponShop weaponShop;
+
+	load.open("SavePlayerInfo.txt");
+
+	if (load.is_open())
+	{
+		load >> mPlayerGameOverCheck;
+		load >> mName;
+
+		load >> mSaveSeed;
+		load >> _sceneCheck;
+
+		load >> mLevel;
+
+		load >> mAttack;
+		load >> mMax_HP;
+		load >> mNow_HP;
+
+		load >> mMax_EXP;
+		load >> mNow_EXP;
+
+		load >> mGetEXP;
+		load >> mGold;
+
+		load >> tmp_WeaponType;
+		load >> tmp_WeaponName;
+
+		load.close();
+	}
+
+	weapon = weaponShop.Search_WeaponName((WEAPON)tmp_WeaponType, tmp_WeaponName);
+
+	return _sceneCheck; //GameManager쪽에 가면 SCENE으로 변환된다.
 }
 
 
-bool Player::DropOthelloCheck(Stone stone, Player* _enemyPlayer)
+void Player::PrintInfo(int _Y, int _X)
 {
-	Stone tmp;
-	for (int y = -1; y <= 1; y++)
-	{
-		for (int x = -1; x <= 1; x++)
-		{
-			if (x == 0 && y == 0)
-				continue;
-			tmp.SetPosition(stone.GetX() + x, stone.GetY() + y);
-			if (tmp.GetX() <= -1 || tmp.GetX() >= m_pGameManager->GetWidth())
-				continue;
-			if (tmp.GetY() <= -1 || tmp.GetY() >= m_pGameManager->GetHeight())
-				continue;
-			if (CheckStoneList(tmp) == true || _enemyPlayer->CheckStoneList(tmp) == true)
-				continue;
-			if (OthelloCheck(tmp, _enemyPlayer,true) == true)
-				return true;
-		}
-	}
-	return false;
+	MapDraw::BoxDraw(MAP_START, MAP_START, MAP_END_X, MAP_END_Y);
+	Character::PrintInfo(_Y, _X); //중요★
+
+	// 무기 정보 출력
+	if (weapon != NULL) //NULL로 판단한다면 초깃값 NULL 설정 필수
+		weapon->SimpleInfo(_Y + GAP_4);
 }
 
-bool Player::DropCheck(Player* _enemyPlayer)
-{
-	vector<Stone> _EnemyStoneList = _enemyPlayer->getStoneList();
-	for (Stone stone: _EnemyStoneList)
-	{
-		if (DropOthelloCheck(stone, _enemyPlayer) == true)
-			return true;
-	}
-	return false;
-}
+void Player::PrintMonsterBook(vector<Character*> monsterInfoList)//, string searchName)
+{ //전투와 도감 완전히 분리해서 관리 //도감	//전체 몬스터 한 화면에 출력
+  //몬스터(자식) > 캐릭터(부모)로 :: 업캐스팅 //캐릭터에 필요한게 있어서 업캐스팅 사용. 몬스터에 있었다면 dynamic_cast<> 으로 강제 다운캐스팅
+	int i = 0, y = GAP_2;
 
-bool Player::OthelloLineCheck(Stone _cursor,Player* _enemyPlayer, int _addX, int _addY,bool Check)
-{
-	vector<Stone> vecStoneList;
-	vecStoneList = _enemyPlayer->StoneLineCheck(_cursor, _addX, _addY);
-	if (vecStoneList.size() != 0 && StoneCheck(vecStoneList.back().GetX() + _addX, vecStoneList.back().GetY() + _addY))
+	for (Character* character : monsterInfoList)
 	{
-		if (Check == false)
-		{
-			_enemyPlayer->DeleteStoneList(vecStoneList);
-			AppendStoneList(vecStoneList);
-		}
-		return true;
-	}
-	else
-		return false;
-}
-
-void Player::DeleteStoneList(vector<Stone> _stoneList)
-{
-	for (Stone st : _stoneList)
-	{
-		for (auto iter = m_vecStoneList.begin(); iter != m_vecStoneList.end(); iter++)
-		{
-			if (iter->Compare(st) == true)
-			{
-				m_vecStoneList.erase(iter);
-				break;
-			}
-		}
-	}
-}
-void Player::AppendStoneList(vector<Stone> _stoneList)
-{
-	for (Stone st : _stoneList)
-	{
-		st.SetShape(m_strShape);
-		st.DrawStone();
-		m_vecStoneList.push_back(st);
+		character->PrintMonsterBookInfo(MONSTER(i++), monsterBook.GetSituation(), y);
+		y += GAP_4;
 	}
 }

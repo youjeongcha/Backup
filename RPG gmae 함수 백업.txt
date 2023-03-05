@@ -1,0 +1,201 @@
+void GameManager::Game()
+{
+	string _Name;
+
+	//------------------------------------------
+	DrawInterface();
+	Print("............");
+	Print("손끝에 딱딱하게 겹겹이 말라붙은 거슬한 감촉이 느껴졌다.");
+	Print("핏자국으로 인해 제목을 알 수 없는 책이다.");
+	//GOLD
+	//Print("<M>을 누르면 기록지를 확인할 수 있다.");
+	//ORIGINAL
+	Print("시체들 사이에서 굴러다니는 무기 하나를 주웠다.");
+	weaponShop.FirstWeapon(&player);
+	DrawInterface();
+	Print("Made in Dongeon.");
+	Print("그 문구 아래에 이름이 적혀있다.");
+	MapDraw::BoxErase(MAP_END_X, MAP_END_Y / GAP_3 * GAP_2);
+	YELLOW 
+	MapDraw::DrawMidText("Player 이름 입력 : ", MAP_END_X, MENUPRINT_START_Y + GAP_2);
+	cin >> _Name; 
+	ORIGINAL
+	player.SetName(_Name);
+	DrawInterface(); //입력 창을 벗어난 문자를 없애기
+	Print(_Name + "...");
+
+	// 심심할때 스크립트 쓰기 
+	// 길 선택하는 거
+	// 랜덤으로 이벤트 뜨는 거
+
+	//----------------무기 상점-----------------
+	//Print("던전의 무기 상점에 오신걸 환영합니다.");
+	//weaponShop.Shop(&player);
+	//DrawInterface();
+	Print("구매 감사합니다.");
+	//Print("금화도 많으면서. 다음엔 인심 좀 써봐요.");
+
+	//-------------이어하기의 경우
+	ifstream load;
+	load.open("SaveMonsters.txt");
+	if (load.is_open())
+	{
+		if (load.eof())
+		{//txt파일에 내용이 없다면
+			monsterManager.MonsterCreate(MONSTER_GOBLIN); //monsterList에 몬스터 push
+		}
+		else
+		{//txt파일에 내용이 저장되어있을 경우
+
+		}
+		load.close();
+	}
+	//if (!load.eof())
+
+	//monsterManager.MonsterCreate(MONSTER_GOBLIN);
+
+
+
+	list<Character*> monsterList = monsterManager.Get_MonsterList();
+	Character* monster;
+
+	//monsterList 매번 찾지 않아도 되도록 미리 찾아둔다.
+	for (list<Character*> ::iterator iter = monsterList.begin(); iter != monsterList.end(); iter++)
+	{
+		if ((*iter)->Get_EntityType() == MONSTER_GOBLIN)
+		{
+			monster = (*iter);
+			break;
+		}
+	}
+
+	Print("몬스터를 조우했습니다.");
+	MapDraw::BoxErase(MAP_END_X, MAP_END_Y / GAP_3 * GAP_2);
+
+	battle->BattleMonsterInfo(player, MONSTER_GOBLIN, SITUATION_MEET, *monster); //몬스터 등장, 출력만.
+	battle->PrintDescription("고블린 김고블은 나뭇가지로 땅을 파헤치고 있다.");// 금화를 찾고 있다.");
+
+	//본격적인 전투 시작. 무한루프 턴 전환 함수.
+	while (true)
+	{
+		WINCHECK winCheck = WINCHECK_NOTHING;
+
+		//공격 : 플레이어 -> 고블린(인간형)
+		//winCheck = battle->PlayerTurn(&player, ENTITYTYPE_HUMANS, monster, monsterManager.Get_MonsterInfoList());
+		//몬스터 창 갱신 위해
+		battle->BattleMonsterInfo(player, MONSTER_GOBLIN, SITUATION_FIGHT, *monster);
+		getch();
+
+		if (winCheck == WINCHECK_WIN)
+		{//if player나 monster의 hp가 0이 된다면 승패 출력
+			Print("WIN!");
+
+			player.GetMonsterBook()->RecodeMonsterBook(SITUATION_WIN, MONSTER_GOBLIN);
+
+			DrawInterface();
+			Print("전투가 종료되었습니다.");
+			Print("적절한 보상이 지급됩니다.");
+
+			player.Set_Gold(player.Get_Gold() + monster->Get_Gold()); //골드
+			player.Set_NowEXP(player.Get_NowEXP() + monster->Get_GetEXP()); //EXP
+
+			//보상 수여
+			DrawInterface();
+			string tmp;
+			MapDraw::BoxErase(MAP_END_X, MAP_END_Y / GAP_3 * GAP_2);
+			GOLD
+			tmp = "획득한 경험치 : " + to_string(monster->Get_GetEXP());
+			MapDraw::DrawMidText(tmp, MAP_END_X, MENUPRINT_START_Y + GAP_2);
+			tmp = "획득한 골드 : " + to_string(monster->Get_Gold()); //TODO::고블린 gold가 0이다. 해결 바람
+			MapDraw::DrawMidText(tmp, MAP_END_X, MENUPRINT_START_Y + GAP_3);
+			ORIGINAL
+			getch();
+
+			//패배한 몬스터 삭제
+			for (list<Character*> ::iterator iter = monsterList.begin(); iter != monsterList.end(); iter++)
+			{
+				if ((*iter)->Get_EntityType() == MONSTER_GOBLIN)
+					delete* iter;
+			}
+
+			//레벨업 진행
+			while (true)
+			{
+				if (player.Get_NowEXP() >= player.Get_MaxEXP()) //Player 레벨업
+				{//TODO::MaxEXP를 레벨업때마다 한계치를 올릴건지.
+					player.Set_NowEXP(player.Get_NowEXP() - player.Get_MaxEXP());
+					player.Set_Level(player.Get_Level() + 1);
+					Print("Level + 1!"); //TODO::레벨업 시에 뜨는 문구 작성
+					DrawInterface();
+				}
+				else
+					break;
+			}
+			break;
+		}
+		else if (winCheck == WINCHECK_RUNAWAY)
+		{
+			//LATER::도망 확률에 따라 성공과 실패 구현. 몬스터별? 레벨별? 확률에 차이를 둔다.
+			Print("비겁하게 도망치다니. 생사결을 내라! 플레이어!");
+			Print("몬스터에게서 무사히 도망쳤습니다.");
+			//Print("몬스터는 도망치는 당신을 쫒아오다... 허망하게 바라본다.");
+			break;
+		}
+
+
+		//공격 : 고블린 -> 플레이어(인간형)
+		winCheck = battle->MonsterAttack(&player, ENTITYTYPE_HUMANS, monster);
+		//플레이어 하단창 갱신 위해
+		DrawInterface();
+		battle->BattleMonsterInfo(player, MONSTER_GOBLIN, SITUATION_FIGHT, *monster);
+
+		if (winCheck == WINCHECK_WIN)
+		{//if player나 monster의 hp가 0이 된다면 승패 출력
+			MapDraw::BoxErase(MAP_END_X, MAP_END_Y / GAP_3 * GAP_2);
+			RED
+			MapDraw::DrawMidText("GAME OVER", MAP_END_X, MENUPRINT_START_Y + GAP_2);
+			ORIGINAL
+			getch();
+			Print("눈꺼풀이 감긴다... 집 가고 싶다...");
+
+
+			//몬스터가 전리품 획득
+			monster->Set_Gold(monster->Get_Gold() + player.Get_Gold()); //골드
+			monster->Set_NowEXP(monster->Get_NowEXP() + player.Get_GetEXP()); //EXP //TODO exp획득 안되는 오류 확인
+
+			//플레이어 객체 삭제해줄 필요 없다. 동적할당한 거 아니잖아.
+			//delete& player; //포인터로 선언시 delete player로 주소를 넘겨준다.
+
+			//몬스터 레벨업
+			while (true)
+			{
+				if (monster->Get_NowEXP() > monster->Get_MaxEXP()) //Monster 레벨업
+				{
+					monster->Set_NowEXP(monster->Get_NowEXP() - monster->Get_MaxEXP());
+					monster->Set_Level(monster->Get_Level() + 1);
+				}
+				else
+					break;
+			}
+			return;
+		}
+	}
+
+	
+
+
+	Print("이제 코드 다듬고");
+	Print("전투 공격력이나 크리티컬 확률 다듬을 차례");
+
+	//TODO::print한 글자 지우도록
+	//TODO::작은 박스 지우는 함수 만들기.
+	//MapDraw::ErasePoint((MAP_END_X - GAP_9) * 2,  y);
+
+	//------------------------------------------
+	system("pause");
+
+
+	//MapDraw::Print("//망치 선택해서 문 부수기 선택한 적 있으면 문구가 다르게 나오게 설계. 이건 안 될 거 같다. 라던가. 안된다.확정 땅땅.");
+	//회복
+	//여유되면 스크립트 점점 출력되는거랑, 다 출력되면 깜빡이는 표시 만드는 거도 해보기
+}
