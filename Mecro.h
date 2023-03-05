@@ -7,6 +7,7 @@ using namespace std;
 
 #define MAPMAX 20
 
+
 enum Game
 {
 	OMOK,
@@ -17,6 +18,12 @@ enum CHARATER
 {
 	BLACK,
 	WHITE
+};
+
+enum CONTINUE_CHECK
+{
+	NEW,
+	CONTINUE
 };
 
 enum DIRECTION
@@ -30,7 +37,8 @@ enum DIRECTION
 	ENTER = '\r',
 	ESC = '\x1b',
 
-//	WIN = 1
+	WIN = 1,
+	YET = 0
 };
 
 //////////////////////////// 어디에 사용?

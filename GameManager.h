@@ -1,9 +1,12 @@
 #pragma once
 #include"Player.h"
+#include<fstream>
 
 #define OMOK_WINJUGE 9
 #define MAXSTONE 400 //판이 다 채워졌다고 판단할 돌 수량
 #define OTHELLO_WINJUGE 10 //턴
+
+#define BACKCOUNT 5
 
 enum DIRECTION_CHECK
 {
@@ -24,13 +27,15 @@ private:
 	Size m_mapSize;
 	Player m_BlackPlayer;
 	Player m_WhitePlayer;
-	int m_turn;
 	int m_iGame;
+	int CharaterTurn;
+	int m_ContinueCheck;
 public:
 	static string mapLog[MAPMAX][MAPMAX];
+	static int turn;
 	//static으로 선언 //string mapLog가 두개면 맵은 세개가 되는 것 > 관리가 안된다.
 	//string은 초기화 안해도 자동으로 됨
-	inline void Setting()
+	void Setting()
 	{
 		m_position.m_ix = 0;
 		m_position.m_iy = 0;
@@ -40,16 +45,25 @@ public:
 		m_WhitePlayer.SetPosition(m_position, m_mapSize);
 		BoxSetting(mapLog, m_position.m_ix, m_position.m_iy, m_mapSize.m_iWidth, m_mapSize.m_iHeight);
 	}
+	void Reset_stoneLog()
+	{//스택 초기화
+		while (!Player::stoneLog.empty())
+		{
+			Player::stoneLog.pop();
+			if (Player::stoneLog.empty())
+				return;
+		}
+	}
 
 	///
 	void Menu();
+	//stack <Position> ContinueLoad(ifstream loadOption, int iTmp, stack <Position> _Temp);
 	//
-	void Play();
-	bool PlayerTurn(Player* m_NowTurn_Player, Player* m_NextTurn_Player, CHARATER player);
+	void Play(int ContinueCheck);
+	bool PlayerTurn(Player* m_NowTurn_Player, Player* m_NextTurn_Player, CHARATER player, int ContinueCheck);
 	void ShowInfo();
 	//
 	void BoxSetting(string mapLog[][MAPMAX], int Start_x, int Start_y, int Width, int Height);
 	GameManager();
 	~GameManager();
 };
-

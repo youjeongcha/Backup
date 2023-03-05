@@ -6,11 +6,11 @@ class DrawManager
 public:
 	//static 함수 집합체로 쓰려고. 해당 함수가 객체로써의 의미가 없기 때문에 static으로 사용하는 것이 맞다.
 
-	void static BoxDraw(int Start_x, int Start_y, int Width, int Height)
-	{
+	void static BoxDraw(int Width, int Height)
+	{//맵 새로 그리기
 		for (int y = 0; y < Height; y++)
 		{
-			gotoxy(Start_x, Start_y + y);
+			gotoxy(0, 0 + y);
 			if (y == 0)
 			{
 				cout << "┌";
@@ -35,6 +35,7 @@ public:
 		}
 		return;
 	}
+
 
 	//------------------------------------------
 
