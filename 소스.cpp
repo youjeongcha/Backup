@@ -1,16 +1,8 @@
-#include"Character.h"
-
-
+#include "Mecro.h"
+#include "Manager.h"
 
 void main()
 {
-	Character character;
-	character.HitbyAnimation();
-	character.HitbyAnimation();
-	character.HitbyAnimation();
-	character.AttackAnimation();
-	character.BuffAnimation();
-	character.AttackAnimation();
-	
-	return;
+	Manager manager;
+	manager.PlayLoop();
 }

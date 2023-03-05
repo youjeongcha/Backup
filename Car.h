@@ -1,41 +1,60 @@
-//차가 만들어져서, 이동하고, 사라지는 것까지.
 #pragma once
-#include <iostream>
-#include <Windows.h> //gotoxy COORD 이용에 필요
-#include <time.h>
-using namespace std;
+#include "Mecro.h"
+#include "Timer.h"
 
-#define CAR_X 10
-#define CAR_Y 10
-#define CARMOVE_X 0.08
-#define MOVE_CAR_SLOW 300 //1000에 1초
-#define MOVE_CAR_FAST 50 //1000에 1초
+#define MAX_DESTANCE 80
 
+enum POSITION //enum으로 처리
+{
+	POSITION_DEFAULT_X = 10,
+	POSITION_DEFAULT_Y = 10
+};
+
+enum CARPART
+{//그림 그릴때 y축 이동
+	CARPART_HEAD,
+	CARPART_BODY,
+	CARPART_WHEEL
+};
+
+typedef struct CarShape //class가 typedef의 상위호환
+{//파츠 따로따로 담아서
+	std::string Head;
+	std::string Body;
+	std::string Wheel;
+}CarShape;
 
 class Car
 {
 private:
-	float m_fX;
-	float m_fY;
-	int m_iSpeed;
-	int m_OldClock;
+	int m_ix;
+	int m_iy;
 
+	bool m_bCreateFlag; //
+	bool m_bFinishFlag;
+	bool m_bFastModeFlag;
+
+	Timer Timer;
+	CarShape Car_Character;
+	
 public:
-	inline void DrawCar();
-	inline void EraseCar();
-	void MoveCar();
+	Car();
+	void Set_ModeChange();
+	void MovePosition();
+	void Move_Car();
+	bool EraseCheck_Car();
+	void Draw_Car(CarShape Car_Character, int x, int y);
+	void Erase_Car(CarShape Car_Character, int x, int y);
 
-	inline float Get_fX() { return m_fX; }
-	inline int Get_iSpeed() { return m_iSpeed; }
-	inline void Set_iSpeed(int _iSpeed) { m_iSpeed = _iSpeed; }
+	inline bool Get_m_iFinish()
+	{
+		return m_bFinishFlag;
+	}
 
 	inline void gotoxy(int x, int y)
 	{
 		COORD Pos = { x, y };
 		SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), Pos);
 	}
-
-	Car();
 	~Car();
 };
-

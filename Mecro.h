@@ -1,41 +1,21 @@
 #pragma once
+#include <iostream>
+#include <string> //
+#include <Windows.h>
+#include <time.h>
+#include <conio.h>
+#include <list>
+#include<functional> //Timer의 함수 포인터
 
-#include<iostream>
-#include<string>
-#include<conio.h>
-#include<Windows.h>
-using namespace std;
+#define MOVE_FASTMODE 32
 
-//rkfh 
-enum class FIVE_IN_A_ROW_BOARD_SIZE
+
+enum TIME
 {
-	WIDTH = 20,
-	HEIGHT = 20,
-}; 
-
-enum class OTHELLO_BOARD_SIZE
-{
-	WIDTH = 8,
-	HEIGHT = 8,
-};
-
-enum class KEY
-{
-	LEFT = 'a',
-	RIGHT = 'd',
-	UP = 'w',
-	DOWN = 's',
-	ESC = 27,
-	DROP = 13,
-	UNDO = 'n',
-	OPTION = 'p',
-	WIN = 1,
-	PASS
+	TIME_CREATE_NEWCAR = 4500,
+	TIME_NORMALMODE_MOVE = 300,
+	TIME_FASTMODE_MOVE = 50
 };
 
 
-enum class GAMETYPE
-{
-	FIVE_IN_A_ROW,
-	OTHELLO
-};
+
