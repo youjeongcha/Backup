@@ -1,9 +1,7 @@
-#include"Mecro.h"
-#include"MapDraw.h"
-#include"Map.h"
+#include"GameManager.h"
 
 void main()
 {
-	Map map;
-	map.MapDraw();
+	GameManager m_gameManager;
+	m_gameManager.GameMain();
 }
