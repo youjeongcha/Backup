@@ -1,10 +1,7 @@
-#include"Mecro.h"
-#include"GameManager.h"
-
-//오목 오델로. 이어하기.
+#include "CarManager.h"
 
 void main()
 {
-	GameManager gameManager;
-	gameManager.Menu();
+	CarManager carManager;
+	carManager.CarsManager();
 }
