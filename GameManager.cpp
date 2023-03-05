@@ -1,486 +1,504 @@
 #include "GameManager.h"
-//static_cast<변환할>(변환될) //다운캐스팅
-
 
 GameManager::GameManager()
 {
-	system("mode con: cols=82 lines=25");
-
-	int seed = time(NULL);
-	srand(seed); // 시드값을 저장에서 저장할 게 아니라. srand에 사용되는 시드값 저장해야 하는 것(저장할때 빼오면 시드값이 시시각각 달라짐)
-	player.SetSeed(seed);
-
-	mShowContinueMenu = false; //default값 게임 새로 하기
-	battle = new Battle; //동적할당까지 해줘야 실체가 있다.
+	system("mode con: cols=156 lines=35");
+	srand(time(NULL));
+	mStoryLineCount = LoadStory();
+	StageSettingList();
 }
 GameManager::~GameManager()
 {
 }
-
-void GameManager::CallMainMenu()
-{
-	ifstream load;
-
-	load.open("SaveContinueCheck.txt"); //이어하기 체크 확인 bool값 받아온다.(Player 파일이 존재 이외에 이어하기 판단 가능한 요소 필요.)
-	if (load.is_open())
-	{
-		load >> mShowContinueMenu;
-		load.close();
-	}
-
-	while (MainMenu()) {}
-}
-
-bool GameManager::MainMenu()
-{//default값 새로하기.
-	ifstream load;
-	PrintXY printXY; 	
-	printXY.Print_Y = MENUPRINT_START_Y; //반복 돌때마다 초기화
-	bool bContinueCheck = false; //default값 새로하기.
-
-	//맵 범위 그리기
-	MapDraw::BoxDraw(MAP_START, MAP_START, MAP_END_X, MAP_END_Y);
-	//로비 창 띄우기
-	MapDraw::DrawMidText("☆★ DonGeonRPG ★☆", MAP_END_X, printXY.Print_Y);
-	MapDraw::DrawMidText("New Game", MAP_END_X, printXY.Print_Y += GAP_3);
-
-	load.open("SavePlayerInfo.txt"); //이어하기 파일 내용이 있는지 확인한다.
-	if (load.is_open() && mShowContinueMenu) //파일이 있지만 죽어서 이어하기 불가한 경우 있다.
-	{
-		MapDraw::DrawMidText("Continue Game", MAP_END_X, printXY.Print_Y += GAP_3);
-		load.close();
-
-		bContinueCheck = true;
-	}
-
-	MapDraw::DrawMidText("Help", MAP_END_X, printXY.Print_Y += GAP_3);
-	MapDraw::DrawMidText("Game Exit", MAP_END_X, printXY.Print_Y += GAP_3);
-
-
-	if (bContinueCheck == false) //새로하기
-	{
-		//화살표
-		switch (MapDraw::MenuSelectCursor(MENUSELECT_EXIT - 1, GAP_3, MAP_END_X * 0.5 - GAP_6, printXY.Print_Y - GAP_6))
-		{
-		case MENUSELECT_NEW:
-			NewGame();
-			break;
-		case MENUSELECT_HELP - 1:
-			Help();
-			break;
-		case MENUSELECT_EXIT - 1:
-			return false;
-		}
-	}
-	else //이어하기
-	{
-		//화살표
-		//  %와/부호는 while문을 반복해서 돌 때 (ex.게임 프레임 단위 갱신) 소모되는 비용이 크므로 *로 변형하여 사용하는 것을 권장 (ex.*0.5)
-		switch (MapDraw::MenuSelectCursor(MENUSELECT_EXIT, GAP_3, MAP_END_X * 0.5 - GAP_6, printXY.Print_Y - GAP_9))
-		{
-		case MENUSELECT_NEW:
-			NewGame();
-			break;
-		case MENUSELECT_CONTINUE:
-			ContinueGame();
-			break;
-		case MENUSELECT_HELP:
-			Help();
-			break;
-		case MENUSELECT_EXIT:
-			return false;
-		}
-	}
-	return true;
-}
-
-void GameManager::Help()
-{
-	//반복 돌때마다 초기화
-	PrintXY printXY;
-	printXY.Print_Y = MENUPRINT_START_Y;
-
-	//맵 범위 그리기
-	MapDraw::BoxDraw(MAP_START, MAP_START, MAP_END_X, MAP_END_Y);
-	//로비 창 띄우기
-	GRAY
-	MapDraw::DrawMidText("☆★ Help ★☆", MAP_END_X, printXY.Print_Y);
-	ORIGINAL
-	MapDraw::DrawMidText("Next : alphabets, numbers, space, enter", MAP_END_X, printXY.Print_Y += GAP_2);
-	MapDraw::DrawMidText("Move : a(A), d(D), w(W), s(S)", MAP_END_X, printXY.Print_Y += GAP_2);
-	MapDraw::DrawMidText("Select : enter", MAP_END_X, printXY.Print_Y += GAP_2);
-	MapDraw::DrawMidText("Menu : m(M)", MAP_END_X, printXY.Print_Y += GAP_2);
-	getch();
-}
-
-
-
-void GameManager::NewGame()
-{
-	mShowContinueMenu = false;
-	SaveContinueCheck();
-
-	player.PlayeInitialSetting();
-	player.GetMonsterBook()->ResetMonsterBook(); //몬스터 도감 초기화
-	player.GetMonsterBook()->ReadMonsterBook(); //몬스터 도감 불리안 배열 초기화
-
-	monsterManager.CreateMonsterReset(); //생성되어있는 몬스터 리스트 초기화
-	monsterManager.ResetSaveMonstersTxt(); //생성 몬스터 txt 저장 파일 초기화
-	GameStart();
-}
-
-void GameManager::ContinueGame()
-{
-	bool bPlayerGameOverCheck;
-	ifstream load;
-	load.open("SavePlayerInfo.txt");
-	load >> bPlayerGameOverCheck;
-	load.close();
-
-	if (bPlayerGameOverCheck == true)
-		mSceneCheck = (SCENE)player.PlayeInitialSetting(false); //초기 세팅 X : 스텟 설정 초기화 + 씬을 처음부터 하되 이름은 유지되도록 //이름 유지 GameOver 여부 따라 true와 false로
-	else
-		mSceneCheck = (SCENE)player.LoadPlayerInfo(); //씬 정보 + 플레이어 정보 가져오기
-
-	srand(player.GetSeed()); //쓰던 시드값 들고 온다.
-	monsterManager.CreateMonsterReset(); //생성되어있는 몬스터 리스트 초기화
-	monsterManager.LoadMonsters(); //몬스터 정보 가져오기(몬스터 객체를 새로 만들고 텍스트의 값을 넣어주는 식이라 리스트 초기화 안하면 같은 스텟 몬스터 x2)
-	player.GetMonsterBook()->ReadMonsterBook(); //몬스터 도감 불리안 배열 초기화
-	GameStart(mSceneCheck, MENUSELECT_CONTINUE);
-}
-
-void GameManager::GameStart(SCENE scene, MENUSELECT startType)
-{
-	//int deadMonster = 0;
-	int randomScene;
-	bool gameOverCheck = false;
-
-	Interface::DrawInterface(player);
-
-	//랜덤 씬(이벤트) 발생
-	while (true) 
-	{
-		switch (scene)
-		{
-		case SCENE_INTRO:
-			Intro(); //새 게임 시작
-		case SCENE_PICKUPWEAPON:
-			PickUpWeapon(); //무기 줍기
-		case SCENE_NAME: // ★ 나중에 하겠지만. Print 함수에서 저장할 필요 없는 구문은 저장 못하는 Print 함수로 대체
-			if ((startType == MENUSELECT_NEW) || (player.Get_Name() == "???")) //이름 설정 전에 저장하면 이어하기로 플레이어 이름 설정 필요.
-				Name(); //이름 기록
-			break;
-		case SCENE_WEAPONSHOP:
-			WeaponShop();
-			break;
-		case SCENE_SPRINGOFRECOVERY:
-			SpringOfRecovery();
-			break;
-		case SCENE_MONSTER:
-			gameOverCheck = Monster();
-			if (gameOverCheck == true)
-			{
-				getch();
-				return;
-			}
-			break;
-		}
-
-		SavePrint("좁다랗게 나있는 길을 걷기 시작한다.");
-
-		randomScene = SCENE(rand() % 10);
-
-		if (randomScene >= 0 && randomScene < 6) //몬스터 확률에 대응하면 다음 씬으로 몬스터.
-			scene = SCENE_MONSTER;
-		else if (randomScene >= 6 && randomScene < 8) //무기 상점 확률
-			scene = SCENE_WEAPONSHOP;
-		else if (randomScene >= 8 && randomScene < 10) //회복샘 확률
-			scene = SCENE_SPRINGOFRECOVERY;
-
-		//LATER::몬스터가 5마리 죽으면 길이 열린다.
-		////TODO::게임 클리어 조건 설정 바람.
-		//if (deadMonster == 5)
-		//{
-		//	Print("나는 여기서 종료가 된다고 의심중이다.");
-		//	system("pause");
-		//	break;
-		//}
-	}
-}
-
-
-
 void GameManager::Menu()
 {
-	PrintXY printXY;
-
 	while (true)
 	{
-		printXY.Print_Y = MENUPRINT_START_Y;
-
-		system("cls");
-		//Todo : 간단하게 현재 상황 브리핑 (기획 굿노트 참고)
-
-
-		MapDraw::BoxDraw(MAP_START, MAP_START, MAP_END_X, MAP_END_Y);
-		MapDraw::DrawMidText("플레이어 정보", MAP_END_X, printXY.Print_Y += GAP_6);
-		MapDraw::DrawMidText("몬스터 도감", MAP_END_X, printXY.Print_Y += GAP_2);
-		MapDraw::DrawMidText("저장", MAP_END_X, printXY.Print_Y += GAP_2);
-		MapDraw::DrawMidText("돌아가기", MAP_END_X, printXY.Print_Y += GAP_2);
-		//iMapDraw::DrawMidText("종료", MAP_END_X, mPrint_Y += GAP_2);
-
-		//화살표
-		//  %와/부호는 while문을 반복해서 돌 때 (ex.게임 프레임 단위 갱신) 소모되는 비용이 크므로 *로 변형하여 사용하는 것을 권장 (ex.*0.5)
-		switch (MapDraw::MenuSelectCursor(MENU_END, GAP_2, MAP_END_X * 0.5 - GAP_6, MENUPRINT_START_Y + GAP_6))
+		switch (UI.StartInterface(player)) //player 레퍼런스로 참조
 		{
-		case MENU_PLAYER:
-			player.PrintInfo();
-			getch();
+		case STARTMENU_START:
+			GameStart();
 			break;
-		case MENU_MONSTER:
-			Interface::DrawInterface(player);
-			player.PrintMonsterBook(monsterManager.Get_MonsterInfoList());
-			getch();
+		case STARTMENU_RANK:
+			//rank.RankPrint();
+			UI.RankingInterface(rank.Get_RankingList(), (int)MAXRANK);
+			UI.EnterNext(); //엔터로 다음 화면 넘어가기 //★ input 클래스 따로 만들어서 거기서 처리
+			system("cls");
 			break;
-		case MENU_SAVE:
-			Save();
-			break;
-		case MENU_END:
+		case STARTMENU_EXIT:
 			return;
-		//case MENU_GAMEEXIT:
-		//	return;
+		default:
+			break;
 		}
 	}
 }
 
-void GameManager::Save()
+void GameManager::GameStart()
 {
-	//플레이어 정보 저장 기능
-	player.SavePlayerInfo(mSceneCheck, (mSceneCheck > SCENE_PICKUPWEAPON));//무기를 지니고 있는지 판단.
-	//생존한 몬스터 저장 기능
-	monsterManager.SaveMonsters();
-	//몬스터 도감 저장 기능
-	player.GetMonsterBook()->SaveMonsterBook();
-	//게임 이어하기 선택지 개방
-	mShowContinueMenu = true;
-	SaveContinueCheck();
-}
+	int stageLevel = 1;
+	std::string sInput = "";
 
-void GameManager::Intro()
-{
-	mSceneCheck = SCENE_INTRO;
-	Interface::Print("............");
-	Interface::Print("손끝에 딱딱하게 말라붙은 감촉이 느껴졌다.");
-	Interface::Print("핏자국으로 인해 제목을 알 수 없는 책을 펼쳤다..");
-}
 
-void GameManager::PickUpWeapon()
-{
-	mSceneCheck = SCENE_PICKUPWEAPON;
-	Interface::Print("시체들 사이에서 굴러다니는 무기 하나를 주웠다.");
-	weaponShop.FirstWeapon(&player);
-	Interface::DrawInterface(player);
-}
+	UI.MapInterface(); //맵
+	UI.PlayerInfoInterface(player); //플레이어 정보 인터페이스 출력
 
-void GameManager::Name()
-{
-	string _Name;
+	//★ 인터페이스에서 처리
+	UI.SkipBox();
 
-	mSceneCheck = SCENE_NAME;
-	Interface::Print("Made in Dongeon.");
-	Interface::Print("그 문구 아래에 이름이 적혀있다.");
-	MapDraw::BoxErase(MAP_END_X, MAP_END_Y / GAP_3 * GAP_2);
-	YELLOW
-	MapDraw::DrawMidText("Player 이름 입력 : ", MAP_END_X, MENUPRINT_START_Y + GAP_2);
-	cin >> _Name;
+	//스토리 출력 + 스킵 기능
+	SKY_BLUE
+	PrintStory(0, 0);
 	ORIGINAL
-	player.SetName(_Name);
-	Interface::DrawInterface(player); //입력 창을 벗어난 문자를 없애는 용도
-	Interface::Print(_Name + "...");
-}
 
-void GameManager::WeaponShop()
-{
-	mSceneCheck = SCENE_WEAPONSHOP;
-	SavePrint("던전의 무기 상점에 오신걸 환영합니다.");
-	weaponShop.Shop(&player);
-	Interface::DrawInterface(player);
-	SavePrint("구매 감사합니다.");
-}
+	//<이름 입력 파트>
+	//맵
+	UI.MapInterface();
+	//★ 인풋 클래스
+	//이름 입력 박스
+	SKY_BLUE
+	MapDraw::BoxDraw(INPUTBOX_START_X, INPUTBOX_START_Y, INPUTBOX_WIDTH, INPUTBOX_HEIGHT);
+	MapDraw::DrawMidText("이름 입력", MAPSIZE_END_X, INPUTBOX_START_Y - 3);
+	ORIGINAL
+	//문자열 입력 //★ 인풋에서 입력을 받고 input박스는 그걸 호출해서 사용해야 했다.
+	while (UI.InputBox(INPUTBOX_PRINTNAME_MAXCOUNT, sInput, 0)) {}
+	//이름 설정
+	player.Set_PlayerName(sInput);
 
-void GameManager::SpringOfRecovery()
-{
-	mSceneCheck = SCENE_SPRINGOFRECOVERY;
 
-	SavePrint("미약한 불빛이 보인다..");
-	SavePrint("걸음을 서두른다.");
-	SavePrint("가까이서 본 불빛은 작은 반딧불이다.");
-	SavePrint("다가갈수록 수가 많아지는 불빛을 따라가니 빛나는 샘이 나왔다.");
+	UI.MapInterface(); //맵
+	UI.PlayerInfoInterface(player); //플레이어 정보 인터페이스 출력
 
-	SavePrint("샘의 물을 마시니 몸이 가벼워진다.");
 
-	SavePrint("HP" + to_string(player.Recover()) + " 회복!");
-	Interface::DrawInterface(player);
-
-	SavePrint("반딧불이가 떠나간다.");
-}
-
-bool GameManager::Monster()
-{
-	//플레이어와 몬스터 부분 함수화. 승리 체크 부분에서는 Character로 몬스터와 플레이어어 어느 인자가 들어오는지에 따라 차별점 주기.
-	mSceneCheck = SCENE_MONSTER;
-
-	Character* monster;
-	WINCHECK whoWin;
-
-	SavePrint("몬스터를 조우했습니다.");
-
-	monster = battle->MeetMonster(&player, &monsterManager);
-	whoWin = battle->BattleTurn(monster, &player, &monsterManager);
-
-	//string으로 비교하는 것보다 enum으로 구분하기. 아예 세세하게 플레이어나 몬스터 승리, 도망까지 (패배는 상대의 승리이므로 패배X) 
-	switch (whoWin)  //승리체크
-	{
-	case WINCHECK_PLAYER_WIN:
-	{ //플레이어가 승리
-		WinnerReward(WINCHECK_PLAYER_WIN, &player, monster);
-
-		//패배한 몬스터 삭제
-		list<Character*>* monsterList = monsterManager.Get_MonsterList();
-		for (list<Character*> ::iterator iter = monsterList->begin(); iter != monsterList->end();)
-		{
-			if (((*iter)->Get_MonsterType() == monster->Get_MonsterType()) && ((*iter)->Get_NowHP() == 0))
-			{
-				Character* c = (*iter); //list에서도 pop 하고 iter의 할당된 메모리를 해제해야할 때
-				monsterList->erase(iter); //리스트에서 pop
-				delete c; //iter가 넘어가지 않은 시점에서 할당된 메모리 해제
-				break;
-			}
-			else
-				iter++;
-		}
-		break;
-	}
-	case WINCHECK_PLAYER_RUNAWAY: //LATER::도망 확률에 따라 성공과 실패 구현. 몬스터별? 레벨별? 확률에 차이를 둔다.
-	{ //플레이어가 도망
-		SavePrint("......");
-		SavePrint("몬스터에게서 무사히 도망쳤다.");
-		break;
-	}
-	case WINCHECK_MONSTER_WIN: //몬스터가 승리
-	{
-		WinnerReward(WINCHECK_MONSTER_WIN, monster, &player);
-
-		//GameOver한 플레이어는 이름과 GameOverCheck만 SavePlayerInfo.txt 파일에 저장한다.
-		player.SaveGameOverPlayerInfo();
-		//생존한 몬스터 저장 기능
-		monsterManager.SaveMonsters();
-		//몬스터 도감 저장 기능
-		player.GetMonsterBook()->SaveMonsterBook();
-		//게임 이어하기 선택지 개방
-		mShowContinueMenu = true;
-		SaveContinueCheck();
-		return true;
-	}
-	case WINCHECK_MONSTER_RUNAWAY:
-	{ //몬스터가 도망
-		SavePrint("......");
-		SavePrint("잠시 방심한 사이...");
-		SavePrint("틈을 노리고 있던 몬스터가 도망갔다.");
-		break;
-	}
-	default:
-		break;
-	}
-
-	//공격, 행동, 가방, 도망이 출력된 그대로 남아있다.
-	Interface::DrawInterface(player);
-	return false;
-}
-
-void GameManager::WinnerReward(WINCHECK whoWin, Character* winner, Character* loser)
-{
-	if (whoWin == WINCHECK_PLAYER_WIN)
-	{ //플레이어 승리
-		SavePrint("WIN!");
-		SavePrint("전투가 종료되었습니다.");
-		SavePrint("적절한 보상이 지급됩니다.");
-
-		player.GetMonsterBook()->RecodeMonsterBook(SITUATION_WIN, loser->Get_MonsterType()); //도감 기록
-	}
-	else
-	{ //몬스터 승리
-		MapDraw::BoxErase(MAP_END_X, MAP_END_Y / GAP_3 * GAP_2);
-		RED
-		MapDraw::DrawMidText("GAME OVER", MAP_END_X, MENUPRINT_START_Y + GAP_2);
-		ORIGINAL
-	}
-	
-	//보상 수령 :: 공통
-	winner->Set_Gold(winner->Get_Gold() + loser->Get_Gold()); //골드
-	winner->Set_NowEXP(winner->Get_NowEXP() + loser->Get_GetEXP()); //EXP
-
-	if (whoWin == WINCHECK_PLAYER_WIN)
-	{ //플레이어 보상 출력
-		string sTmp;
-
-		Interface::DrawInterface(player);
-
-		MapDraw::BoxErase(MAP_END_X, MAP_END_Y / GAP_3 * GAP_2);
-		GOLD
-		sTmp = "획득한 경험치 : " + to_string(loser->Get_GetEXP());
-		MapDraw::DrawMidText(sTmp, MAP_END_X, MENUPRINT_START_Y + GAP_2);
-		sTmp = "획득한 골드 : " + to_string(loser->Get_Gold());
-		MapDraw::DrawMidText(sTmp, MAP_END_X, MENUPRINT_START_Y + GAP_3);
-		ORIGINAL
-		getch();
-	}
-	
-	//레벨업 진행 :: 공통
+	//스테이지 (인자값 받는 거 따라 진행 레벨 다르게)
 	while (true)
 	{
-		if (winner->Get_NowEXP() >= winner->Get_MaxEXP())
-		{
-			winner->LevelUp(PLAYER_PLUS_MAXHP, PLAYER_PLUS_MAXEXP, PLAYER_PLUS_ATTACK);
+		//Stage에서 목숨이 다하기 전에 일정 이상의 점수 획득하면 true 다음 스테이지로 이동
+		if (Stage(stageLevel++))
+		{ //Stage가 true면 다음 스테이지
 
-			if (winner->Get_MonsterType() == MONSTER_NONE) //몬스터가 아닌 경우 == 플레이어인 경우
-			{
-				Interface::Print("Level + 1!"); //TODO::레벨업 시에 뜨는 문구 작성
-				Interface::DrawInterface(player);
-			}
+			//stage는 최대 6레벨인데 6레벨은 true를 받지 않는다. 무제한 게임
+			//if (stageLevel > STAGELEVEL_6)
+			//	break;
+
+			//stage 상승하면 player의 score 초기화
+			player.Set_PlayerScore(0);
+			//생성된 단어 리스트 초기화
+			wordManager.RestList();
+			UI.MapInterface(); //맵
+			UI.PlayerInfoInterface(player); //플레이어 정보 인터페이스 출력
 		}
 		else
+		{ //Stage가 false면 게임 오버
+			int line = 0, maxLine, oldClock = 0;
+			std::string gameEndText = "";
+			std::vector<std::string> gameOverStoryList = storyList[STORYTYPE_GAMEOVER];
+
+			//★ switch로 처리
+			switch (stageLevel - 1)
+			{
+			case STAGELEVEL_6:
+				maxLine = GAMEOVERSTORY_6;
+				gameEndText = "§ G A M E  C L E A R §";
+				break;
+			default:
+				maxLine = GAMEOVERSTORY_1_5;
+				gameEndText = "§ G A M E  O V E R §";
+				break;
+			}
+
+			//마지막 스테이지.(무제한 스테이지) 엔딩
+			while (line < maxLine)
+			{
+				if (kbhit())
+					getch();
+
+				//엔딩 스토리 한줄씩 출력. 딜레이 시간 이상 기다리고 출력된다.
+				if (clock() - oldClock >= PRINTDELAY)
+				{
+					RED
+					if (stageLevel - 1 == STAGELEVEL_6) //보류::점수에 따라 엔딩 차이나게.
+					{
+						if (line >= GAMEOVERSTORY_6_REALITY)
+							ORIGINAL
+						MapDraw::DrawMidText(gameOverStoryList[GAMEOVERSTORY_1_5 + line++], MAPSIZE_END_X, STORYLINE_Y + line);
+					}
+					else
+						MapDraw::DrawMidText(gameOverStoryList[line++], MAPSIZE_END_X, STORYLINE_Y + line);
+					oldClock = clock();
+				}
+			}
+
+			MapDraw::DrawMidText(gameEndText, MAPSIZE_END_X, INPUTBOX_PRINT);
+			ORIGINAL
+
+			//랭킹 정렬 + 저장
+			rank.SaveSortRanking(stageLevel, player.Get_PlayerName(), player.Get_PlayerScore());
+
+			//플레이어 + 생성된 단어 리스트 초기화
+			player.InitalSetting();
+			wordManager.RestList();
+
+			UI.EnterNext(); //엔터로 다음 화면 넘어가기
+			break;
+		}
+	}
+}
+
+void GameManager::PrintStory(int printLineCount, int oldClock)
+{//루프문은 돌때마다 메모리가 쌓여서 큰 범위를 돌릴 경우 오버플로우가 터지기도 한다. 
+	//범위가 넓지만 느려도 되면 재귀. 범위 좁고 빨라야 하면 루프
+	std::vector<std::string> intoStoryList = storyList[STORYTYPE_INTRO];
+
+	//스토리 전부 출력 됐으면 종료
+	if (mStoryLineCount == printLineCount)
+		return;
+
+	//Sleep(1000); //1초 딜레이 //Slepp 대신 Clock으로 사용. 경과시간 알려줌. //Sleep은 프로그램 자체를 정지시킨다.
+
+	while (clock() - oldClock < PRINTDELAY)
+	{//while로 제한 안 걸어두면 다음 재귀 넘어가면서 문제가 생긴다. 조건을 만족하지 못하면 인자값 변동이 없었기 때문.
+		//스킵
+		if (kbhit())
+		{//키보드 입력이 들어오면 스킵 확인
+			if (getch() == 's')
+				return;
+		}
+	}
+
+	if (printLineCount < STRORYLINE_MAX) //출력 10줄 못 넘게
+		MapDraw::DrawMidText(intoStoryList[printLineCount], MAPSIZE_END_X, STORYLINE_Y + printLineCount);
+	else
+	{//10줄 넘으면 전체 다시 출력
+		for (int i = STRORYLINE_MAX - 1, lineRest = 0; i >= 0; i--, lineRest++)
+		{
+			MapDraw::DrawMidText("                                                 ", MAPSIZE_END_X, STORYLINE_Y + lineRest);
+			MapDraw::DrawMidText(intoStoryList[printLineCount - i], MAPSIZE_END_X, STORYLINE_Y + lineRest);
+		}
+	}
+
+	oldClock = clock();
+	printLineCount++;
+
+	return PrintStory(printLineCount, oldClock);
+}
+
+void GameManager::PrintStageStory(int level)
+{
+	std::vector<std::string> stageStoryList = storyList[STORYTYPE_STAGELEVEL];
+	int line = 0, oldClock = 0;
+	int storyLine_X[2] = { MAPSIZE_END_X * 0.1f , MAPSIZE_END_X * 0.4f };
+	//int maxPrintLine = stageStoryList.size() / 6;
+	int maxPrintLine = stageStoryList.size() / 6;
+	int startIndex = (level - 1) * STAGESTROY_LINECOUNT;
+	int storyLine_Y = STORYLINE_Y + (level - 1) / 2 * STAGESTROY_PRINTGAP_Y;
+	int Odd_Or_Even_Level = (level - 1) & 1;
+
+	//이미 쓰여진 스토리 한번에 출력 //2~6레벨 사이에만 적용 //써지는 건 1~5레벨 사이의 글
+	if (level != 1)
+	{
+		for (int writtenPrint = 1; writtenPrint < level; writtenPrint++)
+		{ //레벨별 글뭉치 단위
+
+			for (int line = 0; line < STAGESTROY_LINECOUNT; line++)
+			{
+				MapDraw::DrawPoint(stageStoryList[(writtenPrint - 1) * STAGESTROY_LINECOUNT + line], storyLine_X[(writtenPrint - 1) & 1], 9 + (writtenPrint - 1) / 2 * STAGESTROY_PRINTGAP_Y + line);
+			}
+		}
+	}
+
+	//플레이어가 탑 올라가는 스테이지 확인 가능한 그림 그리기.
+	UI.PrintStageStairs((STAGELEVEL)level);
+
+	//해당 층에서 작성하는 스토리 한줄씩 출력
+	while (line < maxPrintLine) //★ 굳이 enum 쓰지 말고 배열 size로 자동화
+	{
+		if (kbhit())
+			getch();
+
+		if (clock() - oldClock >= PRINTDELAY)
+		{//비트 연산
+			MapDraw::DrawPoint(stageStoryList[startIndex + line++], storyLine_X[Odd_Or_Even_Level], storyLine_Y + line);
+			oldClock = clock();
+		}
+	}
+
+	UI.EnterNext(); //엔터로 다음 화면 넘어가기
+}
+
+bool GameManager::Stage(int level)
+{
+	STAGESETTING stageSetting = mStageSetting[level - 1];
+	//int createSpeed, dropSpeed, clearStage, usedItem_UsingTime;
+	int  usedItem_UsingTime;
+	int create_OldClock = 0, drop_OldClock = 0, failed_OldClock = 0, usedItem_OldClock = 0;
+	std::string inputWord = "";
+	bool returnOriginSpeedCheck = false, hideWordCheck = false; //워드 가리기 아이템 작동
+	ITEM usedItem = ITEM_NONE;
+
+	SKY_BLUE
+	MapDraw::DrawMidText("§ " + std::to_string(level) + " stage §", MAPSIZE_END_X, STAGE_TEXTPRINT_Y);
+
+	create_OldClock = clock();
+
+	while (true) //stage 표시 뜨고 잠시 뒤에 출력되도록
+	{
+		if (clock() - create_OldClock > PRINTDELAY)
 			break;
 	}
-}
 
-
-
-void GameManager::SavePrint(string _string)
-{
-	int Start_y = MAP_END_Y / GAP_3 * GAP_2;
-
-	MapDraw::BoxErase(MAP_END_X, Start_y);
-	GRAY
-	MapDraw::DrawMidText(_string, MAP_END_X, MENUPRINT_START_Y + GAP_2);
+	//인터페이스 나누기
+	UI.MapInterface(); //맵
+	SKY_BLUE
+	MapDraw::DrawVerticalLine(); //맵 나누기
 	ORIGINAL
 
-	switch (getch())
+	//스토리 띄우기 + 플레이어가 탑 올라가는 스테이지 확인 가능한 그림 그리기.(별도의함수 있음)
+	PrintStageStory(level);
+
+	//게임 진행창 띄우기
+	UI.MapInterface(); //맵
+	SKY_BLUE
+	MapDraw::BoxDraw(INPUTBOX_START_X, INPUTBOX_START_Y, INPUTBOX_WIDTH, INPUTBOX_HEIGHT); //word 입력 박스
+	ORIGINAL
+	
+
+	//게임 시작
+	while (true)
 	{
-	case MENU_m:	//간단한 현재 상황 브리핑과,캐릭터와 몬스터 정보,도감 확인
-	case MENU_M:
-		Menu();
-		Interface::DrawInterface(player);
-		break;
-	default:
-		break;
+		//if (clock() - failed_OldClock >= 3000) //Input 틀렸을시 잠시간 Input 막기.
+		//단어 Input 관리 + failed 했을 경우에 대기 시간관리(InputBox())
+		if (UI.InputBox(INPUTBOX_PRINTWORD_MAXCOUNT, inputWord, failed_OldClock) == false) //false면 엔터를 눌렀다는 의미
+		{
+			//Word* deleteWord = NULL;//포인터로 삭제되어야 할 단어 주소 가져와서 쓸 것.
+
+			//단어 맞췄는지 틀렸는지 확인 + 맞췄다면 맞춘 단어의 아이템 타입 반환(일반은 노말). 아니면 ITEM_NONE
+			usedItem = wordManager.TypingCheck(&inputWord);
+
+			//단어 맞췄을 경우 점수 증가 + 아이템 작동
+			if (usedItem != ITEM_NONE)
+			{ 
+				player.Set_PlayerScore(player.Get_PlayerScore() + inputWord.size() * 3); //word 한자당 3점 취급
+				UI.PlayerInfoInterface(player); //플레이어 정보 인터페이스 출력
+				
+				//아이템 작동(일반 단어는 안에서 걸러진다.) + 단어 삭제
+				wordManager.ItemOperate(usedItem, stageSetting.createSpeed, stageSetting.dropSpeed, usedItem_UsingTime);
+
+				//입력창에 있던 문자 저장해둔 것 비우기
+				inputWord.clear();
+
+				//점수가 일정이상 다다르면 다음 스테이지로.
+				if ((level != STAGELEVEL_6) && (player.Get_PlayerScore() >= stageSetting.clearStage)) //6스테이지는 마법사 나옴. 랭킹전 하게 클리어 한계 두지 x
+					return true;
+			}
+			else
+			{ //단어 틀렸을 경우 failed 출력
+				RED
+				MapDraw::DrawMidText("     Failed Compare!!     ", MAPSIZE_END_X, INPUTBOX_PRINT);
+				ORIGINAL
+
+				inputWord.clear();
+				failed_OldClock = clock(); //잠시간 Input 막기.
+			}
+		}
+		//else if (kbhit()) getch();
+
+		//시간 변경하는 아이템 작동 이후 시간 돌려두기 위해
+		if ((usedItem != ITEM_NONE) && (usedItem != ITEM_NOMAL) && (usedItem != ITEM_SCREEN_CLEAR))
+		{
+			usedItem_OldClock = clock();
+			returnOriginSpeedCheck = true; //아이템 사용하고 시간 조정 원래대로 돌려두기 한 번만.
+
+			//워드 가리기 아이템 작동
+			if (usedItem == ITEM_HIDE)
+			{
+				hideWordCheck = true;
+
+				//아이템 사용 즉시 "===="으로 변환시키기 위해 (drop에서만 단어를 갱신해주고 있어서. 이렇게 안 하면 한번 떨어지고 아이템 적용된다.)
+				//워드 떨어지게 출력하는 함수이지만. y-로 지우고 y로 출력해서 여기서 사용해도 문제 없음.
+				wordManager.DropWordPrint(hideWordCheck);
+			}
+
+			usedItem = ITEM_NOMAL; //작동 시간 설정 후 if문 들어오지 않도록 초기화
+		}
+
+		//★ 위에 구조체 배열로 해결
+		//시간 돌리기
+		if ((returnOriginSpeedCheck) && (clock() - usedItem_OldClock >= usedItem_UsingTime))
+		{
+			stageSetting = mStageSetting[level - 1];
+
+			returnOriginSpeedCheck = false;
+			hideWordCheck = false;
+		}
+
+
+		//단어 생성
+		if (clock() - create_OldClock >= stageSetting.createSpeed)
+		{//생성 텀 스테이지별 조정
+			wordManager.CreateWord(hideWordCheck);
+			create_OldClock = clock();
+		}
+
+		//단어 떨어뜨리기
+		if (clock() - drop_OldClock > stageSetting.dropSpeed)
+		{
+			if (wordManager.DropWord(player.Get_PlayerLife())) //워드 XY좌표 옮기기 + 목숨 감소 bool 체크
+			{
+				wordManager.DropWordPrint(hideWordCheck);//GmaeOver 하고도 단어 뜨도록
+				player.DecreasePlayerLife();
+				UI.PlayerInfoInterface(player); //플레이어 정보 인터페이스 출력
+
+				SKY_BLUE
+				MapDraw::BoxDraw(INPUTBOX_START_X, INPUTBOX_START_Y, INPUTBOX_WIDTH, INPUTBOX_HEIGHT); //word 입력 박스 안 망가지게(공백 X)
+				ORIGINAL
+
+				//게임 오버 체크
+				if (player.Get_PlayerLife() == 0)
+					return false;
+			}
+
+			//워드 떨어지게 출력
+			wordManager.DropWordPrint(hideWordCheck);
+
+			drop_OldClock = clock();
+
+			SKY_BLUE
+			MapDraw::BoxDraw(INPUTBOX_START_X, INPUTBOX_START_Y, INPUTBOX_WIDTH, INPUTBOX_HEIGHT); //word 입력 박스
+
+			//단어에 가려지지 않도록
+			if ((usedItem == ITEM_NONE) && (drop_OldClock - failed_OldClock < INPUTBOX_DELAY)) //failed 상태일때는 failed 문구 출력
+			{//3초가 지나기 전에는 계속 들어와야 한다. //drop-OldClock을 쓴 이유 > clock() 호출 바로 전에 해서 또 할 필요X
+				RED
+				MapDraw::DrawMidText("     Failed Compare!!     ", MAPSIZE_END_X, INPUTBOX_PRINT);
+				ORIGINAL
+			}
+			else
+			{
+				ORIGINAL
+				MapDraw::DrawMidText(inputWord, MAPSIZE_END_X, INPUTBOX_PRINT);
+			}
+
+			//글자 초과 프린트
+			if (inputWord.size() >= INPUTBOX_PRINTWORD_MAXCOUNT)
+			{
+				SKY_BLUE
+				MapDraw::DrawMidText(std::to_string(INPUTBOX_PRINTWORD_MAXCOUNT) + "글자 초과!!", MAPSIZE_END_X, INPUTBOX_START_Y - 2);
+				ORIGINAL
+			}
+		}
 	}
 }
 
-void GameManager::SaveContinueCheck()
-{ //게임 이어하기 선택지 개방
-	ofstream save;
-	save.open("SaveContinueCheck.txt");
-	save << mShowContinueMenu;
-	save.close();
+int GameManager::LoadStory()
+{
+	int lineCount = 0;
+	std::string storyTmp;
+	std::vector<std::string> tmpStoryList; //★ into,stage, gameOver를 enum으로 판단해서. 백터 배열로 호출해서 사용 
+	//std::vector<std::string> stageStoryList;
+	//std::vector<std::string> gameOverStoryList;
+
+	std::ifstream load;
+
+	//★ 이름 변경 Save라고 하면 저장되는 데이터로 이해된다.
+	load.open("StageStory.txt");
+	if (load.is_open())
+	{
+		for (int i = 0; i < STAGELEVEL_6; i++)
+		{
+			//load >> storyTmp; //txt 파일에 구분 위해 작성해둔것. 의미X 사용X
+			for (int j = 0; j < STAGESTROY_LINECOUNT; j++)
+			{
+				getline(load, storyTmp);
+				tmpStoryList.push_back(storyTmp);
+			}
+		}
+
+		storyList.insert({ STORYTYPE_STAGELEVEL, tmpStoryList });
+		tmpStoryList.clear();
+		load.close();
+	}
+	//★ 
+	load.open("GameOverStory.txt");
+	if (load.is_open())
+	{
+		for (int i = 0; i < 2; i++)
+		{
+			if (i == 0) //1~5레벨 GameOver 했을 때 스토리 줄 수 
+				lineCount = GAMEOVERSTORY_1_5;
+			else //6레벨 GameOver 했을 때 스토리 줄 수
+				lineCount = GAMEOVERSTORY_6;
+			//load >> lineCount; //txt 파일 1~5레벨, 6레벨 글자수 구분 위해 작성해둔것
+			for (int j = 0; j < lineCount; j++)
+			{
+				getline(load, storyTmp);
+				tmpStoryList.push_back(storyTmp);
+			}
+		}
+
+		storyList.insert({ STORYTYPE_GAMEOVER, tmpStoryList });
+		tmpStoryList.clear();
+		load.close();
+	}
+	//★ 
+	load.open("IntroStory.txt");
+	if (load.is_open())
+	{
+		load >> lineCount;
+
+		for (int i = 0; i < lineCount; i++)
+		{
+			getline(load, storyTmp);
+			tmpStoryList.push_back(storyTmp);
+		}
+
+		storyList.insert({ STORYTYPE_INTRO, tmpStoryList });
+		load.close();
+	}
+	return lineCount;
+}
+
+void GameManager::StageSettingList()
+{
+	for (int setLevel = 0; setLevel < STAGELEVEL_6; setLevel++)
+	{
+		switch (setLevel + 1)
+		{
+		case STAGELEVEL_1:
+			//MapDraw::DrawMidText("마법사가 예고했던 시간이 되자 그가 탑 위에 나타났습니다.", MAPSIZE_END_X, STAGE_TEXTPRINT_Y + 4);
+			mStageSetting[setLevel].createSpeed = CREATEWORD_SPEED_STAGE1;
+			mStageSetting[setLevel].dropSpeed = DROP_SPEED_STAGE1;
+			mStageSetting[setLevel].clearStage = CLEARSTAGE_1;
+			break;
+		case STAGELEVEL_2:
+			//MapDraw::DrawMidText("레벨 2 추후 수정", MAPSIZE_END_X, STAGE_TEXTPRINT_Y + 4);
+			mStageSetting[setLevel].createSpeed = CREATEWORD_SPEED_STAGE2;
+			mStageSetting[setLevel].dropSpeed = DROP_SPEED_STAGE2;
+			mStageSetting[setLevel].clearStage = CLEARSTAGE_2;
+			break;
+		case STAGELEVEL_3:
+			//MapDraw::DrawMidText("레벨 3 추후 수정", MAPSIZE_END_X, STAGE_TEXTPRINT_Y + 4);
+			mStageSetting[setLevel].createSpeed = CREATEWORD_SPEED_STAGE3;
+			mStageSetting[setLevel].dropSpeed = DROP_SPEED_STAGE3;
+			mStageSetting[setLevel].clearStage = CLEARSTAGE_3;
+			break;
+		case STAGELEVEL_4:
+			//MapDraw::DrawMidText("레벨 4 추후 수정", MAPSIZE_END_X, STAGE_TEXTPRINT_Y + 4);
+			mStageSetting[setLevel].createSpeed = CREATEWORD_SPEED_STAGE4;
+			mStageSetting[setLevel].dropSpeed = DROP_SPEED_STAGE4;
+			mStageSetting[setLevel].clearStage = CLEARSTAGE_4;
+			break;
+		case STAGELEVEL_5:
+			//MapDraw::DrawMidText("레벨 5 추후 수정", MAPSIZE_END_X, STAGE_TEXTPRINT_Y + 4);
+			mStageSetting[setLevel].createSpeed = CREATEWORD_SPEED_STAGE5;
+			mStageSetting[setLevel].dropSpeed = DROP_SPEED_STAGE5;
+			mStageSetting[setLevel].clearStage = CLEARSTAGE_5;
+			break;
+		case STAGELEVEL_6:
+			//MapDraw::DrawMidText("레벨 6 추후 수정", MAPSIZE_END_X, STAGE_TEXTPRINT_Y + 4);
+			mStageSetting[setLevel].createSpeed = CREATEWORD_SPEED_STAGE6;
+			mStageSetting[setLevel].dropSpeed = DROP_SPEED_STAGE6;
+			//clearStage = CLEARSTAGE_6;
+			break;
+		}
+	}
 }

@@ -2,6 +2,6 @@
 
 void main()
 {
-	GameManager gm;
-	gm.CallMainMenu();
+	GameManager gameManager;
+	gameManager.Menu();
 }
