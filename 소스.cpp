@@ -1,7 +1,16 @@
-#include"GameManager.h"
+#include"Character.h"
+
+
 
 void main()
 {
-	GameManager m_gameManager;
-	m_gameManager.GameMain();
+	Character character;
+	character.HitbyAnimation();
+	character.HitbyAnimation();
+	character.HitbyAnimation();
+	character.AttackAnimation();
+	character.BuffAnimation();
+	character.AttackAnimation();
+	
+	return;
 }
