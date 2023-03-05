@@ -1,30 +1,62 @@
 #pragma once
-
 #include<iostream>
 #include<string>
-#include<conio.h>
+#include<conio.h>//getch()이용
 #include<Windows.h>
 using namespace std;
 
-#define WIDTH 20
-#define HEIGHT 20
+#define MAPMAX 20
 
-enum class KEY
+enum Game
+{
+	OMOK,
+	OTHELLO
+};
+
+enum CHARATER
+{
+	BLACK,
+	WHITE
+};
+
+enum DIRECTION
 {
 	LEFT = 'a',
 	RIGHT = 'd',
 	UP = 'w',
 	DOWN = 's',
-	ESC = 27,
-	DROP = 13, //
-	UNDO = 'n',
-	OPTION = 'p', //
-	WIN = 1 //
+
+	BACK = 'n',
+	ENTER = '\r',
+	ESC = '\x1b',
+
+//	WIN = 1
 };
 
-
-enum class GAMETYPE
+//////////////////////////// 어디에 사용?
+enum XY
 {
-	FIVE_IN_A_ROW,
-	OTHELLO
+	X,
+	Y
+};
+
+struct Position
+{
+	int m_ix;
+	int m_iy;
+};
+
+//////////////////////////// 개선 가능할 거 같은데 어디 사용?
+struct Rectingle
+{//차이점
+	int m_iLeft;
+	int m_iRight;
+	int m_iUp;
+	int m_iDown;
+};
+
+struct Size
+{
+	int m_iWidth;
+	int m_iHeight;
 };

@@ -1,142 +1,230 @@
 #include "GameManager.h"
 
-
-
 GameManager::GameManager()
-{//생성자 초기값
-	m_iTurn = 1;
-	m_iHeight = HEIGHT;
-	m_iWidth = WIDTH;
-	m_eGameType = GAMETYPE::FIVE_IN_A_ROW; //이런 식으로
-}
-
-void GameManager::LobbyDraw()
 {
-	switch (m_eGameType)
-	{
-	case GAMETYPE::FIVE_IN_A_ROW:
-		DrawManager::DrawMidText("★ 오 목 ★", m_iWidth, m_iHeight * 0.3f);
-		break;
-	case GAMETYPE::OTHELLO:
-		DrawManager::DrawMidText("★ 오 델 로 ★", m_iWidth, m_iHeight * 0.3f);
-		break;
-	default:
-		break;
-	}
-	DrawManager::DrawMidText("1.게임 시작", m_iWidth, m_iHeight * 0.4f);
-	DrawManager::DrawMidText("2.게임 변경", m_iWidth, m_iHeight * 0.5f);
-	DrawManager::DrawMidText("3.게임 종료", m_iWidth, m_iHeight * 0.6f);
-	DrawManager::BoxDraw(m_iWidth, m_iHeight * 0.7, m_iWidth / 2, 3);
-	DrawManager::gotoxy(m_iWidth, m_iHeight * 0.7 + 1);
+	m_iGame = OMOK;
 }
 
-void GameManager::InputInfoDraw()
-{// 하단 정보창 변곡점
-	DrawManager::DrawMidText("====조작키====", m_iWidth, m_iHeight); //m_iWidth 이용
-	DrawManager::DrawMidText("이동 : A,S,W,D 돌놓기 : ENTER", m_iWidth, m_iHeight + 1);
-	if(m_eGameType == GAMETYPE::FIVE_IN_A_ROW)
-		DrawManager::DrawMidText("무르기 : N 종료 : ESC", m_iWidth, m_iHeight + 2);
-	else
-		DrawManager::DrawMidText("종료 : ESC", m_iWidth, m_iHeight + 2);
-}
+string GameManager::mapLog[MAPMAX][MAPMAX]; //static은 선언 .cpp에서 해야 한다.
 
-void GameManager::CurPlayerInfoDraw()
-{//현재 플레이어의 정보. 하단의 키 정보와 따로 관리
-	string Name = m_iTurn % 2 == (int)PLAYERTYPE::BLACK ? "Black" : "While"; 
-	//삼항연산자. ture면 첫번째 반환 false면 두번째 반환
-	//‘조건’ ? ‘A’ : ‘B’
-	int UndoCount = m_Players[m_iTurn % 2].GetUndoCount(); //UndoCount 무르기 횟수 //m_iTurn % 2로 누구의 턴인지 판단
-	string str;
-	if (m_eGameType == GAMETYPE::FIVE_IN_A_ROW) //to_string은 int형을 string형으로 변환
-		str = "Player Name : " + Name + "       무르기 : " + to_string(UndoCount) + "  ";
-	else
-		str = "Player Name : " + Name;
-	DrawManager::DrawMidText(str, m_iWidth, m_iHeight + 3); //str이용해서 같은 방법으로 출력 가능하게
-	DrawManager::DrawMidText("Turn : " + to_string(m_iTurn) + "  ", m_iWidth, m_iHeight + 4);
-}
 
-void GameManager::GameMain()
+void GameManager::BoxSetting(string mapLog[][MAPMAX], int Start_x, int Start_y, int Width, int Height)
 {
-	char buf[256];
-	sprintf(buf, "mode con: lines=%d cols=%d", m_iHeight + 5, (m_iWidth * 2) + 1); //sprintf가 버퍼에 사용될 변수로 출력된다고 함 //sprintf는 조합후 문자열 저장
-	system(buf); //"mode con: lines=%d, 세로 cols=%d, 가로" 콘솔창 크기 조절 세로, 가로
-	//별 떨어지는 것과, 미로에서 사용함
-	while (1)
+	for (int y = 0; y < Height; y++)
 	{
-		system("cls");
-		DrawManager::DrawPanel(m_iWidth, m_iHeight);//판 싹다 그리는 거
-		LobbyDraw(); //오목 오델로 시작 메뉴창 띄우는 거
-		int Select;
-		cin >> Select;
-		switch ((LOBBYMENU)Select)//int형을 enum으로 형변환
+		int x = 0;
+		//DrawManager::gotoxy(Start_x, Start_y + y);
+		if (y == 0)
 		{
-		case LOBBYMENU::START:
-			Play();
+			mapLog[x][y] = "┌";
+			for (x = 1; x < Width - 1; x++)
+				mapLog[x][y] = "┬";
+			mapLog[x][y] = "┐";
+		}
+		else if (y == Height - 1)
+		{
+			mapLog[x][y] = "└";
+			for (x = 1; x < Width - 1; x++)
+				mapLog[x][y] = "┴";
+			mapLog[x][y] = "┘";
+		}
+		else
+		{
+			mapLog[x][y] = "├";
+			for (x = 1; x < Width - 1; x++)
+				mapLog[x][y] = "┼";
+			mapLog[x][y] = "┤";
+		}
+	}
+	return;
+}
+
+
+//----------------------------------------------------------------
+
+
+void GameManager::Menu()
+{
+	int m_iSelect;
+
+	while (true)
+	{
+		Setting();
+		DrawManager::BoxDraw(m_position.m_ix, m_position.m_iy, m_mapSize.m_iWidth, m_mapSize.m_iHeight);
+
+		switch (m_iGame)
+		{
+		case OMOK:
+			DrawManager::DrawMidText("★ 오 목 ★", MAPMAX, 6);
 			break;
-		case LOBBYMENU::OPTION:
-			if (m_eGameType == GAMETYPE::FIVE_IN_A_ROW)
-				m_eGameType = GAMETYPE::OTHELLO;
+		case OTHELLO:
+			DrawManager::DrawMidText("★ 오 델 로 ★", MAPMAX, 6);
+			break;
+		}
+		DrawManager::DrawMidText("1.게임 시작", MAPMAX, 8);
+		DrawManager::DrawMidText("2.게임 변경", MAPMAX, 10);
+		DrawManager::DrawMidText("3.게임 종료", MAPMAX, 12);
+		DrawManager::DrawMidText("┌────────┐", MAPMAX, 14);
+		DrawManager::DrawMidText("│                │", MAPMAX, 15);
+		DrawManager::DrawMidText("└────────┘", MAPMAX, 16);
+		DrawManager::gotoxy(MAPMAX, 15);
+		cin >> m_iSelect;
+
+
+		switch (m_iSelect)
+		{
+		case 1:
+			Play();//인자를 받아서 일일이 오목 오델로 차이점 구분하기로★
+			break;
+		case 2:
+			if (m_iGame == OMOK)
+				m_iGame = OTHELLO;
 			else
-				m_eGameType = GAMETYPE::FIVE_IN_A_ROW;
+				m_iGame = OMOK;
 			break;
-		case LOBBYMENU::EXIT:
+		case 3:
 			return;
 		}
 	}
 }
+
+
+//-------------------------------------------------------------------
 
 
 void GameManager::Play()
 {
-	system("cls");
-	m_iTurn = 1;
-	m_Players[(int)PLAYERTYPE::BLACK].Init(m_iWidth, m_iHeight, PLAYERTYPE::BLACK, this);
-	m_Players[(int)PLAYERTYPE::WHITE].Init(m_iWidth, m_iHeight, PLAYERTYPE::WHITE, this);
-	//init은 내 돌 setting과 유사
-	//this 포인터. 현재의 객체는 CameManager. player에서 참조가 필요할 때를 위해.
+	int CharaterTurn = BLACK;
+	m_turn = 1;
+	bool ESC_Check = true;
 
-	DrawManager::DrawPanel(m_iWidth, m_iHeight); //판 싹다 그리기
-	InputInfoDraw(); //하단 정보창 
+	DrawManager::BoxDraw(m_position.m_ix, m_position.m_iy, m_mapSize.m_iWidth, m_mapSize.m_iHeight);
+	ShowInfo();
+
+	//캐릭터 정해주고
+	m_BlackPlayer.SetCharater("○", "●", "Black");
+	m_WhitePlayer.SetCharater("●", "○", "White");
+
+	if (m_iGame == OMOK)
+	{
+		//2회차 이상 플레이 시 - 스택 초기화
+		m_WhitePlayer.Reset_m_backXY();
+		m_BlackPlayer.Reset_m_backXY();
+
+		//2회차 이상 플레이 시 - 무르기 신청 : 기본 false로 유지
+		//무르기 상태로 종료시 bool이 계속 ture로 남아있다.
+		m_BlackPlayer.SetBack(false);
+		m_WhitePlayer.SetBack(false);
+	}
+
+	//2회차 이상 플레이 시 - ESC 초기화
+	m_WhitePlayer.SetESC(false);
+	m_BlackPlayer.SetESC(false);
+
 	while (true)
 	{
-		CurPlayerInfoDraw();//현재 플레이어의 정보
-		switch (m_Players[m_iTurn % 2].Input(&m_Players[!(m_iTurn % 2)], m_iTurn, m_eGameType))
-		{
-			//Input은 Key enum을 리턴
-			//&m_Players[!(m_iTurn % 2)] 적 플레이어의 주소
-		case KEY::ESC:
-			return;
-		case KEY::DROP:
-			m_iTurn++;
-			break;
-		case KEY::UNDO:
-			if (m_iTurn > 1)
-			{
-				m_iTurn--;
-				m_Players[m_iTurn % 2].UndoSet();
-			}
-			break;
-		case KEY::WIN:
-			if (m_eGameType == GAMETYPE::FIVE_IN_A_ROW)
-			{//방향키 return받아서 enum 이용+ Win까지 enum의 리턴 이용해서 경우를 보기 쉽게 관리
-				if (m_iTurn % 2 == (int)PLAYERTYPE::BLACK)
-					DrawManager::DrawMidText("Black Win", m_iWidth, m_iHeight * 0.5f);
-				else
-					DrawManager::DrawMidText("White Win", m_iWidth, m_iHeight * 0.5f);
-			}
-			else
-			{
-				if(m_Players[(int)PLAYERTYPE::BLACK].GetStoneCount() > m_Players[(int)PLAYERTYPE::WHITE].GetStoneCount())
-					DrawManager::DrawMidText("Black Win", m_iWidth, m_iHeight * 0.5f);
-				else
-					DrawManager::DrawMidText("White Win", m_iWidth, m_iHeight * 0.5f);
-			}
-			getch(); //윈 화면 잠시 띄워두는 용도
-			return;
+		DrawManager::gotoxy(MAPMAX + 2, MAPMAX + 4);
+		cout << m_turn;
+
+		if (CharaterTurn == BLACK)
+		{//코드 중복
+			CharaterTurn = WHITE;
+			ESC_Check = PlayerTurn(&m_BlackPlayer, &m_WhitePlayer, BLACK); //깊은복사 > 얕은복사
 		}
+		else if (CharaterTurn == WHITE)
+		{
+			CharaterTurn = BLACK;
+			ESC_Check = PlayerTurn(&m_WhitePlayer, &m_BlackPlayer, WHITE);
+		}
+		m_turn++;
+
+		if (ESC_Check == true)
+			return;
 	}
 }
 
-GameManager::~GameManager()
+bool GameManager::PlayerTurn(Player* m_NowTurn_Player, Player* m_NextTurn_Player, CHARATER player)
 {
+	m_NowTurn_Player->GetTurn(m_turn);//무르기 횟수 체크
+	//m_NowTurn_Player->Turn(m_iGame);//게임 진행
+	
+	switch ((DIRECTION)m_NowTurn_Player->Turn(m_iGame)) //게임 진행
+	{
+	case BACK:
+		//무르기 신청 확인
+		if (m_iGame == OMOK &&
+			(m_NowTurn_Player->GetBack() == true))
+		{
+			//black에서 무르기 신청을 받아 white에게 무르기 명령
+			m_NextTurn_Player->SetBack(true);
+			m_NowTurn_Player->SetBack(false);
+
+			//m_turn이 10을 넘을 경우 일의자리가 지워지지 않아서
+			DrawManager::gotoxy(MAPMAX + 2, MAPMAX + 4);
+			cout << "       ";
+			m_turn -= 2;
+		}
+		return false;
+	case ENTER:
+		if (m_NowTurn_Player->GetEsc() == true)
+		{
+			DrawManager::gotoxy(MAPMAX - 4, MAPMAX / 2);
+			if (player == BLACK)
+				cout << "Black Win";
+			else
+				cout << "White Win";
+
+			char ch = getch();
+			DrawManager::ErasePoint(0, MAPMAX); //하단 정보창 지움
+
+			return true;
+		}
+		return false;
+	case ESC:
+		DrawManager::ErasePoint(0, MAPMAX); //하단 정보창 지움
+		return true;
+	}
+
+	////무르기 신청 확인
+	//if (m_iGame == OMOK &&
+	//	(m_NowTurn_Player->GetBack() == true))
+	//{
+	//	//black에서 무르기 신청을 받아 white에게 무르기 명령
+	//	m_NextTurn_Player->SetBack(true);
+	//	m_NowTurn_Player->SetBack(false);
+
+	//	//m_turn이 10을 넘을 경우 일의자리가 지워지지 않아서
+	//	DrawManager::gotoxy(MAPMAX + 2, MAPMAX + 4);
+	//	cout << "       ";
+	//	m_turn -= 2;
+	//}
+
+	////ESC
+	//if (m_NowTurn_Player->GetEsc() == true)
+	//{//하단 정보창 지움
+	//	DrawManager::ErasePoint(0, MAPMAX);
+	//	return true;
+	//}
 }
+
+void GameManager::ShowInfo()
+{
+	DrawManager::DrawMidText("====조작키====", MAPMAX, MAPMAX);
+	DrawManager::DrawMidText("이동 : A,S,W,D  돌놓기 : ENTER", MAPMAX, MAPMAX + 1);
+	if (m_iGame == OMOK)
+	{
+		DrawManager::DrawMidText("무르기 : N  종료 : ESC", MAPMAX, MAPMAX + 2);
+		DrawManager::DrawMidText("Player Name : ", 1, MAPMAX + 3);
+		DrawManager::DrawMidText("무르기 : ", MAPMAX + 11, MAPMAX + 3);
+		DrawManager::DrawMidText("Turn : ", MAPMAX - 2, MAPMAX + 4);
+	}
+	else
+	{
+		DrawManager::DrawMidText("종료 : ESC", MAPMAX, MAPMAX + 2);
+		DrawManager::DrawMidText("Player Name : ", MAPMAX - 2, MAPMAX + 3);
+		DrawManager::DrawMidText("Turn : ", MAPMAX - 2, MAPMAX + 4);
+	}
+}
+
+
+GameManager::~GameManager() { }

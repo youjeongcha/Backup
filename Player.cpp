@@ -1,220 +1,412 @@
 #include "Player.h"
-#include"GameManager.h"
+#include "GameManager.h"
 
-
-void Player::Init(int _iWidth, int _iHeight, PLAYERTYPE _ePlayerType,GameManager* _pGameManager)
-{//내 코드의 setting과 유사
-	m_ePlayerType = _ePlayerType; //흰돌 검은돌 확인
-	switch (m_ePlayerType)
-	{
-	case PLAYERTYPE::WHITE:
-		m_strShape = WHITETEAMICON; //string 받는다. define이용 "○"
-		break;
-	case PLAYERTYPE::BLACK:
-	default:
-		m_strShape = BLACKTEAMICON;
-		break;
-	}
-	m_Cursor.SetPosition(_iWidth / 2, _iHeight / 2, m_strShape); //m_Cursor은 Stone의 객체
-	m_iUndoCount = MAX_UNDO_COUNT;
-	m_vecStoneList.clear();
-	m_pGameManager = _pGameManager;
-	m_undoStone.Disable(m_pGameManager->GetWidth(), m_pGameManager->GetHeight()); //어디서 언제 왜 쓰는 건지
+Player::Player()
+{
+	bMoveStatus = false;
+	bBackCheck = false;
 }
 
-KEY Player::Input(Player* _enemyPlayer, int _iTurn, GAMETYPE _eGameType)
-{//enum으로로 형 가능
+
+int Player::Move(int _iGame)
+{
 	while (true)
 	{
-		m_undoStone.DrawUndoStone(); //무르기 돌 표시
-		m_Cursor.DrawStone(); //둬야 할 돌 표시
 		char ch = getch();
-		if(CheckStoneList(m_Cursor,true) == false && _enemyPlayer->CheckStoneList(m_Cursor,true) == false)
-			m_Cursor.EraseStone(m_pGameManager->GetWidth(),m_pGameManager->GetHeight());
-			//돌 있던 부분만 지우기. 
-		//CheckStoneList 둔 돌의 위치인지 체크하고 아니면 그린다.
-		//_enemyPlayer->CheckStoneList 상대편이 둔 돌인지 체크, 아니면 그린다.
-		switch ((KEY)ch)
+		Position prevPosition = m_position;//중요 //이번 턴에서 돌이 맨 처음 위치한 자리.(지나간 자리 복구할때 주로 이용한다.)
+		switch (ch)
 		{
-		case KEY::LEFT:
-			if (m_Cursor.GetX() > 0)//판 안에서 움직이도록
-				m_Cursor.SetLeft();
-			break;
-		case KEY::RIGHT:
-			if (m_Cursor.GetX() < m_pGameManager->GetWidth() - 1)//한계는 맵 크기에 맞게
-				m_Cursor.SetRight();
-			break;
-		case KEY::UP:
-			if (m_Cursor.GetY() > 0)
-				m_Cursor.SetUp();
-			break;
-		case KEY::DOWN:
-			if (m_Cursor.GetY() < m_pGameManager->GetHeight() - 1)
-				m_Cursor.SetDown();
-			break;
-		case KEY::ESC:
-			return KEY::ESC; //ESC를 판단하는 걸 따로 안 만들고 enum이용
-		case KEY::DROP://enter
-			if (m_undoStone.Compare(m_Cursor) == false && CheckStoneList(m_Cursor) == false && _enemyPlayer->CheckStoneList(m_Cursor) == false)
-				//m_undoStone 무르기 표시 체크. 무르기 할 돌이라 false로 둘 수 없어야 한다.
-				//CheckStoneList 이미 놓아져 있는 돌들의 리스트
-			{ 
-				m_undoStone.Disable(m_pGameManager->GetWidth(), m_pGameManager->GetHeight(),true);
-				m_Cursor.DrawStone();
-				m_vecStoneList.push_back(m_Cursor); //vector에 넣는다.
-				if (WinCheck(_eGameType,_enemyPlayer, m_pGameManager->GetWidth()*m_pGameManager->GetHeight()))//맨 뒤가 maxStoneSize 바둑판에 총 둘 수 있는 바둑돌의 갯수
-					//바둑판을 다 채웠을 경우
-					return KEY::WIN; //바둑판의 바둑을 많이 가진 플레이어 판단은 GameManager에서 input을 받아서
-				else
-					return KEY::DROP;
-			}
-			break;
-		case KEY::UNDO://무르기
-			if (_eGameType == GAMETYPE::FIVE_IN_A_ROW && m_iUndoCount > 0 && _iTurn > 1) //바둑일 경우에만 작동하도록 //무르기 횟수와 턴 1턴이상 고려
+		case DIRECTION::LEFT:
+			if (m_position.m_ix - 1 >= m_mapSize.m_iLeft) //문자열 2칸 고려
 			{
-				m_iUndoCount--;
-				m_undoStone.Disable(m_pGameManager->GetWidth(), m_pGameManager->GetHeight(),true); //무리기 표시
-				return KEY::UNDO;//표시는 input 리턴 받은 GameManager에서
+				m_position.m_ix -= 2;
+				bMoveStatus = true;
 			}
 			break;
-		default:
+		case DIRECTION::RIGHT:
+			if (m_position.m_ix + 1 < m_mapSize.m_iRight - 2)
+			{
+				m_position.m_ix += 2;
+				bMoveStatus = true;
+			}
 			break;
-		}
-	}
-}
-
-bool Player::CheckStoneList(Stone _stone, bool _bDrawStatus)
-{//List를 확인하고 List에 존재하지 않으면 돌을 그린다. //그리다와 두다 다름. 구분 필요.
-	if (_bDrawStatus && m_undoStone.Compare(_stone)) //무르기 돌인지 확인
-	{
-		m_undoStone.DrawUndoStone(); //무르기 표시 그린다.
-		return true;
-	}
-	return StoneCheck(_stone, _bDrawStatus); //둘 수 있으면 돌 그림. _bDrawStatus이 false면 안 그림
-}
-
-void Player::UndoSet()
-{
-	if (m_vecStoneList.size() > 0)
-	{
-		m_undoStone = m_vecStoneList.back();
-		m_vecStoneList.pop_back();
-	}
-}
-
-
-bool Player::WinCheck(GAMETYPE _eGameType, Player* _enemyPlayer,int MaxStoneSize)
-{//MaxStoneSize  바둑판에 총 둘 수 있는 바둑돌의 갯수
-	switch (_eGameType)
-	{
-	case GAMETYPE::FIVE_IN_A_ROW:
-		return FiveInARowCheck();
-	case GAMETYPE::OTHELLO:
-		OthelloLineCheck(_enemyPlayer,-1,0);
-		OthelloLineCheck(_enemyPlayer,1,0);
-		OthelloLineCheck(_enemyPlayer,0,-1);
-		OthelloLineCheck(_enemyPlayer,0,1);
-		OthelloLineCheck(_enemyPlayer,-1,-1);
-		OthelloLineCheck(_enemyPlayer,1,1);
-		OthelloLineCheck(_enemyPlayer,-1,1);
-		OthelloLineCheck(_enemyPlayer,1,-1);
-		if (m_vecStoneList.size() + _enemyPlayer->m_vecStoneList.size() == MaxStoneSize)
-			return true;
-		else
-			return false;
-	}
-}
-bool Player::FiveInARowCheck()
-{
-	if (StoneLineCheck(m_Cursor,-1, 0).size() + StoneLineCheck(m_Cursor, 1, 0).size() == 4) //바로 위 아래 돌 합계내도록
-		return true;
-	else if (StoneLineCheck(m_Cursor, 0, -1).size() + StoneLineCheck(m_Cursor, 0, 1).size() == 4)
-		return true;
-	else if (StoneLineCheck(m_Cursor, -1, -1).size() + StoneLineCheck(m_Cursor, 1, 1).size() == 4)
-		return true;
-	else if (StoneLineCheck(m_Cursor, 1, -1).size() + StoneLineCheck(m_Cursor, -1, 1).size() == 4)
-		return true;
-	else return false;
-}
-
-
-vector<Stone> Player::StoneLineCheck(Stone _cursor,int _addX, int _addY)
-{//vector에 넣어서 라인 관리
-	vector<Stone> vecStoneList;
-	int iWidth = m_pGameManager->GetWidth(); //m_pGameManager은 cpp에 h 받아서 //get이용 방법 이렇게
-	int iHeight = m_pGameManager->GetHeight();
-	int iCount = 0;
-	for (int x = _cursor.GetX() + _addX, y = _cursor.GetY() + _addY; //둔 돌 기준에서 체크할 방향의 돌이. 첫번째로 체크 되는 돌
-		(x >= 0 && x < iWidth) && (y >= 0 && y < iHeight); //판 안에 범위 체크
-		x += _addX, y += _addY)
-	{//범위 맞는지 걸러내기
-		if (StoneCheck(x, y) == false)
+		case DIRECTION::UP:
+			if (m_position.m_iy - 1 >= m_mapSize.m_iUp)
+			{
+				m_position.m_iy--;
+				bMoveStatus = true;
+			}
 			break;
+		case DIRECTION::DOWN:
+			if (m_position.m_iy + 1 <= m_mapSize.m_iDown - 1)
+			{
+				m_position.m_iy++;
+				bMoveStatus = true;
+			}
+			break;
+		case DIRECTION::ENTER:
+			if ((GameManager::mapLog[m_position.m_ix / 2][m_position.m_iy] == "○") ||
+				(GameManager::mapLog[m_position.m_ix / 2][m_position.m_iy] == "●") ||
+				(GameManager::mapLog[m_position.m_ix / 2][m_position.m_iy] == "※"))
+			{
+				bMoveStatus = false;
+			}
+			else
+			{
+				bMoveStatus = true;
+
+				//캐릭터(바둑돌)를 맵에 기록
+				GameManager::mapLog[m_position.m_ix / 2][m_position.m_iy] = m_strCharacter;
+
+				if (_iGame == OMOK)
+				{
+					Position m_temp;
+
+					//해당 턴에 무르기 ※ 되어있는 상황이면 복구
+					if (bBackCheck == true)
+					{
+						m_temp = m_backXY.top();
+						BackMapDraw(&m_temp);
+						bBackCheck = false;
+						m_backXY.pop();
+					}
+
+					//무르기 할 좌표 확보(상시2)
+					m_temp.m_ix = m_position.m_ix / 2;
+					m_temp.m_iy = m_position.m_iy;
+					m_backXY.push(m_temp);
+
+					//승패 확인 - 오목
+					if (m_turn >= OMOK_WINJUGE)
+					{
+						//bool m_bCheck;
+						Position m_CheckCount;
+						m_CheckCount.m_ix = m_position.m_ix / 2;
+						m_CheckCount.m_iy = m_position.m_iy;
+
+						if (WinCheck(m_CheckCount, 0, -1, 0, 1) == true) //상하
+							bESC = true;
+						if (WinCheck(m_CheckCount, -1, 0, 1, 0) == true) //좌우
+							bESC = true;
+						if (WinCheck(m_CheckCount, 1, -1, -1, -1) == true) //대1,3
+							bESC = true;
+						if (WinCheck(m_CheckCount, 1, 1, -1, 1) == true) //대2,4
+							bESC = true;
+
+						//if (bESC == true)
+						//{
+						//	DrawManager::gotoxy(MAPMAX - 4, MAPMAX / 2);
+						//	cout << m_player_stone << " Win";
+						//	char ch = getch();
+						//}
+					}
+				}
+				else if (_iGame == OTHELLO)
+				{
+					//양 끝단에 다른 색 바둑으로 막히면 바둑돌 먹힘
+					Position m_CheckCount;
+					m_CheckCount.m_ix = m_position.m_ix / 2;
+					m_CheckCount.m_iy = m_position.m_iy;
+
+					StoneChange(m_CheckCount, 0, -1, 0, 1, C_UP, C_DOWN); //상하
+					StoneChange(m_CheckCount, -1, 0, 1, 0, C_LEFT, C_RIGHT); //좌우
+					StoneChange(m_CheckCount, 1, -1, 1, 1, C_CROSS1, C_CROSS2); //대1,3
+					StoneChange(m_CheckCount, -1, 1, -1, -1, C_CROSS3, C_CROSS4); //대2,4
+
+
+					//승리 체크
+					if (m_turn == MAXSTONE)
+					{//1.바둑판이 다 채워지면 > 턴 400이 되면 검사
+						WinCheck_StoneCount(MAXSTONE);
+					}
+					else if (m_turn >= OTHELLO_WINJUGE)
+					{//2.바둑돌이 화면상에 한가지 돌만 남으면 > 10턴 이상부터
+						WinCheck_StoneCount(OTHELLO_WINJUGE);
+					}
+				}	
+				return ENTER;
+			}
+			break;
+		case DIRECTION::BACK:
+			if ((_iGame == OMOK) &&
+				(m_backCount != 0) && (m_turn > 1))
+			{
+				Position m_temp;
+				//현재 두고 있는 돌 지움(무르기 한 턴의 돌)
+				DrawManager::gotoxy(m_position.m_ix, m_position.m_iy);
+				cout << GameManager::mapLog[prevPosition.m_ix / 2][prevPosition.m_iy];
+
+				if (bBackCheck == true)
+				{
+					m_temp = m_backXY.top();
+					BackMapDraw(&m_temp);
+					bBackCheck = false;
+					m_backXY.pop();
+				}
+
+				//이전 돌 무르기 신청
+				bBackCheck = true;
+
+				m_backCount--;
+				return BACK;
+			}
+			break;
+		case DIRECTION::ESC:
+			bESC = true;
+			return ESC;
+		}
+		if (bMoveStatus)
+		{//캐릭터 이동하고 지난 자리 처리
+			DrawManager::gotoxy(prevPosition.m_ix, prevPosition.m_iy);//원인해결 위해 추가
+			cout << GameManager::mapLog[prevPosition.m_ix / 2][prevPosition.m_iy];//원인
+			Draw();
+		}
+	}
+}
+
+/////////////////////////////////////////////////////////////////////
+bool Player::WinCheck(Position m_CheckCount, int m_X1, int m_Y1, int m_X2, int m_Y2)
+{//바둑돌 갯수 카운트
+	int m_count = 1;
+
+	m_count = WinCheck(m_CheckCount, m_count, m_X1, m_Y1);
+	m_count = WinCheck(m_CheckCount, m_count, m_X2, m_Y2);
+
+	if (m_count == 5) //오목 성공
+		return true;
+	else
+		return false;
+}
+
+/////////////////////////////////////////////////////////////////////
+int Player::WinCheck(Position m_CheckCount, int m_count, int m_checkX, int m_checkY)
+{//바둑돌 입력받는 방향따라 좌표 판단하고. 해당 방향에 돌 있으면 count++ 
+	for (int i = 0; i < 5; i++)
+	{
+		if (GameManager::mapLog[m_CheckCount.m_ix][m_CheckCount.m_iy] == GameManager::mapLog[m_CheckCount.m_ix + m_checkX][m_CheckCount.m_iy + m_checkY])
+		{
+			m_CheckCount.m_ix = m_CheckCount.m_ix + m_checkX;
+			m_CheckCount.m_iy = m_CheckCount.m_iy + m_checkY;
+
+			m_count++;
+		}
 		else
-			vecStoneList.push_back(Stone(x, y));
+			break;
 	}
-	return vecStoneList;
+	return m_count;
 }
 
-bool Player::StoneCheck(Stone _stone, bool _bDrawStatus)
-{//둘 수 있으면 돌 그림. _bDrawStatus이 false면 안 그림
-	//foreach 문법 List 처음부터 끝까지 돈다. 하지만 내용 수정 불가능. 확인용
-	for (Stone st : m_vecStoneList)
-	{
-		if (st.Compare(_stone))
-		{//판단과 일치하는 돌
-			if (_bDrawStatus) //돌 
-				st.DrawStone();
-			return true;
-		}
-	}
-	return false;
-}
-bool Player::StoneCheck(int _ix, int _iy)
-{
-	for (Stone st : m_vecStoneList)
-	{
-		if (st.Compare(_ix, _iy))
-		{
-			return true;
-		}
-	}
-	return false;
+
+void Player::StoneChange(Position m_CheckCount, int m_X1, int m_Y1, int m_X2, int m_Y2, int m_direction1, int m_direction2)
+{//바둑돌 갯수 카운트
+	StoneChange(m_CheckCount, m_X1, m_Y1, m_direction1);
+	StoneChange(m_CheckCount, m_X2, m_Y2, m_direction2);
 }
 
-bool Player::OthelloLineCheck(Player* _enemyPlayer, int _addX, int _addY)
-{//vector에 넣어서 라인 관리
-	vector<Stone> vecStoneList;
-	vecStoneList = _enemyPlayer->StoneLineCheck(m_Cursor, _addX, _addY);
-	if (vecStoneList.size() != 0 && StoneCheck(vecStoneList.back().GetX() + _addX, vecStoneList.back().GetY() + _addY))
-		//비교나  true false 판별 없는 거 같은데?
-	{
-		_enemyPlayer->DeleteStoneList(vecStoneList);//적 돌 먹는 것 //이걸 위해 주소값 받아온단
-		AppendStoneList(vecStoneList); ////돌 흰검 정하고 그리고, vector에 넣기
-	}
-	return true;
-}
+void Player::StoneChange(Position m_CheckCount, int m_checkX, int m_checkY, int m_direction)
+{//바둑돌 입력받는 방향따라 좌표 판단하고. 해당 방향에 돌 있으면 count++ 
+	int m_count = 0; //변환해야 할 돌 갯수 판단
+	Position m_temp;
 
-void Player::DeleteStoneList(vector<Stone> _stoneList)
-{
-	for (Stone st : _stoneList)
+	m_temp.m_ix = m_CheckCount.m_ix;
+	m_temp.m_iy = m_CheckCount.m_iy;
+
+	while (true)
 	{
-		for (auto iter = m_vecStoneList.begin(); iter != m_vecStoneList.end(); iter++)
-		{
-			if (iter->Compare(st) == true)
-			{//foreach이용한 st로 
-				m_vecStoneList.erase(iter);
-				break;
+		//검은돌 흰돌 반반 일렬로 배치하면 마지막에 한 줄을 채운 색으로 다 변해버리는 상황 방지 (좌표가 -1이 되면 발생)
+		if (m_Compare_player_stone == GameManager::mapLog[m_CheckCount.m_ix + m_checkX][m_CheckCount.m_iy + m_checkY] &&
+			((m_CheckCount.m_ix + m_checkX) >= 0) && ((m_CheckCount.m_iy + m_checkY) >= 0) &&
+			((m_CheckCount.m_ix + m_checkX) < 20) && ((m_CheckCount.m_iy + m_checkY) < 20))
+		{//현재 턴인 돌과 현재 체크하는 방향에 있는 돌이 다른 돌인지 확인
+			//(좌표가 -1이 되는 경우 제외) (돌 표시할때와 m_CheckCount가 달라서 실행하는데 필수는 아님)
+		 // Map::mapLog[m_CheckCount.m_ix + m_checkX][m_CheckCount.m_iy + m_checkY] 사라질 돌 좌표
+
+			m_CheckCount.m_ix += m_checkX;
+			m_CheckCount.m_iy += m_checkY;
+
+			m_count++;
+
+			if (m_strCharacter == GameManager::mapLog[m_CheckCount.m_ix + m_checkX][m_CheckCount.m_iy + m_checkY] &&
+				((m_CheckCount.m_ix + m_checkX) >= 0) && ((m_CheckCount.m_iy + m_checkY) >= 0) &&
+				((m_CheckCount.m_ix + m_checkX) < 20) && ((m_CheckCount.m_iy + m_checkY) < 20))
+			{//맞은편에 현재 턴에 둔 바둑돌과 같은 게 있으면 사이의 돌 변환
+				//(좌표가 -1이 되는 경우 제외) (필수)
+
+				switch (m_direction)
+				{//count 이용
+				case C_UP:
+					for (int i = 1; i <= m_count; i++)
+					{
+						GameManager::mapLog[m_temp.m_ix][m_temp.m_iy - i] = m_strCharacter;
+						DrawManager::DrawPoint(GameManager::mapLog[m_temp.m_ix][m_temp.m_iy - i], m_temp.m_ix, m_temp.m_iy - i);
+					}
+					break;
+				case C_DOWN:
+					for (int i = 1; i <= m_count; i++)
+					{
+						GameManager::mapLog[m_temp.m_ix][m_temp.m_iy + i] = m_strCharacter;
+						DrawManager::DrawPoint(GameManager::mapLog[m_temp.m_ix][m_temp.m_iy + i], m_temp.m_ix, m_temp.m_iy + i);
+					}
+					break;
+				case C_LEFT:
+					for (int i = 1; i <= m_count; i++)
+					{
+						GameManager::mapLog[m_temp.m_ix - i][m_temp.m_iy] = m_strCharacter;
+						DrawManager::DrawPoint(GameManager::mapLog[m_temp.m_ix - i][m_temp.m_iy], m_temp.m_ix - i, m_temp.m_iy);
+					}
+					break;
+				case C_RIGHT:
+					for (int i = 1; i <= m_count; i++)
+					{
+						GameManager::mapLog[m_temp.m_ix + i][m_temp.m_iy] = m_strCharacter;
+						DrawManager::DrawPoint(GameManager::mapLog[m_temp.m_ix + i][m_temp.m_iy], m_temp.m_ix + i, m_temp.m_iy);
+					}
+					break;
+				case C_CROSS1:
+					for (int i = 1; i <= m_count; i++)
+					{
+						GameManager::mapLog[m_temp.m_ix + i][m_temp.m_iy - i] = m_strCharacter;
+						DrawManager::DrawPoint(GameManager::mapLog[m_temp.m_ix + i][m_temp.m_iy - i], m_temp.m_ix + i, m_temp.m_iy - i);
+					}
+					break;
+				case C_CROSS2:
+					for (int i = 1; i <= m_count; i++)
+					{
+						GameManager::mapLog[m_temp.m_ix + i][m_temp.m_iy + i] = m_strCharacter;
+						DrawManager::DrawPoint(GameManager::mapLog[m_temp.m_ix + i][m_temp.m_iy + i], m_temp.m_ix + i, m_temp.m_iy + i);
+					}
+					break;
+				case C_CROSS3:
+					for (int i = 1; i <= m_count; i++)
+					{
+						GameManager::mapLog[m_temp.m_ix - i][m_temp.m_iy + i] = m_strCharacter;
+						DrawManager::DrawPoint(GameManager::mapLog[m_temp.m_ix - i][m_temp.m_iy + i], m_temp.m_ix - i, m_temp.m_iy + i);
+					}
+					break;
+				case C_CROSS4:
+					for (int i = 1; i <= m_count; i++)
+					{
+						GameManager::mapLog[m_temp.m_ix - i][m_temp.m_iy - i] = m_strCharacter;
+						DrawManager::DrawPoint(GameManager::mapLog[m_temp.m_ix - i][m_temp.m_iy - i], m_temp.m_ix - i, m_temp.m_iy - i);
+					}
+					break;
+				}
 			}
 		}
+		else
+			break;
 	}
 }
-void Player::AppendStoneList(vector<Stone> _stoneList)
-{//돌 흰검 정하고 그리고, vector에 넣기
-	for (Stone st : _stoneList)
+
+
+//-------------------------------------------
+
+
+void Player::WinCheck_StoneCount(int m_winType)
+{
+	int m_winCheck;
+	int m_blackCount = 0;
+	int m_whiteCount = 0;
+
+	for (int x = 0; x < MAPMAX; x++)
 	{
-		st.SetShape(m_strShape);
-		st.DrawStone();
-		m_vecStoneList.push_back(st);
+		for (int y = 0; y < MAPMAX; y++)
+		{
+			if (GameManager::mapLog[x][y] == "○")
+				m_blackCount++;
+			if (GameManager::mapLog[x][y] == "●")
+				m_whiteCount++;
+		}
+	}
+
+
+	if (m_winType == MAXSTONE)
+	{
+		//바둑돌 수량 비교
+		if (m_blackCount > m_whiteCount)
+			m_winCheck = BLACK;
+		else if (m_whiteCount > m_blackCount)
+			m_winCheck = WHITE;
+
+		bESC = true;
+	}
+	else if ((m_winType == OTHELLO_WINJUGE) && (m_blackCount == 0 || m_whiteCount == 0))
+	{
+		//화면에 한 색의 바둑돌만 남는 경우
+		if (m_blackCount == 0)
+			m_winCheck = WHITE;
+		else if (m_whiteCount == 0)
+			m_winCheck = BLACK;
+
+		bESC = true;
+	}
+
+	////승리 출력
+	//if (bESC == true)
+	//{
+	//	DrawManager::gotoxy(MAPMAX - 4, MAPMAX / 2);
+	//	if (m_winCheck == BLACK)
+	//		cout << "Black Win";
+	//	else
+	//		cout << "White Win";
+	//	char ch = getch();
+	//}
+
+}
+
+//-------------------------------------------
+
+void Player::BackMapDraw(Position* m_temp)
+{
+	GameManager::mapLog[m_temp->m_ix][m_temp->m_iy] = DrawManager::MapDraw(m_temp->m_ix, m_temp->m_iy);//m_temp가 쓰레기값
+	DrawManager::gotoxy(m_temp->m_ix * 2, m_temp->m_iy);
+	cout << GameManager::mapLog[m_temp->m_ix][m_temp->m_iy];
+}
+
+//-------------------------------------------
+
+
+void Player::ShowPlayerInfo(int _iGame)
+{
+	if (_iGame == OMOK)
+	{
+		DrawManager::DrawMidText(m_player_stone, 17, MAPMAX + 3);
+		DrawManager::gotoxy(MAPMAX + 16, MAPMAX + 3);
+		cout << m_backCount;
+	}
+	else if (_iGame == OTHELLO)
+	{
+		DrawManager::DrawMidText(m_player_stone, MAPMAX + 7, MAPMAX + 3);
 	}
 }
+
+void Player::Draw()
+{
+	DrawManager::TextDraw(m_strCharacter, m_position.m_ix, m_position.m_iy);
+}
+
+
+int Player::Turn(int _iGame)
+{
+	ShowPlayerInfo(_iGame);
+	Draw();
+
+	/////////////////////////////////////////////////////////////////////
+	//m_bBackCheck으로 앞 바둑돌의 턴에서 무르기 신청했을 경우(true) 
+	//무르기 신청된 돌 표시 ※
+	if ((_iGame == OMOK) &&
+		(bBackCheck == true) && (m_turn >= 1))
+	{//무르기 신청된 경우 && turn 1 까지만 무르기 가능,표시
+		Position m_temp;
+		m_temp = m_backXY.top();
+
+		GameManager::mapLog[m_temp.m_ix][m_temp.m_iy] = "※";
+		DrawManager::gotoxy(m_temp.m_ix * 2, m_temp.m_iy);
+		cout << GameManager::mapLog[m_temp.m_ix][m_temp.m_iy];
+	}
+
+	return Move(_iGame);
+}
+
+
+Player::~Player() { }

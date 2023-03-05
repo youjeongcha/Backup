@@ -1,8 +1,8 @@
 #include"Mecro.h"
-#include"Map.h"
+#include"GameManager.h"
 
 void main()
 {
-	Map map;
-	map.Menu();
+	GameManager gameManager;
+	gameManager.Menu();
 }
