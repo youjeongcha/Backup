@@ -1,10 +1,10 @@
 #pragma once
 #include<iostream>
 #include<string>
-#include<Windows.h>
 using namespace std;
 
-enum GENDER
+enum GENDER //enum class GENDER도 사용 가능 int enum 형변환 둘다 필요
+	//class 안 쓰면 enum은 int로 사용 가능
 {
 	GENDER_MAN,
 	GENDER_WOMAN
@@ -22,21 +22,23 @@ enum CLASS
 class Student
 {
 private:
-	string m_strName;
+	string m_strName;	
 	int m_iAge;
-	CLASS m_eClass;
 	GENDER m_eGender;
+	CLASS m_eClass;
 	int m_iNumber;
 public:
 	void SetStudent(int Number);
 	void ShowStudent();
-	string GetName()
+	inline string GetName()
 	{
 		return m_strName;
 	}
-	CLASS GetClass()
+	inline CLASS GetClass()
 	{
 		return m_eClass;
 	}
+	Student();
+	~Student();
 };
 

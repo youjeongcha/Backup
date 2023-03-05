@@ -4,5 +4,5 @@
 void main()
 {
 	StudentManager studentManager;
-	studentManager.MainMenu();
+	studentManager.Main(); //#include"StudentManager.h"
 }
