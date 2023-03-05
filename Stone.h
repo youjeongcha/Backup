@@ -1,6 +1,7 @@
 #pragma once
 #include"Mecro.h"
 #include"DrawManager.h"
+
 class Stone
 {
 private:
@@ -8,6 +9,7 @@ private:
 	int m_iy;
 	string m_strShape;
 public:
+	void SetPosition(int _ix, int _iy);
 	void SetPosition(int _ix, int _iy,string _strShape);
 	void DrawStone();
 	void DrawUndoStone();
@@ -24,6 +26,7 @@ public:
 	inline void SetShape(string _strShape) { m_strShape = _strShape; }
 	Stone();
 	Stone(int _ix,int _iy);
+	Stone(int _ix, int _iy, string _strShape);
 	~Stone();
 };
 
