@@ -1,9 +1,8 @@
-#include"Mecro.h"
-#include"MapDraw.h"
-#include"Map.h"
-
+#include"Number.h"
+#include<conio.h> //console input output
 void main()
 {
-	Map map;
-	map.MapDraw();
+	Number n;
+	n.NumberDraw();
+	getch(); //프로그램 바로 종료되지 않도록
 }
