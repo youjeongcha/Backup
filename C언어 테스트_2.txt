@@ -1,0 +1,109 @@
+1. 두수를 입력 받아 큰 수가 짝수이면 출력하시오(if문)
+
+#include <studio.h>
+
+int main() {
+	int first, seccond;
+
+	do {
+		printf("정수 두개를 입력해주십시오 >> ");
+		scanf_s("%d %d", first, second);	
+	} while (first || second < 0);
+
+	if (first > second) {
+		if (frist/2 = 0) {
+			printf("\n큰 수 짝수 >> %d", first);
+		} else {
+			printf("\n큰 수이지만 홀수");
+		}
+	} else {
+		if (second/2 = 0) {
+			printf("\n큰 수 짝수 >> %d", second);
+		} else {
+			printf("\n큰 수이지만 홀수");
+		}
+	}
+
+return 0;
+}
+
+
+
+2. 5.세 과목의 성적을 입력 받아 합계와 평균을 구하고 평균이 90이상이면 “A”, 
+80이상이면 “B”, 70 이상이면 “C”, 60 이상이면 “ D”, 60미만이면 “F”를 출력하시오.(if문)
+
+#include <studio.h>
+
+int main() {
+	float first, second, thrid, sum, everage;
+
+	//scoreA, scoreB, scoreC, scoreD, scoreF;
+
+	do {
+		printf("세 과목의 성적을 입력하십시오 >> ");
+		scanf_s("%f %f %f", first, second, thrid);
+	} while (first || second || thrid < 0);
+
+	sum = first + second + thrid;
+	everage = sum/3;
+
+
+	if (everage >= 90) {
+		printf("\n등급은 A 입니다.");
+	} else if (everage >= 80) {
+		printf("\n등급은 B 입니다.");
+	} else if (everage >= 70) {
+		printf("\n등급은 C 입니다.");
+	} else if (everage >= 60) {
+		printf("\n등급은 D 입니다.");
+	} else {
+		printf("\n등급은 F 입니다.");
+	} 
+
+return 0;
+}
+
+
+3.menu 실행파일을 완성해 보세요(Switch문)
+
+4.1~1000까지의 합을 구하라.단 3의 배수는 제외하고 3의 배수이면서
+  5의 배수는 제외하지 않는 조건으로 구하라.(for문)
+#include <studio.h>
+
+int main() {
+	int sum;
+	for (int i = 1; i <= 1000; i++) {
+		if (i%15 == 0) {
+			sum += i;
+		} else if (i%3 == 0) {
+			break;
+		} else {
+			sum += i;
+		}
+	}
+
+	printf("1~1000까지의 합 >> %d", sum);
+
+return 0;
+}
+
+5. 정수를 반복하여 입력 받아 입력 받은 정수들의 합계를 구하시오
+(0을 입력 받을 때 까지 계속하여 입력 받게 만들 것)(while문)
+
+#include <studio.h>
+
+int main() {
+	int input, sum;
+
+	do {
+		printf("정수를 입려하시오 >> ");
+		scanf_s("%d", input);
+		sum += input;
+	} while (input != 0);
+
+	print("정수의 합은 >> %d", sum);
+
+return 0;
+}
+
+6.updown 게임을 완성하시오
