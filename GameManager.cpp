@@ -1,504 +1,481 @@
 #include "GameManager.h"
 
-GameManager::GameManager()
+#define CM CardManager::Get_Instance()
+//CardManager:: //private 제대로 작동 안 하니 걱정X
+
+GameManager* GameManager::m_pInstance = NULL;
+
+GameManager::GameManager() 
 {
-	system("mode con: cols=156 lines=35");
 	srand(time(NULL));
-	mStoryLineCount = LoadStory();
-	StageSettingList();
-}
-GameManager::~GameManager()
-{
-}
-void GameManager::Menu()
-{
-	while (true)
-	{
-		switch (UI.StartInterface(player)) //player 레퍼런스로 참조
-		{
-		case STARTMENU_START:
-			GameStart();
-			break;
-		case STARTMENU_RANK:
-			//rank.RankPrint();
-			UI.RankingInterface(rank.Get_RankingList(), (int)MAXRANK);
-			UI.EnterNext(); //엔터로 다음 화면 넘어가기 //★ input 클래스 따로 만들어서 거기서 처리
-			system("cls");
-			break;
-		case STARTMENU_EXIT:
-			return;
-		default:
-			break;
-		}
-	}
-}
 
-void GameManager::GameStart()
-{
-	int stageLevel = 1;
-	std::string sInput = "";
-
-
-	UI.MapInterface(); //맵
-	UI.PlayerInfoInterface(player); //플레이어 정보 인터페이스 출력
-
-	//★ 인터페이스에서 처리
-	UI.SkipBox();
-
-	//스토리 출력 + 스킵 기능
-	SKY_BLUE
-	PrintStory(0, 0);
-	ORIGINAL
-
-	//<이름 입력 파트>
-	//맵
-	UI.MapInterface();
-	//★ 인풋 클래스
-	//이름 입력 박스
-	SKY_BLUE
-	MapDraw::BoxDraw(INPUTBOX_START_X, INPUTBOX_START_Y, INPUTBOX_WIDTH, INPUTBOX_HEIGHT);
-	MapDraw::DrawMidText("이름 입력", MAPSIZE_END_X, INPUTBOX_START_Y - 3);
-	ORIGINAL
-	//문자열 입력 //★ 인풋에서 입력을 받고 input박스는 그걸 호출해서 사용해야 했다.
-	while (UI.InputBox(INPUTBOX_PRINTNAME_MAXCOUNT, sInput, 0)) {}
-	//이름 설정
-	player.Set_PlayerName(sInput);
-
-
-	UI.MapInterface(); //맵
-	UI.PlayerInfoInterface(player); //플레이어 정보 인터페이스 출력
-
-
-	//스테이지 (인자값 받는 거 따라 진행 레벨 다르게)
-	while (true)
-	{
-		//Stage에서 목숨이 다하기 전에 일정 이상의 점수 획득하면 true 다음 스테이지로 이동
-		if (Stage(stageLevel++))
-		{ //Stage가 true면 다음 스테이지
-
-			//stage는 최대 6레벨인데 6레벨은 true를 받지 않는다. 무제한 게임
-			//if (stageLevel > STAGELEVEL_6)
-			//	break;
-
-			//stage 상승하면 player의 score 초기화
-			player.Set_PlayerScore(0);
-			//생성된 단어 리스트 초기화
-			wordManager.RestList();
-			UI.MapInterface(); //맵
-			UI.PlayerInfoInterface(player); //플레이어 정보 인터페이스 출력
-		}
-		else
-		{ //Stage가 false면 게임 오버
-			int line = 0, maxLine, oldClock = 0;
-			std::string gameEndText = "";
-			std::vector<std::string> gameOverStoryList = storyList[STORYTYPE_GAMEOVER];
-
-			//★ switch로 처리
-			switch (stageLevel - 1)
-			{
-			case STAGELEVEL_6:
-				maxLine = GAMEOVERSTORY_6;
-				gameEndText = "§ G A M E  C L E A R §";
-				break;
-			default:
-				maxLine = GAMEOVERSTORY_1_5;
-				gameEndText = "§ G A M E  O V E R §";
-				break;
-			}
-
-			//마지막 스테이지.(무제한 스테이지) 엔딩
-			while (line < maxLine)
-			{
-				if (kbhit())
-					getch();
-
-				//엔딩 스토리 한줄씩 출력. 딜레이 시간 이상 기다리고 출력된다.
-				if (clock() - oldClock >= PRINTDELAY)
-				{
-					RED
-					if (stageLevel - 1 == STAGELEVEL_6) //보류::점수에 따라 엔딩 차이나게.
-					{
-						if (line >= GAMEOVERSTORY_6_REALITY)
-							ORIGINAL
-						MapDraw::DrawMidText(gameOverStoryList[GAMEOVERSTORY_1_5 + line++], MAPSIZE_END_X, STORYLINE_Y + line);
-					}
-					else
-						MapDraw::DrawMidText(gameOverStoryList[line++], MAPSIZE_END_X, STORYLINE_Y + line);
-					oldClock = clock();
-				}
-			}
-
-			MapDraw::DrawMidText(gameEndText, MAPSIZE_END_X, INPUTBOX_PRINT);
-			ORIGINAL
-
-			//랭킹 정렬 + 저장
-			rank.SaveSortRanking(stageLevel, player.Get_PlayerName(), player.Get_PlayerScore());
-
-			//플레이어 + 생성된 단어 리스트 초기화
-			player.InitalSetting();
-			wordManager.RestList();
-
-			UI.EnterNext(); //엔터로 다음 화면 넘어가기
-			break;
-		}
-	}
-}
-
-void GameManager::PrintStory(int printLineCount, int oldClock)
-{//루프문은 돌때마다 메모리가 쌓여서 큰 범위를 돌릴 경우 오버플로우가 터지기도 한다. 
-	//범위가 넓지만 느려도 되면 재귀. 범위 좁고 빨라야 하면 루프
-	std::vector<std::string> intoStoryList = storyList[STORYTYPE_INTRO];
-
-	//스토리 전부 출력 됐으면 종료
-	if (mStoryLineCount == printLineCount)
-		return;
-
-	//Sleep(1000); //1초 딜레이 //Slepp 대신 Clock으로 사용. 경과시간 알려줌. //Sleep은 프로그램 자체를 정지시킨다.
-
-	while (clock() - oldClock < PRINTDELAY)
-	{//while로 제한 안 걸어두면 다음 재귀 넘어가면서 문제가 생긴다. 조건을 만족하지 못하면 인자값 변동이 없었기 때문.
-		//스킵
-		if (kbhit())
-		{//키보드 입력이 들어오면 스킵 확인
-			if (getch() == 's')
-				return;
-		}
-	}
-
-	if (printLineCount < STRORYLINE_MAX) //출력 10줄 못 넘게
-		MapDraw::DrawMidText(intoStoryList[printLineCount], MAPSIZE_END_X, STORYLINE_Y + printLineCount);
-	else
-	{//10줄 넘으면 전체 다시 출력
-		for (int i = STRORYLINE_MAX - 1, lineRest = 0; i >= 0; i--, lineRest++)
-		{
-			MapDraw::DrawMidText("                                                 ", MAPSIZE_END_X, STORYLINE_Y + lineRest);
-			MapDraw::DrawMidText(intoStoryList[printLineCount - i], MAPSIZE_END_X, STORYLINE_Y + lineRest);
-		}
-	}
-
-	oldClock = clock();
-	printLineCount++;
-
-	return PrintStory(printLineCount, oldClock);
-}
-
-void GameManager::PrintStageStory(int level)
-{
-	std::vector<std::string> stageStoryList = storyList[STORYTYPE_STAGELEVEL];
-	int line = 0, oldClock = 0;
-	int storyLine_X[2] = { MAPSIZE_END_X * 0.1f , MAPSIZE_END_X * 0.4f };
-	//int maxPrintLine = stageStoryList.size() / 6;
-	int maxPrintLine = stageStoryList.size() / 6;
-	int startIndex = (level - 1) * STAGESTROY_LINECOUNT;
-	int storyLine_Y = STORYLINE_Y + (level - 1) / 2 * STAGESTROY_PRINTGAP_Y;
-	int Odd_Or_Even_Level = (level - 1) & 1;
-
-	//이미 쓰여진 스토리 한번에 출력 //2~6레벨 사이에만 적용 //써지는 건 1~5레벨 사이의 글
-	if (level != 1)
-	{
-		for (int writtenPrint = 1; writtenPrint < level; writtenPrint++)
-		{ //레벨별 글뭉치 단위
-
-			for (int line = 0; line < STAGESTROY_LINECOUNT; line++)
-			{
-				MapDraw::DrawPoint(stageStoryList[(writtenPrint - 1) * STAGESTROY_LINECOUNT + line], storyLine_X[(writtenPrint - 1) & 1], 9 + (writtenPrint - 1) / 2 * STAGESTROY_PRINTGAP_Y + line);
-			}
-		}
-	}
-
-	//플레이어가 탑 올라가는 스테이지 확인 가능한 그림 그리기.
-	UI.PrintStageStairs((STAGELEVEL)level);
-
-	//해당 층에서 작성하는 스토리 한줄씩 출력
-	while (line < maxPrintLine) //★ 굳이 enum 쓰지 말고 배열 size로 자동화
-	{
-		if (kbhit())
-			getch();
-
-		if (clock() - oldClock >= PRINTDELAY)
-		{//비트 연산
-			MapDraw::DrawPoint(stageStoryList[startIndex + line++], storyLine_X[Odd_Or_Even_Level], storyLine_Y + line);
-			oldClock = clock();
-		}
-	}
-
-	UI.EnterNext(); //엔터로 다음 화면 넘어가기
-}
-
-bool GameManager::Stage(int level)
-{
-	STAGESETTING stageSetting = mStageSetting[level - 1];
-	//int createSpeed, dropSpeed, clearStage, usedItem_UsingTime;
-	int  usedItem_UsingTime;
-	int create_OldClock = 0, drop_OldClock = 0, failed_OldClock = 0, usedItem_OldClock = 0;
-	std::string inputWord = "";
-	bool returnOriginSpeedCheck = false, hideWordCheck = false; //워드 가리기 아이템 작동
-	ITEM usedItem = ITEM_NONE;
-
-	SKY_BLUE
-	MapDraw::DrawMidText("§ " + std::to_string(level) + " stage §", MAPSIZE_END_X, STAGE_TEXTPRINT_Y);
-
-	create_OldClock = clock();
-
-	while (true) //stage 표시 뜨고 잠시 뒤에 출력되도록
-	{
-		if (clock() - create_OldClock > PRINTDELAY)
-			break;
-	}
-
-	//인터페이스 나누기
-	UI.MapInterface(); //맵
-	SKY_BLUE
-	MapDraw::DrawVerticalLine(); //맵 나누기
-	ORIGINAL
-
-	//스토리 띄우기 + 플레이어가 탑 올라가는 스테이지 확인 가능한 그림 그리기.(별도의함수 있음)
-	PrintStageStory(level);
-
-	//게임 진행창 띄우기
-	UI.MapInterface(); //맵
-	SKY_BLUE
-	MapDraw::BoxDraw(INPUTBOX_START_X, INPUTBOX_START_Y, INPUTBOX_WIDTH, INPUTBOX_HEIGHT); //word 입력 박스
-	ORIGINAL
+	LoadStory();
 	
+	//폰트 설정
+	font[FONT_GAMENAME] = CreateFont(FONTSIZE_GAMENAME, 0, 0, 0, FW_BOLD, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"Times New Roman");
+	font[FONT_START_EXIT] = CreateFont(FONTSIZE_START_EXIT, 0, 0, 0, FW_SEMIBOLD, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"Times New Roman");
+	font[FONT_STORY] = CreateFont(FONTSIZE_STORY, 0, 0, 0, FW_BOLD, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"Times New Roman");
+	font[FONT_NEXT] = CreateFont(FONTSIZE_NEXT, 0, 0, 0, FW_BOLD, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"Times New Roman");
+	font[FONT_CLOCK] = CreateFont(FONTSIZE_CLOCK, 0, 0, 0, FW_BOLD, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"Times New Roman");
+	font[FONT_GAMECLEAR] = CreateFont(FONTSIZE_GAMECLEAR, 0, 0, 0, FW_BOLD, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"궁서");
 
-	//게임 시작
-	while (true)
+	cardSame = true;
+	changeIMG_Sec = SEC_CHANGE_IMG;
+}
+GameManager::~GameManager() 
+{
+	for (int i = 0; i < FONT_COUNT; i++)
+		DeleteObject(font[i]);
+}
+
+void GameManager::Init(BitMapManager* BitMapMgr_Main, BitMapManager* BitMapMgr_Sub, HWND hWnd_Main, HWND hWnd_Sub)
+{
+	scene = SEQUENCE_MENU;
+
+	m_HWND_Main = hWnd_Main;
+	m_HWND_Sub = hWnd_Sub;
+
+	m_BitMapMgr_Main = BitMapMgr_Main;
+	m_BitMapMgr_Sub = BitMapMgr_Sub;
+
+	BitMapMgr_Main->Init(hWnd_Main);
+	BitMapMgr_Sub->Init(hWnd_Sub); //★원래 비트맵 Mgr 하나만 존재하는 게 맞는데. 간편하게 만들기 위해서 이번만 이렇게 사용
+
+	click.X = MENUCLICK_X;
+	click.Y = MENUCLICK_Y;
+
+	startRect.left = RECT_START_L;
+	startRect.top = RECT_START_T;
+	startRect.right = RECT_START_R;
+	startRect.bottom = RECT_START_B;
+
+	exitRect.left = RECT_EXIT_L;
+	exitRect.top = RECT_EXIT_T;
+	exitRect.right = RECT_EXIT_R;
+	exitRect.bottom = RECT_EXIT_B;
+
+	nextRect.left = RECT_NEXT_L;
+	nextRect.top = RECT_NEXT_T;
+	nextRect.right = RECT_NEXT_R;
+	nextRect.bottom = RECT_NEXT_B;
+
+	timerRect.left = RECT_Timer_L;
+	timerRect.top = RECT_Timer_T;
+	timerRect.right = RECT_Timer_R;
+	timerRect.bottom = RECT_Timer_B;
+}
+
+bool GameManager::ColliderCheck(POINT point)
+{
+	switch (scene)
 	{
-		//if (clock() - failed_OldClock >= 3000) //Input 틀렸을시 잠시간 Input 막기.
-		//단어 Input 관리 + failed 했을 경우에 대기 시간관리(InputBox())
-		if (UI.InputBox(INPUTBOX_PRINTWORD_MAXCOUNT, inputWord, failed_OldClock) == false) //false면 엔터를 눌렀다는 의미
+	case SEQUENCE_MENU:
+		if (PtInRect(&startRect, point))
 		{
-			//Word* deleteWord = NULL;//포인터로 삭제되어야 할 단어 주소 가져와서 쓸 것.
-
-			//단어 맞췄는지 틀렸는지 확인 + 맞췄다면 맞춘 단어의 아이템 타입 반환(일반은 노말). 아니면 ITEM_NONE
-			usedItem = wordManager.TypingCheck(&inputWord);
-
-			//단어 맞췄을 경우 점수 증가 + 아이템 작동
-			if (usedItem != ITEM_NONE)
-			{ 
-				player.Set_PlayerScore(player.Get_PlayerScore() + inputWord.size() * 3); //word 한자당 3점 취급
-				UI.PlayerInfoInterface(player); //플레이어 정보 인터페이스 출력
-				
-				//아이템 작동(일반 단어는 안에서 걸러진다.) + 단어 삭제
-				wordManager.ItemOperate(usedItem, stageSetting.createSpeed, stageSetting.dropSpeed, usedItem_UsingTime);
-
-				//입력창에 있던 문자 저장해둔 것 비우기
-				inputWord.clear();
-
-				//점수가 일정이상 다다르면 다음 스테이지로.
-				if ((level != STAGELEVEL_6) && (player.Get_PlayerScore() >= stageSetting.clearStage)) //6스테이지는 마법사 나옴. 랭킹전 하게 클리어 한계 두지 x
-					return true;
-			}
-			else
-			{ //단어 틀렸을 경우 failed 출력
-				RED
-				MapDraw::DrawMidText("     Failed Compare!!     ", MAPSIZE_END_X, INPUTBOX_PRINT);
-				ORIGINAL
-
-				inputWord.clear();
-				failed_OldClock = clock(); //잠시간 Input 막기.
-			}
+			CM->CardInit(m_BitMapMgr_Main);
+			scene = SEQUENCE_STROY;
+			//scene = SEQUENCE_CLEAR;
+			return true;
 		}
-		//else if (kbhit()) getch();
-
-		//시간 변경하는 아이템 작동 이후 시간 돌려두기 위해
-		if ((usedItem != ITEM_NONE) && (usedItem != ITEM_NOMAL) && (usedItem != ITEM_SCREEN_CLEAR))
+		else if (PtInRect(&exitRect, point))
+			PostQuitMessage(0);
+		break;
+	case SEQUENCE_STROY:
+		if (PtInRect(&nextRect, point))
 		{
-			usedItem_OldClock = clock();
-			returnOriginSpeedCheck = true; //아이템 사용하고 시간 조정 원래대로 돌려두기 한 번만.
-
-			//워드 가리기 아이템 작동
-			if (usedItem == ITEM_HIDE)
-			{
-				hideWordCheck = true;
-
-				//아이템 사용 즉시 "===="으로 변환시키기 위해 (drop에서만 단어를 갱신해주고 있어서. 이렇게 안 하면 한번 떨어지고 아이템 적용된다.)
-				//워드 떨어지게 출력하는 함수이지만. y-로 지우고 y로 출력해서 여기서 사용해도 문제 없음.
-				wordManager.DropWordPrint(hideWordCheck);
-			}
-
-			usedItem = ITEM_NOMAL; //작동 시간 설정 후 if문 들어오지 않도록 초기화
+			scene = SEQUENCE_RABBIT;
+			return true;
 		}
+		break;
+	case SEQUENCE_RABBIT:
+		if (PtInRect(&nextRect, point))
+		{		
+			scene = SEQUENCE_SHOWCARD;
+			//카드 순서 보여주기 전 초기 설정
+			CM->CardOrderSet();
+			//타이머 설정
+			SetTimer(m_HWND_Main, TIMER_ID_CARD_ORDER, TIMER_CARD_ODER_SEC, NULL); //카드 하나씩 뒤집기 시간 체크
+			SetTimer(m_HWND_Main, TIMER_ID_SCENE, TIMER_SCENE_SEC, NULL); //화면 보여주기 할 시간 체크
+			second = SEC_SCENE_SHOWCARD; //화면 보여주기할 시간
+			return true;
+		}
+		break;
+	case SEQUENCE_CARDGAME:
+		//카드 순서대로 뒤집는 중에는 콜라이더 체크를 막아놔야 한다.
+		if (CM->CardList_ColliderCheck(point, m_HWND_Main, TIMER_ID_CARD_ALL, TIMER_CARD_ALL_SEC, NULL))
+			return true;
+		break;
+	case SEQUENCE_GAMEOVER:
+		if (PtInRect(&exitRect, point))
+			PostQuitMessage(0);
+		break;
+	case SEQUENCE_CLEAR:
+		if (PtInRect(&nextRect, point))
+			PostQuitMessage(0);
+		break;
+	default:
+		break;
+	}
+	return false;
+}
 
-		//★ 위에 구조체 배열로 해결
-		//시간 돌리기
-		if ((returnOriginSpeedCheck) && (clock() - usedItem_OldClock >= usedItem_UsingTime))
+void GameManager::Draw(HDC hdc, HINSTANCE g_hInst)
+{
+	switch (scene)
+	{
+	case SEQUENCE_MENU:
+		m_BitMapMgr_Main->GetBGImage(IMG_BG::IMG_BG_MAIN)->DrawBackGroundIMG(hdc);
+		MainMenu(hdc, g_hInst);
+		break;
+	case SEQUENCE_STROY: 
+		m_BitMapMgr_Main->GetBGImage(IMG_BG::IMG_BG_STORY)->DrawBackGroundIMG(hdc);
+		//스토리
+		Story(hdc, STORY_INTRO, STORY_INTRO_LINE, STORY_INTRO_X, STORY_INTRO_Y); 
+		break;
+	case SEQUENCE_RABBIT:
+		m_BitMapMgr_Main->GetBGImage(IMG_BG::IMG_BG_RABBIT)->DrawBackGroundIMG(hdc);
+		Story(hdc, STORY_RABBIT, STORY_RABBIT_LINE, STORY_RABBIT_X, STORY_RABBIT_Y);//스토리
+		break;
+	case SEQUENCE_SHOWCARD:
+		m_BitMapMgr_Main->GetBGImage(IMG_BG::IMG_BG_CARDGAME)->DrawBackGroundIMG(hdc);
+		CM->ShowCard_XY(hdc);
+		PrintTimer(hdc, std::to_wstring(second));
+		PrintAdvice(hdc);
+		break;
+	case SEQUENCE_CARD_ORDERTURN:
+		m_BitMapMgr_Main->GetBGImage(IMG_BG::IMG_BG_CARDGAME)->DrawBackGroundIMG(hdc);
+		CM->ShowCard_Index(hdc);
+		PrintTimer(hdc, std::to_wstring(second));
+		break;
+	case SEQUENCE_CARDGAME:
+		m_BitMapMgr_Main->GetBGImage(IMG_BG::IMG_BG_CARDGAME)->DrawBackGroundIMG(hdc);
+		if (second <= changeIMG_Sec) //다 깨진 이미지로 변경
 		{
-			stageSetting = mStageSetting[level - 1];
-
-			returnOriginSpeedCheck = false;
-			hideWordCheck = false;
+			CM->Front_IMG_Change(m_BitMapMgr_Main);
+			changeIMG_Sec = -1;
 		}
 
+		CM->ShowCard_Index(hdc);
 
-		//단어 생성
-		if (clock() - create_OldClock >= stageSetting.createSpeed)
-		{//생성 텀 스테이지별 조정
-			wordManager.CreateWord(hideWordCheck);
-			create_OldClock = clock();
-		}
+		if (CM->EmptyCardCheck())
+			scene = SEQUENCE_CLEAR;
 
-		//단어 떨어뜨리기
-		if (clock() - drop_OldClock > stageSetting.dropSpeed)
+		PrintTimer(hdc, std::to_wstring(second));
+		break;
+	case SEQUENCE_GAMEOVER:
+		m_BitMapMgr_Main->GetBGImage(IMG_BG::IMG_BG_GAMEOVER)->DrawBackGroundIMG(hdc);
+		GameOver(hdc);
+		break;
+	case SEQUENCE_CLEAR:
+		m_BitMapMgr_Main->GetBGImage(IMG_BG::IMG_BG_GAMECLEAR)->DrawBackGroundIMG(hdc);
+		GameClear(hdc);
+		break;
+	default:
+		break;
+	}
+}
+
+void GameManager::PrintTimer(HDC hdc, std::wstring wstrSec)
+{
+	if (second >= 0)
+	{
+		//font 배열로만들어서 사용
+		//(HFONT)SelectObject(hdc, font[FONT_CLOCK]); //(HFONT)는 리턴형으로 받아서 Old 저장할 때 사용한다.
+		SelectObject(hdc, font[FONT_CLOCK]);
+		SetBkColor(hdc, RGB(0, 0, 0));
+		//SetBkMode(hdc, TRANSPARENT); //글자 뒷배경 투명화
+		SetTextColor(hdc, RGB(255, 0, 0)); //글자 색 변경
+
+		//타이머 출력
+		std::wstring wstr = L"00 : ";
+
+		if (second < 10)
+			wstr += L"0";
+		wstr += wstrSec;
+
+		DrawText(hdc, wstr.c_str(), -1, &timerRect, DT_WORDBREAK);
+
+		//2개의 카드가 다른 경우 2초 감소 Print
+		if (!cardSame)
 		{
-			if (wordManager.DropWord(player.Get_PlayerLife())) //워드 XY좌표 옮기기 + 목숨 감소 bool 체크
-			{
-				wordManager.DropWordPrint(hideWordCheck);//GmaeOver 하고도 단어 뜨도록
-				player.DecreasePlayerLife();
-				UI.PlayerInfoInterface(player); //플레이어 정보 인터페이스 출력
+			if (keep_sec - second >= SEC_MINUS_PRINT) //1s 동안 출력되도록
+				cardSame = true;
 
-				SKY_BLUE
-				MapDraw::BoxDraw(INPUTBOX_START_X, INPUTBOX_START_Y, INPUTBOX_WIDTH, INPUTBOX_HEIGHT); //word 입력 박스 안 망가지게(공백 X)
-				ORIGINAL
+			wstr = L"- 2s";
 
-				//게임 오버 체크
-				if (player.Get_PlayerLife() == 0)
-					return false;
-			}
-
-			//워드 떨어지게 출력
-			wordManager.DropWordPrint(hideWordCheck);
-
-			drop_OldClock = clock();
-
-			SKY_BLUE
-			MapDraw::BoxDraw(INPUTBOX_START_X, INPUTBOX_START_Y, INPUTBOX_WIDTH, INPUTBOX_HEIGHT); //word 입력 박스
-
-			//단어에 가려지지 않도록
-			if ((usedItem == ITEM_NONE) && (drop_OldClock - failed_OldClock < INPUTBOX_DELAY)) //failed 상태일때는 failed 문구 출력
-			{//3초가 지나기 전에는 계속 들어와야 한다. //drop-OldClock을 쓴 이유 > clock() 호출 바로 전에 해서 또 할 필요X
-				RED
-				MapDraw::DrawMidText("     Failed Compare!!     ", MAPSIZE_END_X, INPUTBOX_PRINT);
-				ORIGINAL
-			}
-			else
-			{
-				ORIGINAL
-				MapDraw::DrawMidText(inputWord, MAPSIZE_END_X, INPUTBOX_PRINT);
-			}
-
-			//글자 초과 프린트
-			if (inputWord.size() >= INPUTBOX_PRINTWORD_MAXCOUNT)
-			{
-				SKY_BLUE
-				MapDraw::DrawMidText(std::to_string(INPUTBOX_PRINTWORD_MAXCOUNT) + "글자 초과!!", MAPSIZE_END_X, INPUTBOX_START_Y - 2);
-				ORIGINAL
-			}
+			//SetBkColor(hdc, RGB(0, 0, 0));
+			SetBkMode(hdc, TRANSPARENT); //글자 뒷배경 투명화
+			SetTextColor(hdc, RGB(255, 0, 0)); //글자 색 변경
+			TextOut(hdc, SEC_MINUS_PRINT_X, SEC_MINUS_PRINT_Y, wstr.c_str(), wstr.length()); //TODO::인자 따로 받아서 사용
 		}
 	}
 }
 
-int GameManager::LoadStory()
+
+
+void GameManager::MainMenu(HDC hdc, HINSTANCE g_hInst)
 {
-	int lineCount = 0;
-	std::string storyTmp;
-	std::vector<std::string> tmpStoryList; //★ into,stage, gameOver를 enum으로 판단해서. 백터 배열로 호출해서 사용 
-	//std::vector<std::string> stageStoryList;
-	//std::vector<std::string> gameOverStoryList;
+	//HDC hdc = BeginPaint(hWnd, &ps); //BeginPaint는 WM_Paint에서만 쓴다.
 
+	std::wstring str;
+
+	//글자 크기 변경
+	SelectObject(hdc, font[FONT_GAMENAME]);
+	//oldfont = (HFONT)SelectObject(hdc, font);
+	SetBkMode(hdc, TRANSPARENT); //글자 뒷배경 투명화
+	//SetBkColor(hdc, RGB(0, 0, 0));
+	SetTextColor(hdc, RGB(245, 250, 245)); //글자 색 변경
+
+
+	str = L"F O R E S T";
+	TextOut(hdc, click.X, click.Y, str.c_str(), str.length());
+
+	SelectObject(hdc, font[FONT_START_EXIT]);
+	//oldfont = (HFONT)SelectObject(hdc, font);
+	SetTextColor(hdc, RGB(50, 20, 20));
+
+	str = L"S t a r t";
+	DrawText(hdc, str.c_str(), -1, &startRect, DT_CENTER | DT_WORDBREAK);
+
+	str = L"E x i t";
+	DrawText(hdc, str.c_str(), -1, &exitRect, DT_CENTER | DT_WORDBREAK);
+}
+
+void GameManager::Story(HDC hdc, STORY storyType, STORY storyLine, STORY x, STORY y)
+{
+	std::wstring str;
+	std::vector<std::string> printStoryList = storyList[storyType];
+
+	SelectObject(hdc, font[FONT_STORY]);
+	//oldfont = (HFONT)SelectObject(hdc, font);
+	//SetBkMode(hdc, TRANSPARENT); //글자 뒷배경 투명화
+	SetBkColor(hdc, RGB(0, 0, 0));
+	SetTextColor(hdc, RGB(245, 250, 245)); //글자 색 변경
+
+	for (int i = 0; i < storyLine; i++)
+		TextOutA(hdc, x, y + i * 1.2 * FONTSIZE_STORY, printStoryList[i].c_str(), printStoryList[i].length());
+
+	SelectObject(hdc, font[FONT_NEXT]);
+
+	switch (storyType)
+	{
+	case STORY_CLEAR:
+		str = L"E N D ◇";
+		break;
+	default:
+		str = L"N e x t ☞";
+		break;
+	}
+		
+	DrawText(hdc, str.c_str(), -1, &nextRect, DT_WORDBREAK);
+}
+
+void GameManager::PrintAdvice(HDC hdc)
+{
+	std::wstring str;
+
+	//글자 크기 변경
+	SelectObject(hdc, font[FONT_STORY]);
+	SetBkMode(hdc, TRANSPARENT); //글자 뒷배경 투명화
+	//SetBkColor(hdc, RGB(0, 0, 0));
+	SetTextColor(hdc, RGB(245, 250, 245)); //글자 색 변경
+	//SetTextColor(hdc, RGB(000, 051, 051)); //글자 색 변경
+
+	str = L"동물들이 순서대로 모습을 드러낸다.";
+	TextOut(hdc, click.X, STORY_ADVICE_Y, str.c_str(), str.length());
+}
+
+void GameManager::GameOver(HDC hdc)
+{
+	std::wstring wstr;
+
+	//글자 크기 변경
+	SelectObject(hdc, font[FONT_GAMENAME]);
+	//oldfont = (HFONT)SelectObject(hdc, font);
+	SetBkMode(hdc, TRANSPARENT); //글자 뒷배경 투명화
+	SetTextColor(hdc, RGB(245, 250, 245)); //글자 색 변경
+	//SetTextColor(hdc, RGB(000, 051, 051)); //글자 색 변경
+
+	wstr = L"G A M E  O V E R";//TODO:: 그림으로 변경
+	TextOut(hdc, click.X - 30, click.Y, wstr.c_str(), wstr.length()); //TODO::인자 따로 받아서 사용
+
+	SelectObject(hdc, font[FONT_START_EXIT]);
+	SetTextColor(hdc, RGB(245, 250, 245));
+	wstr = L"E n d";
+	DrawText(hdc, wstr.c_str(), -1, &exitRect, DT_CENTER | DT_WORDBREAK);
+}
+
+void GameManager::GameClear(HDC hdc)
+{
+	//KillTimer(m_HWND_Main, TIMER_ID_SCENE);
+	//KillTimer(m_HWND_Main, TIMER_ID_CARD_ORDER); //사실상 순서 보여주기에는 이미지가 10개라 여기서 해제
+	Kill_AllTimer();
+
+	std::wstring wstr;
+
+	//글자 크기 변경
+	(HFONT)SelectObject(hdc, font[FONT_GAMECLEAR]);
+	SetBkMode(hdc, TRANSPARENT); //글자 뒷배경 투명화
+	SetTextColor(hdc, RGB(245, 250, 245)); //글자 색 변경
+	//SetTextColor(hdc, RGB(000, 051, 051)); //글자 색 변경
+
+	wstr = L"E S C A P E";
+	TextOut(hdc, click.X - 60, click.Y, wstr.c_str(), wstr.length());
+
+	Story(hdc, STORY_CLEAR, STORY_CLEAR_LINE, STORY_CLEAR_X, STORY_CLEAR_Y);//스토리
+}
+
+
+void GameManager::LoadStory()
+{
 	std::ifstream load;
+	std::string storyTmp; //wstring으로 변환 위해
+	std::vector<std::string> tmpStoryList;
 
-	//★ 이름 변경 Save라고 하면 저장되는 데이터로 이해된다.
-	load.open("StageStory.txt");
-	if (load.is_open())
-	{
-		for (int i = 0; i < STAGELEVEL_6; i++)
-		{
-			//load >> storyTmp; //txt 파일에 구분 위해 작성해둔것. 의미X 사용X
-			for (int j = 0; j < STAGESTROY_LINECOUNT; j++)
-			{
-				getline(load, storyTmp);
-				tmpStoryList.push_back(storyTmp);
-			}
-		}
-
-		storyList.insert({ STORYTYPE_STAGELEVEL, tmpStoryList });
-		tmpStoryList.clear();
-		load.close();
-	}
-	//★ 
-	load.open("GameOverStory.txt");
-	if (load.is_open())
-	{
-		for (int i = 0; i < 2; i++)
-		{
-			if (i == 0) //1~5레벨 GameOver 했을 때 스토리 줄 수 
-				lineCount = GAMEOVERSTORY_1_5;
-			else //6레벨 GameOver 했을 때 스토리 줄 수
-				lineCount = GAMEOVERSTORY_6;
-			//load >> lineCount; //txt 파일 1~5레벨, 6레벨 글자수 구분 위해 작성해둔것
-			for (int j = 0; j < lineCount; j++)
-			{
-				getline(load, storyTmp);
-				tmpStoryList.push_back(storyTmp);
-			}
-		}
-
-		storyList.insert({ STORYTYPE_GAMEOVER, tmpStoryList });
-		tmpStoryList.clear();
-		load.close();
-	}
-	//★ 
 	load.open("IntroStory.txt");
 	if (load.is_open())
 	{
-		load >> lineCount;
-
-		for (int i = 0; i < lineCount; i++)
+		for (int i = 0; i < STORY_INTRO_LINE; i++)
 		{
 			getline(load, storyTmp);
 			tmpStoryList.push_back(storyTmp);
 		}
 
-		storyList.insert({ STORYTYPE_INTRO, tmpStoryList });
+		storyList.insert({ STORY_INTRO, tmpStoryList });
+		tmpStoryList.clear();
 		load.close();
 	}
-	return lineCount;
+
+	load.open("RabbitStory.txt");
+	if (load.is_open())
+	{
+		for (int i = 0; i < STORY_RABBIT_LINE; i++)
+		{
+			getline(load, storyTmp);
+			tmpStoryList.push_back(storyTmp);
+		}
+
+		storyList.insert({ STORY_RABBIT, tmpStoryList });
+		tmpStoryList.clear();
+		load.close();
+	}
+
+	load.open("ClearStory.txt");
+	if (load.is_open())
+	{
+		for (int i = 0; i < STORY_CLEAR_LINE; i++)
+		{
+			getline(load, storyTmp);
+			tmpStoryList.push_back(storyTmp);
+		}
+
+		storyList.insert({ STORY_CLEAR, tmpStoryList });
+		tmpStoryList.clear();
+		load.close();
+	}
 }
 
-void GameManager::StageSettingList()
+bool GameManager::Timer(WPARAM wParam)
 {
-	for (int setLevel = 0; setLevel < STAGELEVEL_6; setLevel++)
+	InvalidateRect(m_HWND_Main, NULL, true);
+
+	switch (wParam)
 	{
-		switch (setLevel + 1)
+	case TIMER_ID_SCENE:
+		second--;
+
+		if (second < 0)
 		{
-		case STAGELEVEL_1:
-			//MapDraw::DrawMidText("마법사가 예고했던 시간이 되자 그가 탑 위에 나타났습니다.", MAPSIZE_END_X, STAGE_TEXTPRINT_Y + 4);
-			mStageSetting[setLevel].createSpeed = CREATEWORD_SPEED_STAGE1;
-			mStageSetting[setLevel].dropSpeed = DROP_SPEED_STAGE1;
-			mStageSetting[setLevel].clearStage = CLEARSTAGE_1;
-			break;
-		case STAGELEVEL_2:
-			//MapDraw::DrawMidText("레벨 2 추후 수정", MAPSIZE_END_X, STAGE_TEXTPRINT_Y + 4);
-			mStageSetting[setLevel].createSpeed = CREATEWORD_SPEED_STAGE2;
-			mStageSetting[setLevel].dropSpeed = DROP_SPEED_STAGE2;
-			mStageSetting[setLevel].clearStage = CLEARSTAGE_2;
-			break;
-		case STAGELEVEL_3:
-			//MapDraw::DrawMidText("레벨 3 추후 수정", MAPSIZE_END_X, STAGE_TEXTPRINT_Y + 4);
-			mStageSetting[setLevel].createSpeed = CREATEWORD_SPEED_STAGE3;
-			mStageSetting[setLevel].dropSpeed = DROP_SPEED_STAGE3;
-			mStageSetting[setLevel].clearStage = CLEARSTAGE_3;
-			break;
-		case STAGELEVEL_4:
-			//MapDraw::DrawMidText("레벨 4 추후 수정", MAPSIZE_END_X, STAGE_TEXTPRINT_Y + 4);
-			mStageSetting[setLevel].createSpeed = CREATEWORD_SPEED_STAGE4;
-			mStageSetting[setLevel].dropSpeed = DROP_SPEED_STAGE4;
-			mStageSetting[setLevel].clearStage = CLEARSTAGE_4;
-			break;
-		case STAGELEVEL_5:
-			//MapDraw::DrawMidText("레벨 5 추후 수정", MAPSIZE_END_X, STAGE_TEXTPRINT_Y + 4);
-			mStageSetting[setLevel].createSpeed = CREATEWORD_SPEED_STAGE5;
-			mStageSetting[setLevel].dropSpeed = DROP_SPEED_STAGE5;
-			mStageSetting[setLevel].clearStage = CLEARSTAGE_5;
-			break;
-		case STAGELEVEL_6:
-			//MapDraw::DrawMidText("레벨 6 추후 수정", MAPSIZE_END_X, STAGE_TEXTPRINT_Y + 4);
-			mStageSetting[setLevel].createSpeed = CREATEWORD_SPEED_STAGE6;
-			mStageSetting[setLevel].dropSpeed = DROP_SPEED_STAGE6;
-			//clearStage = CLEARSTAGE_6;
-			break;
+			//카드 순서 보여주기 끝나고 처리할 거
+			//MessageBeep(MB_ICONHAND); //경고음 출력
+			CM->CardTurn_All(CARD_FRONT); //카드 앞면으로 뒤집기
+			//KillTimer(m_HWND_Main, TIMER_ID_SCENE);
+			//KillTimer(m_HWND_Main, TIMER_ID_CARD_ORDER); //사실상 순서 보여주기에는 이미지가 10개라 여기서 해제
+			Kill_AllTimer();
+
+			switch (scene)
+			{
+			case SEQUENCE_SHOWCARD:
+				//본 가드 게임 넘어가기 전 초기세팅
+				scene = SEQUENCE_CARD_ORDERTURN;
+				CM->CardShuffleMix(); //카드 랜덤 생성한 배열에 따라 XY 배치
+
+				//본 카드 게임 카드 보여주는 순간부터:: 게임 플레이 제한 시간 
+				SetTimer(m_HWND_Main, TIMER_ID_CARD_ORDER, TIMER_CARD_ODER_SEC, NULL); //이렇게 안 하면 다음 시작때 카드 하나 이미 가려짐
+				SetTimer(m_HWND_Main, TIMER_ID_SCENE, TIMER_SCENE_SEC, NULL); //화면 보여주기 할 시간 체크
+				second = SEC_SCENE_CARDGMAE; //화면 보여주기할 시간
+
+				break;
+			case SEQUENCE_CARDGAME:
+				//타임오버로 GAME OVER
+				scene = SEQUENCE_GAMEOVER;
+				break;
+			default:
+				break;
+			}
+			return true;
 		}
+		break;
+	case TIMER_ID_CARD_ORDER: //카드 순서 보여주기, 본 카드 게임 카드 보여주기
+		if (!CM->CardTurn_Order(scene)) //이 씬에선 카드가 다 뒷면이 될때까지 뒤집기 //모든 카드 아님 절반인 5개
+		{
+			if (scene == SEQUENCE_CARD_ORDERTURN)
+			{
+				scene = SEQUENCE_CARDGAME;
+				CM->Set_TurnNextID_To_0();
+			}
+
+			KillTimer(m_HWND_Main, TIMER_ID_CARD_ORDER);
+		}
+		break;
+	case TIMER_ID_CARD_ALL:
+		cardSame = CM->CardInactiveCheck();
+		if (!cardSame) //순서 + 같은 카드 확인 후 없으면 출력 안 하기
+		{
+			second -= SEC_MINUS; //카드가 틀릴 경우 2초 감소
+			keep_sec = second; //감소 표시 일정 시간 띄워두기 위해
+		}
+		CM->CardTurn_All(CARD_REAR); //앞 > 뒷 한번에 //같은 카드 비활성화 해도 FrontCount 값이 있어서 함수 필요.
+
+		KillTimer(m_HWND_Main, TIMER_ID_CARD_ALL);
+		break;
+	default:
+		break;
 	}
+
+	return false;
+}
+
+
+void GameManager::SubDraw(HDC hdc)
+{
+	switch (scene)
+	{
+	case SEQUENCE_SHOWCARD:
+	case SEQUENCE_CARD_ORDERTURN:
+	case SEQUENCE_CARDGAME:
+		m_BitMapMgr_Sub->GetBGImage(IMG_BG::SUB_IMG_BG_FIRST)->Draw(hdc, 0, 0, SUB_W, SUB_H);
+		break;
+	case SEQUENCE_GAMEOVER:
+		MoveWindow(m_HWND_Sub, MAIN_X, MAIN_Y, MAIN_W, MAIN_H, true);
+		m_BitMapMgr_Sub->GetBGImage(IMG_BG::SUB_IMG_BG_END)->DrawBackGroundIMG(hdc);
+		//서브 Window가 앞으로 오게
+		SetForegroundWindow(m_HWND_Sub); //컴퓨터 그래픽스 ppt 확인
+
+		//화면 보여주기 할 시간 체크
+		SetTimer(m_HWND_Sub, TIMER_ID_SCENE, TIMER_SCENE_SEC, NULL); 
+		second = SEC_SCENE_GAMEOVERE; //2초 동안 띄우고 없애기
+		break;
+	case SEQUENCE_CLEAR:
+		break;
+	default:
+		break;
+	}
+}
+
+void GameManager::Kill_AllTimer()
+{
+	KillTimer(m_HWND_Main, TIMER_ID_SCENE);
+	KillTimer(m_HWND_Main, TIMER_ID_CARD_ORDER);
+	KillTimer(m_HWND_Main, TIMER_ID_CARD_ALL);
 }
