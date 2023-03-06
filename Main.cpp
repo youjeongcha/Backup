@@ -1,33 +1,86 @@
-#include "News.h"
-#include "Interface.h"
-#include "Person.h"
+ï»¿// WinAPI_Chess.cpp : ì• í”Œë¦¬ì¼€ì´ì…˜ì— ëŒ€í•œ ì§„ì…ì ì„ ì •ì˜í•©ë‹ˆë‹¤.
+//
+#include <Windows.h>
+#include "framework.h"
+#include "GameManager.h"
+#include "WndClassCreate.h"
+#include "resource.h"
+//#include "Resource.h"
 
-#define stdMgr News::Get_Instance()
+#define GMMgr GameManager::Get_Instance()
 
-void main()
+
+// ì „ì—­ ë³€ìˆ˜:
+LRESULT CALLBACK WndProc_Main(HWND, UINT, WPARAM, LPARAM);
+HINSTANCE g_hInst;                                // í˜„ì¬ ì¸ìŠ¤í„´ìŠ¤ì…ë‹ˆë‹¤.
+LPCTSTR IpszClassMain = TEXT("Chess");
+BitMapManager BitMapMgr_Main;
+
+
+int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
+                     _In_opt_ HINSTANCE hPrevInstance,
+                     _In_ LPWSTR    lpCmdLine,
+                     _In_ int       nCmdShow)
 {
-	Interface UI;
+    // TODO: ì—¬ê¸°ì— ì½”ë“œë¥¼ ì…ë ¥í•©ë‹ˆë‹¤.
+    HWND hWnd_Main;
+    MSG msg;
+    WndClassCreate WndClassMain(hInstance, IpszClassMain, WHITE_BRUSH);
+    g_hInst = hInstance;
 
-	while (true)
-	{
-		system("cls");
 
-		switch (UI.MainMenu())
-		{
-		case 1: //°í°´ µî·Ï
-			stdMgr->Observer_Add(new Person(UI.CustomerRegister())); //¿ÉÀú¹ö Ãß°¡ ÇÔ¼ö 
-			//º¹»ç »ı¼ºÀÚ¸¦ ÁöÁ¤ÇØµÖ¼­ string¸¸ ¹Ş¾Æ¼­ Observer¸¦ »ó¼Ó¹ŞÀº °´Ã¼¸¦ ¸¸µé ¼ö ÀÖ´Ù.
-			break;
-		case 2: //News Àü¼Û(°í°´ News ½ÃÃ»)
-			stdMgr->Observer_InfoUpdate(); //¿ÉÀú¹ö Á¤º¸ ¾÷µ¥ÀÌÆ® ÇÔ¼ö
-			break;
-		case 3: //News ¾÷µ¥ÀÌÆ®
-			stdMgr->NewsUpdate(UI.NewsUpdate()); //News Á¤º¸ ¾÷µ¥ÀÌÆ® ÇÔ¼ö
-			break;
-		case 4: //News ½ÃÃ»(°í°´ ½ÃÃ» ±â·Ï È®ÀÎ)
-			stdMgr->Observer_InfoPrint();
-			break;
-		}
-		system("pause");
-	}
+    //ë©”ì¸ ì°½ ë“±ë¡
+    WndClassMain.WndClass.lpfnWndProc = WndProc_Main;	//í”„ë¡œì„¸ìŠ¤ í•¨ìˆ˜ í˜¸ì¶œ
+    RegisterClass(&WndClassMain.WndClass);
+
+
+    hWnd_Main = CreateWindow(IpszClassMain, IpszClassMain, WS_SYSMENU | WS_MINIMIZEBOX, MAIN_X, MAIN_Y, MAIN_W, MAIN_H,
+        NULL, (HMENU)NULL, hInstance, NULL);
+    
+    //ë©”ì¸ and ì„œë¸Œ ì°½ ì´ˆê¸°í™”ëŠ” ì—¬ê¸°ì„œ
+    GMMgr->Init(&BitMapMgr_Main, hWnd_Main);
+
+    ShowWindow(hWnd_Main, nCmdShow);
+
+    //SetForegroundWindow(hWnd_Main); //ì»´í“¨í„° ê·¸ë˜í”½ìŠ¤ ppt í™•ì¸
+
+    // ê¸°ë³¸ ë©”ì‹œì§€ ë£¨í”„ì…ë‹ˆë‹¤:
+    while (GetMessage(&msg, nullptr, 0, 0))
+    {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+
+    return (int) msg.wParam;
+}
+
+
+LRESULT CALLBACK WndProc_Main(HWND hWnd_Main, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    HDC hdc;
+    PAINTSTRUCT ps;
+    POINT Point;
+
+    switch (message)
+    {
+    case WM_LBUTTONDOWN:
+        Point.x = LOWORD(lParam);
+        Point.y = HIWORD(lParam);
+
+        if (GMMgr->ColliderCheck(Point))
+            InvalidateRect(hWnd_Main, NULL, true); //ì´ë¯¸ì§€ë¥¼ í´ë¦­í•˜ë©´ í™”ë©´ ì§€ìš°ê³  ë‹¤ì‹œ ê·¸ë ¤ì•¼ > ì‹œê°í™”
+
+        return 0;
+    case WM_PAINT:
+        hdc = BeginPaint(hWnd_Main, &ps);
+        GMMgr->Draw(hdc, g_hInst);
+        EndPaint(hWnd_Main, &ps);
+        break;
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        break;
+    default:
+        return DefWindowProc(hWnd_Main, message, wParam, lParam);
+    }
+    return 0;
 }

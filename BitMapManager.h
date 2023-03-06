@@ -1,52 +1,59 @@
 #pragma once
 #include"BitMap.h"
 #include<stdio.h>
-//#include<vector>
 //0~4 오리지널 이미지, 20~24 ReInit 이미지. but 같은 동물 사진끼리 m_parrBitMap에 저장되는 인덱스는 같아야 한다.
 
-enum IMAGE
-{
-	IMAGE_START,
-	IMAGE_TIGER = 0,
-	IMAGE_FOX,
-	IMAGE_HORSE,
-	IMAGE_LIZARD,
-	IMAGE_SQUIRREL,
-	//IMAGE_HORSE,
-	//IMAGE_CAT,
-	//IMAGE_MONKEY,
-	//IMAGE_FROG,
-	//IMAGE_CHICKEN,
-	IMAGE_BLACK,
-	IMAGE_COUNT = IMAGE_SQUIRREL + 1,
+enum IMG
+{	
+	IMG_BLACK_START,
+	IMG_BLACK_PAWN = IMG_BLACK_START,
+	IMG_BLACK_ROOK,
+	IMG_BLACK_KNIGHT,
+	IMG_BLACK_BISHOP,
+	IMG_BLACK_QUEEN,
+	IMG_BLACK_KING,
+	IMG_BLACK_COUNT = 6,
 
-	//색 출력 망한 이미지
-	IMAGE_CHANGE_START= 20,
-	IMAGE_CHANGE_TIGER = 20,
-	IMAGE_CHANGE_FOX,
-	IMAGE_CHANGE_HORSE,
-	IMAGE_CHANGE_LIZARD,
-	IMAGE_CHANGE_SQUIRREL,
-	IMAGE_CHANGE_COUNT = IMAGE_CHANGE_SQUIRREL - IMAGE_CHANGE_START + 1,
-	IMAGE_CHANGE_RANGE = IMAGE_CHANGE_TIGER + IMAGE_CHANGE_COUNT,
-	IMAGE_CHANGE_INDEX = 6,
+
+	IMG_WHITE_START = 6,
+	IMG_WHITE_PAWN = IMG_WHITE_START,
+	IMG_WHITE_ROOK,
+	IMG_WHITE_KNIGHT,
+	IMG_WHITE_BISHOP,
+	IMG_WHITE_QUEEN,
+	IMG_WHITE_KING,
+	IMG_WHITE_COUNT = 6,
+
+
+
+	IMG_COUNT = IMG_WHITE_COUNT + IMG_BLACK_COUNT,
+
+	//배경
+	IMG_BG_WHITE = 12,
+	IMG_BG_BLACK,
+
+	IMG_BG_COUNT = 2,
+
+	//이동 가능 이미지
+	IMG_MOVE = 14,
+
+
+	//----------------------출력-----------------------------
+	PRINT_WH_MINUS = 18, //20, //너비 높이 감소(이미지 크기 조절)
+	PRINT_XY_PLUS = PRINT_WH_MINUS / 2, //이미지 출력 좌표 조절
+
+	//이미지 사이즈
+	IMG_BG_SIZE = 60,
+	IMG_SIZE = IMG_BG_SIZE - PRINT_WH_MINUS,
 };
 
-enum IMG_BG
-{
-	IMG_BG_START = 11,
-	IMG_BG_MAIN = 11,
-	IMG_BG_STORY,
-	IMG_BG_RABBIT,
-	IMG_BG_CARDGAME,
-	IMG_BG_GAMEOVER,
-	IMG_BG_GAMECLEAR,
-
-	SUB_IMG_BG_FIRST = 17,
-	SUB_IMG_BG_END,
-
-	IMG_BG_COUNT = SUB_IMG_BG_END - IMG_BG_MAIN + 1, //배경 이미지 갯수
-};
+//enum IMG_BG
+//{
+//	IMG_BG_WHITE,
+//	IMG_BG_BLACK,
+//
+//	IMG_BG_COUNT,
+//};
 
 
 //싱글톤
@@ -65,11 +72,7 @@ public:
 	BitMapManager();
 	~BitMapManager();
 
-	//Card.cpp에서 사용하고 있다.
-	BitMap* GetImage(IMAGE index) { return &m_parrBitMap[index]; }
-	//GameManager.cpp에서 사용
-	BitMap* GetBGImage(IMG_BG index) { return &m_parrBitMap[index]; }
+	BitMap* GetImage(IMG index) { return &m_parrBitMap[index]; }
 
 	void Init(HWND hWnd);
 };
-

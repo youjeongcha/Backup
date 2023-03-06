@@ -4,7 +4,7 @@
 
 BitMapManager::BitMapManager()
 {
-	m_parrBitMap = new BitMap[IMAGE_COUNT * 2 + IMG_BG_COUNT + 1];
+	m_parrBitMap = new BitMap[IMG_COUNT + IMG_BG_COUNT + 1];
 }
 
 
@@ -12,28 +12,33 @@ void BitMapManager::Init(HWND hWnd)
 {
 	char buf[256];
 	HDC hdc = GetDC(hWnd);
-	int i;
+	int i; //m_parrBitMap에 저장하기위해
 
-	//기본 카드 이미지 0~4
-	for (i = IMAGE_START; i <= IMAGE_COUNT; i++)
+	//흑말
+	for (i = 0; i < IMG_BLACK_COUNT; i++) //TODO::0~6으로 변경
 	{
-		sprintf_s(buf, "RES//0%d.bmp", i);
+		sprintf_s(buf, "RES//block_b_%d.bmp", i);
 		m_parrBitMap[i].Init(hdc, buf);
 	}
 
-	//변할 카드 이미지 4~9
-	for (int j = IMAGE_CHANGE_START; j < IMAGE_CHANGE_RANGE; j++)
+	//백말
+	for (int j = 0; j < IMG_WHITE_COUNT; j++)
 	{
-		sprintf_s(buf, "RES//%d.bmp", j);
+		sprintf_s(buf, "RES//block_w_%d.bmp", j);
 		m_parrBitMap[i++].Init(hdc, buf);
 	}
+	
+	//배경 12~13
+	for (int j = 0; j < IMG_BG_COUNT; j++)
+	{
+		sprintf_s(buf, "RES//tile_%d.bmp", j);
+		m_parrBitMap[i++].Init(hdc, buf);
+	}
+	
+	//투명화 이미지 14
+	sprintf_s(buf, "RES//MoveableTileMask.bmp", i);
+	m_parrBitMap[i].Init(hdc, buf);
 
-	//메인 배경 + 서브 배경 11~16
-	for (int j = IMG_BG_START; j <= SUB_IMG_BG_END; j++)
-	{
-		sprintf_s(buf, "RES//%d.bmp", j);
-		m_parrBitMap[i++].Init(hdc, buf);
-	}
 	ReleaseDC(hWnd, hdc);
 }
 
