@@ -1,22 +1,31 @@
-#pragma once
+#ifndef _NAMES_H
+#define _NAMES_H
+
 #include <string>
 
-enum
+enum 
 {
-	ent_EvilPlant,
-	//ent_Miner_Bob,
-	//ent_Elsa
+	ent_Miner_Bob,
+	ent_Elsa,
+	ent_Peddle
 };
 
-inline std::string GetNameOfEntity(int value)
+inline std::string GetNameOfEntity(int n)
 {
-	switch (value)
+	switch(n)
 	{
-	case ent_EvilPlant:
-		return "식인식물";
-	//case ent_Miner_Bob: return "광부 Bob";
-	//case ent_Elsa: return "Elsa";
-	default: 
-		return "Unknown!";
+	case ent_Miner_Bob:
+		return "광부 Bob";
+
+	case ent_Elsa:
+		return "Elsa";
+
+	case ent_Peddle:
+		return "보부상";
+
+	default:
+		return "UNKNOWN!";
 	}
 }
+
+#endif

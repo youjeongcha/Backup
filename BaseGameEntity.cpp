@@ -1,14 +1,14 @@
 #include "BaseGameEntity.h"
 #include <cassert>
 
-int BaseGameEntity::m_nNextVaildID = 0;
+int BaseGameEntity::m_iNextValidID = 0;
 
-void BaseGameEntity::SetID(const int& id)
+void BaseGameEntity::SetID(int val)
 {
-	// (id < m_nNextVaildID) 상황인 경우 에러 메시지 발생!!
-	// 에러 메시지 발생 시 "<BaseGameEntity::SetID>:invaild ID" 문구 같이 출력.
-	assert((id >= m_nNextVaildID) && "<BaseGameEntity::SetID>:invaild ID");
+  //make sure the val is equal to or greater than the next available ID
+  assert ( (val >= m_iNextValidID) && "<BaseGameEntity::SetID>: invalid ID");
 
-	m_nID = id;
-	m_nNextVaildID = m_nID + 1;
+  m_ID = val;
+    
+  m_iNextValidID = m_ID + 1;
 }

@@ -1,25 +1,28 @@
-#pragma once
-#include <Windows.h>
+#ifndef CONSOLE_UTILS_H
+#define CONSOLE_UTILS_H
+
+#include <windows.h>
 #include <conio.h>
 #include <iostream>
 
+//문자의 색을 원하는 색으로 바꾼다.
 inline void SetTextColor(WORD colors)
 {
-	// #include <Windows.h>
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	HANDLE hConsole=GetStdHandle(STD_OUTPUT_HANDLE);
+
 	SetConsoleTextAttribute(hConsole, colors);
 }
 
 inline void PressAnyKeyToContinue()
 {
-	// white color
-	SetTextColor(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+	//문자의 색을 흰색으로 바꾼다.
+	SetTextColor(FOREGROUND_BLUE| FOREGROUND_RED | FOREGROUND_GREEN);
 
-	std::cout << "\n\nPress any key to continue" << std::endl;
+	std::cout << "\n\nPress any key to continue" << std::endl; 
 
-	// #include <conio.h>
-	// _kbhit : key가 눌러 졌는지 확인.
-	while (!_kbhit()) {}
+	while (!_kbhit()){}
 
 	return;
 }
+
+#endif
