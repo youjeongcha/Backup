@@ -47,8 +47,9 @@ public:
 	~Piece();
 
 	//void Init(BitMapManager* BitMapMgr_Main, CAMP _campColor, IMG _Index, int _X, int _Y);
-	//이동 가능한 칸을 나타낸 이미지를 클릭한 경우
+	//이동 가능한 말을 클린한 경우 판단
 	bool ColliderCheck_Piece(POINT point);
+	//이동 가능한 칸을 나타낸 이미지를 클릭한 경우
 	bool ColliderCheck_Moveable(POINT point);
 	//bool ColliderCheck_Move(POINT point);
 	//virtual bool ColliderCheck_Piece(POINT point);
@@ -75,6 +76,7 @@ public:
 	RECT Get_moveRect() { return m_moveRect; } //적 말 먹을때 위치 파악
 	RECT Get_BitMapRect() { return m_BitMapRect; } //적 말 먹을때 위치 파악
 	CAMP Get_CampColor() { return m_CampColor; }
+	IMG Get_PieceType() { return m_Piece; } //기물의 종류를 판단하기 위해
 	//void Set_MoveCheck(bool _moveCheck) { m_moveCheck = _moveCheck; }
 };
 

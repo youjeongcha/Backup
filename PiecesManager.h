@@ -51,9 +51,6 @@ enum PIECE_XY_ID
 	KING_X = 4,
 };
 
-
-
-
 class PiecesManager
 {
 private:
@@ -65,7 +62,7 @@ private:
 	void InitLoaction(BitMapManager* BitMapMgr_Main);
 	void PieceErase(int _campColor, int _piece);
 	
-	template<typename TPieces>
+	template<typename TPieces, typename = std::enable_if<std::is_base_of<Piece, TPieces>::value>>
 	std::vector<Piece*> MakePieces(BitMapManager* _BitMapMgr, IMG _pieceID, int _X, int _Y, int _count)
 	//std::vector<std::vector<TPieces*>> MakePieces(BitMapManager* BitMapMgr, CAMP campColor, IMG pieceID, int x, int y)
 	//std::vector<std::vector<TPieces*>> MakePieces(BitMapManager* BitMapMgr)

@@ -54,9 +54,11 @@ Piece::~Piece()
 
 bool Piece::ColliderCheck_Piece(POINT point)
 {
-	if (PtInRect(&m_BitMapRect, point))
+	//검은, 흰 말을 클릭했는지 and 해당 말이 움직일 턴이 맞는지(해당 순서에만 말 선택 가능)
+	if (PtInRect(&m_BitMapRect, point) &&
+		(GMMgr->Get_PlayerTurn() == m_CampColor))
 	{
-		//TODO::해당 기물의 이동 방향 체크 후. 가로막는 것 없으면 이동.
+		//해당 기물의 이동 방향 체크 후. 가로막는 것 없으면 이동.
 		m_moveCheck = true; //이동 표시 체크 요청이 들어왔는지
 		return true;
 	}

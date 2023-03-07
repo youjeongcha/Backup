@@ -12,9 +12,12 @@
 
 // 전역 변수:
 LRESULT CALLBACK WndProc_Main(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK WndProc_Sub(HWND, UINT, WPARAM, LPARAM);
 HINSTANCE g_hInst;                                // 현재 인스턴스입니다.
 LPCTSTR IpszClassMain = TEXT("Chess");
+LPCTSTR IpszClassSub = TEXT("Turn");
 BitMapManager BitMapMgr_Main;
+BitMapManager BitMapMgr_Sub;
 
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -24,8 +27,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 {
     // TODO: 여기에 코드를 입력합니다.
     HWND hWnd_Main;
+    HWND hWnd_Sub;
     MSG msg;
-    WndClassCreate WndClassMain(hInstance, IpszClassMain, WHITE_BRUSH);
+    WndClassCreate WndClassMain(hInstance, IpszClassMain, BLACK_BRUSH);
+    WndClassCreate WndClassSub(hInstance, IpszClassSub, WHITE_BRUSH);
     g_hInst = hInstance;
 
 
@@ -33,14 +38,23 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     WndClassMain.WndClass.lpfnWndProc = WndProc_Main;	//프로세스 함수 호출
     RegisterClass(&WndClassMain.WndClass);
 
+    //서브 창 등록
+    WndClassSub.WndClass.lpfnWndProc = WndProc_Sub;
+    RegisterClass(&WndClassSub.WndClass);
+
 
     hWnd_Main = CreateWindow(IpszClassMain, IpszClassMain, WS_SYSMENU | WS_MINIMIZEBOX, MAIN_X, MAIN_Y, MAIN_W, MAIN_H,
         NULL, (HMENU)NULL, hInstance, NULL);
+
+    //서브 일정 단계가 지나고 출력하도록
+    hWnd_Sub = CreateWindow(IpszClassSub, IpszClassSub, WS_OVERLAPPED | WS_MINIMIZEBOX, SUB_X, SUB_Y, SUB_W, SUB_H,
+        NULL, (HMENU)NULL, hInstance, NULL);  //부모 클래스를 받으면 부모 클래스가 상위 노출이 안된다.
     
     //메인 and 서브 창 초기화는 여기서
-    GMMgr->Init(&BitMapMgr_Main, hWnd_Main);
+    GMMgr->Init(&BitMapMgr_Main, &BitMapMgr_Sub, hWnd_Main, hWnd_Sub);
 
     ShowWindow(hWnd_Main, nCmdShow);
+    ShowWindow(hWnd_Sub, nCmdShow);
 
     //SetForegroundWindow(hWnd_Main); //컴퓨터 그래픽스 ppt 확인
 
@@ -83,4 +97,27 @@ LRESULT CALLBACK WndProc_Main(HWND hWnd_Main, UINT message, WPARAM wParam, LPARA
         return DefWindowProc(hWnd_Main, message, wParam, lParam);
     }
     return 0;
+}
+
+LRESULT CALLBACK WndProc_Sub(HWND hWnd_Sub, UINT iMessage, WPARAM wParam, LPARAM lParam)
+{
+    HDC hdc;
+    PAINTSTRUCT ps;
+    POINT Point;
+
+
+    switch (iMessage)
+    {
+    case WM_PAINT:
+        hdc = BeginPaint(hWnd_Sub, &ps);
+        GMMgr->SubDraw(hdc);
+        EndPaint(hWnd_Sub, &ps);
+        return 0;
+
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        return 0;
+    }
+
+    return(DefWindowProc(hWnd_Sub, iMessage, wParam, lParam));
 }

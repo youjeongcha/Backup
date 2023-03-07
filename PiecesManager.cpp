@@ -24,83 +24,13 @@ PiecesManager::~PiecesManager()
 void PiecesManager::Init(BitMapManager* BitMapMgr_Main)
 {
 	InitLoaction(BitMapMgr_Main);
-	/*
-	int black_PieceCount = 0;
+	
+	/*int black_PieceCount = 0;
 	int white_PieceCount = 0;
 
+	MakePieces<Pawn>(BitMapMgr_Main, IMG_BLACK_PAWN, FIRST_PAWN_X, BLACK_PAWN_Y, PIECES_PAWN);
 	//폰
-	for (auto _piece : MakePieces<Pawn>(BitMapMgr_Main, IMG_BLACK_PAWN, FIRST_PAWN_X, BLACK_PAWN_Y, PIECES_PAWN))
-	{
-		switch (_piece->Get_CampColor())
-		{
-		case CAMP_BLACK:
-			m_Pieces[CAMP_BLACK][black_PieceCount++] = _piece;
-			break;
-		case CAMP_WHITE:
-			m_Pieces[CAMP_WHITE][white_PieceCount++] = _piece;
-			break;
-		}
-	}
-
-	//룩
-	for (auto _piece : MakePieces<Pawn>(BitMapMgr_Main, IMG_BLACK_ROOK, FIRST_ROOK_X, BLACK_OTHER_Y, PIECES_ROOK))
-	{
-		switch (_piece->Get_CampColor())
-		{
-		case CAMP_BLACK:
-			m_Pieces[CAMP_BLACK][black_PieceCount++] = _piece;
-			break;
-		case CAMP_WHITE:
-			m_Pieces[CAMP_WHITE][white_PieceCount++] = _piece;
-			break;
-		}
-	}
-
-	//나이트
-	for (auto _piece : MakePieces<Knight>(BitMapMgr_Main, IMG_BLACK_KNIGHT, FIRST_KNIGHT_X, BLACK_OTHER_Y, PIECES_KNIGHT))
-	{
-		switch (_piece->Get_CampColor())
-		{
-		case CAMP_BLACK:
-			m_Pieces[CAMP_BLACK][black_PieceCount++] = _piece;
-			break;
-		case CAMP_WHITE:
-			m_Pieces[CAMP_WHITE][white_PieceCount++] = _piece;
-			break;
-		}
-	}
-
-	//비숍
-	for (auto _piece : MakePieces<Bishop>(BitMapMgr_Main, IMG_BLACK_BISHOP, FIRST_BISHOP_X, BLACK_OTHER_Y, PIECES_BISHOP))
-	{
-		switch (_piece->Get_CampColor())
-		{
-		case CAMP_BLACK:
-			m_Pieces[CAMP_BLACK][black_PieceCount++] = _piece;
-			break;
-		case CAMP_WHITE:
-			m_Pieces[CAMP_WHITE][white_PieceCount++] = _piece;
-			break;
-		}
-	}
-
-	//퀸
-	for (auto _piece : MakePieces<Queen>(BitMapMgr_Main, IMG_BLACK_QUEEN, QUEEN_X, BLACK_OTHER_Y, PIECES_QUEEN))
-	{
-		switch (_piece->Get_CampColor())
-		{
-		case CAMP_BLACK:
-			m_Pieces[CAMP_BLACK][black_PieceCount++] = _piece;
-			break;
-		case CAMP_WHITE:
-			m_Pieces[CAMP_WHITE][white_PieceCount++] = _piece;
-			break;
-		}
-	}
-
-
-	//킹
-	for (auto _piece : MakePieces<Pawn>(BitMapMgr_Main, IMG_BLACK_KING, KING_X, BLACK_OTHER_Y, PIECES_KING))
+	/*for (auto _piece : )
 	{
 		switch (_piece->Get_CampColor())
 		{
@@ -113,10 +43,82 @@ void PiecesManager::Init(BitMapManager* BitMapMgr_Main)
 		}
 	}*/
 
+	//룩
+	//for (auto _piece : MakePieces<Pawn>(BitMapMgr_Main, IMG_BLACK_ROOK, FIRST_ROOK_X, BLACK_OTHER_Y, PIECES_ROOK))
+	//{
+	//	switch (_piece->Get_CampColor())
+	//	{
+	//	case CAMP_BLACK:
+	//		m_Pieces[CAMP_BLACK][black_PieceCount++] = _piece;
+	//		break;
+	//	case CAMP_WHITE:
+	//		m_Pieces[CAMP_WHITE][white_PieceCount++] = _piece;
+	//		break;
+	//	}
+	//}
+
+	////나이트
+	//for (auto _piece : MakePieces<Knight>(BitMapMgr_Main, IMG_BLACK_KNIGHT, FIRST_KNIGHT_X, BLACK_OTHER_Y, PIECES_KNIGHT))
+	//{
+	//	switch (_piece->Get_CampColor())
+	//	{
+	//	case CAMP_BLACK:
+	//		m_Pieces[CAMP_BLACK][black_PieceCount++] = _piece;
+	//		break;
+	//	case CAMP_WHITE:
+	//		m_Pieces[CAMP_WHITE][white_PieceCount++] = _piece;
+	//		break;
+	//	}
+	//}
+
+	////비숍
+	//for (auto _piece : MakePieces<Bishop>(BitMapMgr_Main, IMG_BLACK_BISHOP, FIRST_BISHOP_X, BLACK_OTHER_Y, PIECES_BISHOP))
+	//{
+	//	switch (_piece->Get_CampColor())
+	//	{
+	//	case CAMP_BLACK:
+	//		m_Pieces[CAMP_BLACK][black_PieceCount++] = _piece;
+	//		break;
+	//	case CAMP_WHITE:
+	//		m_Pieces[CAMP_WHITE][white_PieceCount++] = _piece;
+	//		break;
+	//	}
+	//}
+
+	////퀸
+	//for (auto _piece : MakePieces<Queen>(BitMapMgr_Main, IMG_BLACK_QUEEN, QUEEN_X, BLACK_OTHER_Y, PIECES_QUEEN))
+	//{
+	//	switch (_piece->Get_CampColor())
+	//	{
+	//	case CAMP_BLACK:
+	//		m_Pieces[CAMP_BLACK][black_PieceCount++] = _piece;
+	//		break;
+	//	case CAMP_WHITE:
+	//		m_Pieces[CAMP_WHITE][white_PieceCount++] = _piece;
+	//		break;
+	//	}
+	//}
+
+
+	////킹
+	//for (auto _piece : MakePieces<Pawn>(BitMapMgr_Main, IMG_BLACK_KING, KING_X, BLACK_OTHER_Y, PIECES_KING))
+	//{
+	//	switch (_piece->Get_CampColor())
+	//	{
+	//	case CAMP_BLACK:
+	//		m_Pieces[CAMP_BLACK][black_PieceCount++] = _piece;
+	//		break;
+	//	case CAMP_WHITE:
+	//		m_Pieces[CAMP_WHITE][white_PieceCount++] = _piece;
+	//		break;
+	//	}
+	//}*/
+
 	//m_Pieces[CAMP_BLACK][black_PieceCount++] = new Knight(*BitMapMgr_Main, CAMP_BLACK, IMG_BLACK_KNIGHT, FIRST_KNIGHT_X, BLACK_OTHER_Y);
 	//m_Pieces[CAMP_BLACK][black_PieceCount++] = new Bishop(*BitMapMgr_Main, CAMP_BLACK, IMG_BLACK_BISHOP, FIRST_BISHOP_X, BLACK_OTHER_Y);
 	//m_Pieces[CAMP_BLACK][black_PieceCount++] = new Queen(*BitMapMgr_Main, CAMP_BLACK, IMG_BLACK_QUEEN, QUEEN_X, BLACK_OTHER_Y);
 	//m_Pieces[CAMP_BLACK][black_PieceCount++] = new King(*BitMapMgr_Main, CAMP_BLACK, IMG_BLACK_KING, KING_X, BLACK_OTHER_Y);
+	
 }
 
 
@@ -225,7 +227,7 @@ bool PiecesManager::ColliderCheck(POINT point)
 		for (int piece = 0; piece < CAMP_PIECE_COUNT; piece++)
 		{
 			if (m_MoveTurn == false)
-			{//이동 가능 이미지 콜라이더 적용(말 클릭 안 했을 시 이동 가능해버리면 안되므로)
+			{//이동 가능 이미지 콜라이더 rect 적용(말 클릭 안 했을 시 이동 가능해버리면 안되므로)
 				if (m_Pieces[campColor][piece]->ColliderCheck_Piece(point))
 				{//기물 이동 클릭
 					m_MoveTurn = true;
@@ -238,11 +240,16 @@ bool PiecesManager::ColliderCheck(POINT point)
 				{//이동 movealbe 클릭
 					m_MoveTurn = false;
 
-					//TODO::적 기물을 먹는 경우
+					//적 기물을 먹는 경우
 					PieceErase(campColor, piece);
 
 					//XY 좌표와 Rect 이동
 					m_Pieces[campColor][piece]->Move();
+
+					if (GMMgr->Get_GameEndCheck() == false)
+						//현재 턴과 반대되는 턴을 세팅해준다.(플레이어 턴 전환)
+					GMMgr->Set_PlayerTurn();
+
 					return true;
 				}
 			}
@@ -264,6 +271,7 @@ void PiecesManager::PieceErase(int _campColor, int _piece)
 {//TODO::적 기물을 먹는 경우
 
 	CAMP(*map)[BOARD_Y] = GMMgr->Get_Map();
+	IMG IMG_PieceType;
 
 	//특정 위치로 이동할 기물
 	RECT moveRect = m_Pieces[_campColor][_piece]->Get_moveRect();
@@ -290,6 +298,14 @@ void PiecesManager::PieceErase(int _campColor, int _piece)
 				{
 					//GMMgr->Set_Map(CAMP_NONE, m_iX, m_iY);
 					m_Pieces[campColor][piece]->Set_Inactive();
+
+					//게임 승리 체크
+					//킹인지 체크 위해
+					IMG_PieceType = m_Pieces[campColor][piece]->Get_PieceType();
+
+					if ((IMG_PieceType == IMG_BLACK_KING) || (IMG_PieceType == IMG_WHITE_KING))
+						GMMgr->Set_GameEndCheck(true);
+
 					return;
 				}
 			}
