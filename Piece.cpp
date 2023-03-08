@@ -5,13 +5,48 @@
 #define GMMgr GameManager::Get_Instance()
 #define PiecesMgr PiecesManager::Get_Instance()
 
+//Piece::Piece(BitMap* _pBitMap, BitMap* _pBitMap_Move, bool _moveCheck,
+//RECT _BitMapRect, int _iX, int _iY, IMG _Piece, CAMP _CampColor)
+//{
+//	*m_pBitMap;
+//	*m_pBitMap_Move; //이동 표시
+//	m_moveCheck; //이동 표시 체크 요청이 들어왔는지
+//	m_BitMapRect;
+//	m_moveRect; //이동 시킬 rect 임시 저장용
+//	std::vector<RECT> m_BitMapRect_MoveList;
+//	int m_iX; //map에서의 인덱스
+//	int m_iY;
+//	int move_iY;
+//	IMG m_Piece; //해당 기물의 enum;
+//	CAMP m_CampColor; //해당 기물의 진영
+//	bool firstMoveCheck; //첫번째 이동인지 확인
+//}
+
 Piece::Piece()
 {
 }
 
-//Piece::Piece(BitMapManager& BitMapMgr_Main, const CAMP _campColor, const IMG _Index, const int _X, const int _Y)
+Piece::Piece(const Piece& piece)
+{
+	m_moveCheck = false;
+
+	//m_pBitMap = piece.m_pBitMap;
+	m_pBitMap_Move = piece.m_pBitMap_Move; //이동 표시
+	m_moveCheck = piece.m_moveCheck; //이동 표시 체크 요청이 들어왔는지
+	m_BitMapRect = piece.m_BitMapRect;
+	//m_moveRect; //이동 시킬 rect 임시 저장용
+	m_BitMapRect_MoveList = piece.m_BitMapRect_MoveList;
+	m_iX = piece.m_iX; //map에서의 인덱스
+	m_iY = piece.m_iY;
+	move_iY = piece.move_iY; //BW 별 이동 방향 저장
+	m_Piece = piece.m_Piece; //해당 기물의 enum;
+	m_CampColor = piece.m_CampColor; //해당 기물의 진영
+}
+
 Piece::Piece(BitMapManager& BitMapMgr_Main, CAMP _campColor, IMG _Index, int _X, int _Y)
 {
+	m_moveCheck = false;
+
     m_CampColor = _campColor;
     m_Piece = _Index;
     m_pBitMap = BitMapMgr_Main.GetImage(_Index);

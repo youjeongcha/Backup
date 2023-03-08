@@ -35,13 +35,16 @@ protected: //private 으로 하면 자식에서 접근 불가 > protected
 	std::vector<RECT> m_BitMapRect_MoveList;
 	int m_iX; //map에서의 인덱스
 	int m_iY;
-	int move_iY;
+	int move_iY; //BW 별 이동 방향 저장
 	IMG m_Piece; //해당 기물의 enum;
 	CAMP m_CampColor; //해당 기물의 진영
 	bool firstMoveCheck; //첫번째 이동인지 확인
 
 public:
 	Piece();
+	Piece(const Piece& piece);//& piece);
+	//Piece(BitMap* _pBitMap, BitMap* _pBitMap_Move, bool _moveCheck,
+	//	RECT _BitMapRect, int _iX, int _iY, IMG _Piece, CAMP _CampColor);
 	//Piece(BitMapManager& BitMapMgr_Main, const CAMP _campColor, const IMG _Index, const int _X, const int _Y);
 	Piece(BitMapManager& BitMapMgr_Main, CAMP _campColor, IMG _Index, int _X, int _Y);
 	~Piece();
@@ -77,6 +80,8 @@ public:
 	RECT Get_BitMapRect() { return m_BitMapRect; } //적 말 먹을때 위치 파악
 	CAMP Get_CampColor() { return m_CampColor; }
 	IMG Get_PieceType() { return m_Piece; } //기물의 종류를 판단하기 위해
+	int Get_iX() { return m_iX; }
+	int Get_iY() { return m_iY; }
 	//void Set_MoveCheck(bool _moveCheck) { m_moveCheck = _moveCheck; }
 };
 

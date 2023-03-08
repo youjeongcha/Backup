@@ -7,6 +7,12 @@ Bishop::Bishop()
 {
 }
 
+Bishop::Bishop(Piece _piece, IMG _Index) : Piece(_piece)
+{
+	m_Piece = _Index;
+	m_pBitMap = GMMgr->Get_BitMapMain()->GetImage(_Index);
+}
+
 Bishop::Bishop(BitMapManager& BitMapMgr_Main, const CAMP _campColor, const IMG _Index, const int _X, const int _Y) : Piece(BitMapMgr_Main, _campColor, _Index, _X, _Y)
 {
 }

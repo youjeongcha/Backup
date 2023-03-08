@@ -8,15 +8,33 @@
 #include "Queen.h"
 #include "King.h"
 
-//enum PIECES
-//{
-//	PIECES_PAWN,
-//	PIECES_ROOK,
-//	PIECES_KNIGHT,
-//	PIECES_BISHOP,
-//	PIECES_QUEEN,
-//	PIECES_KING,
-//};
+
+enum PROMOTION_PIECES
+{
+	PROMOTION_ROOK = 1,
+	PROMOTION_KNIGHT,
+	PROMOTION_BISHOP,
+	PROMOTION_QUEEN,
+	PROMOTION_COUNT = PROMOTION_QUEEN,
+};
+
+enum PROMOTION_RECT
+{
+	PROMOTION_RECT_L = 0,
+	PROMOTION_RECT_T = 25,
+	PROMOTION_RECT_R = PROMOTION_RECT_L + 120,
+	PROMOTION_RECT_B = PROMOTION_RECT_T + 30,
+
+	PROMOTION_RECT_GAP = 30,
+
+
+	PROMOTION_ROOK_T = PROMOTION_RECT_T,
+	PROMOTION_KNIGHT_T = PROMOTION_ROOK_T + PROMOTION_RECT_GAP,
+	PROMOTION_BISHOP_T = PROMOTION_KNIGHT_T + PROMOTION_RECT_GAP,
+	PROMOTION_QUEEN_T = PROMOTION_BISHOP_T + PROMOTION_RECT_GAP,
+
+	PROMOTION_FONTSIZE = 11,
+};
 
 enum PIECES_COUNT
 {
@@ -58,9 +76,12 @@ private:
 	//BitMapManager* BitMapMgr_Main;
 	Piece* m_Pieces[CAMP_COUNT][CAMP_PIECE_COUNT];
 	bool m_MoveTurn;//이동 가능 이미지 콜라이더 적용 턴(말 클릭 안 했을 시 이동 가능해버리면 안되므로)
+	RECT m_promotionRect[PROMOTION_COUNT];
+	Piece* m_ErasePawn;
 
 	void InitLoaction(BitMapManager* BitMapMgr_Main);
 	void PieceErase(int _campColor, int _piece);
+	bool PawnPromotionCheck(Piece* pieceTmp);
 	
 	template<typename TPieces, typename = std::enable_if<std::is_base_of<Piece, TPieces>::value>>
 	std::vector<Piece*> MakePieces(BitMapManager* _BitMapMgr, IMG _pieceID, int _X, int _Y, int _count)
@@ -116,8 +137,13 @@ public:
 	}
 
 	void Init(BitMapManager* BitMapMgr_Main);
+	//메인 window
 	bool ColliderCheck(POINT point);
 	void DrawPices(HDC hdc);
+	//승진 window
+	bool ColliderCheck_SubPromotion(POINT point);
+	void DrawPawnPromotion(HDC hdc_SubPromotion);
+
 	//콜라이더 체크 후, 움직임 가능한 칸 보여주기
 	void DrawMoveable(HDC hdc);
 

@@ -7,6 +7,10 @@ King::King()
 {
 }
 
+//King::King(Piece _piece) : Piece(_piece)
+//{
+//}
+
 King::King(BitMapManager& BitMapMgr_Main, const CAMP _campColor, const IMG _Index, const int _X, const int _Y) : Piece(BitMapMgr_Main, _campColor, _Index, _X, _Y)
 {
 }

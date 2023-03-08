@@ -25,31 +25,36 @@ void BitMap::Draw(HDC hdc, int x, int y, int IMG_WSize, int IMG_HSize)
 	SelectObject(MemDC, OldBitmap);
 }
 
-//void BitMap::DrawMoveable(HDC hdc, int x, int y, int IMG_WSize, int IMG_HSize)
-//{//카드 크기를 바꾸면 선택 영역인 이것도 같이 바꿔야 할 것
-//	HBITMAP OldBitmap = (HBITMAP)SelectObject(MemDC, m_BitMap);
-//	BLENDFUNCTION bf;
-//	ZeroMemory(&bf, sizeof(bf));
-//	bf.SourceConstantAlpha = 100; //원하는 값(0~255)
-//	AlphaBlend(hdc, x, y, IMG_WSize, IMG_HSize, MemDC, 0, 0, m_Size.cx, m_Size.cy, bf);
-//	TransparentBlt(hdc, x, y, IMG_WSize, IMG_HSize, MemDC, 0, 0, m_Size.cx, m_Size.cy, RGB(255, 0, 255));
-//	SelectObject(MemDC, OldBitmap);
-//}
+void BitMap::DrawTransparent(HDC hdc, int x, int y, int IMG_WSize, int IMG_HSize)
+{
+	HBITMAP OldBitmap = (HBITMAP)SelectObject(MemDC, m_BitMap);
+	BLENDFUNCTION bf;
+	ZeroMemory(&bf, sizeof(bf));
+	bf.SourceConstantAlpha = 190; //원하는 값(0~255)
+	AlphaBlend(hdc, x, y, IMG_WSize, IMG_HSize, MemDC, 0, 0, m_Size.cx, m_Size.cy, bf);
+	//TransparentBlt(hdc, x, y, IMG_WSize, IMG_HSize, MemDC, 0, 0, m_Size.cx, m_Size.cy, RGB(255, 0, 255));
+	SelectObject(MemDC, OldBitmap);
+}
 
 void BitMap::DrawBG(HDC hdc, int x, int y, int IMG_WSize, int IMG_HSize)
 {
 	StretchBlt(hdc, x, y, IMG_WSize, IMG_HSize, MemDC, 0, 0, m_Size.cx, m_Size.cy, SRCCOPY);
 }
 
-void BitMap::DrawMove(HDC hdc, int x, int y, int IMG_WSize, int IMG_HSize)
+void BitMap::DrawSubWin(HDC hdc, int x, int y, int IMG_WSize, int IMG_HSize)
 {
-	HBITMAP OldBitmap = (HBITMAP)SelectObject(MemDC, m_BitMap);
-	BLENDFUNCTION bf;
-	ZeroMemory(&bf, sizeof(bf));
-	bf.SourceConstantAlpha = 100; //원하는 값(0~255)
-	AlphaBlend(hdc, x, y, IMG_WSize, IMG_HSize, MemDC, 0, 0, m_Size.cx, m_Size.cy, bf);
-	SelectObject(MemDC, OldBitmap);
+	StretchBlt(hdc, x, y, IMG_WSize * 2, IMG_HSize, MemDC, 0, 0, m_Size.cx, m_Size.cy, SRCCOPY);
 }
+
+//void BitMap::DrawMove(HDC hdc, int x, int y, int IMG_WSize, int IMG_HSize)
+//{
+//	HBITMAP OldBitmap = (HBITMAP)SelectObject(MemDC, m_BitMap);
+//	BLENDFUNCTION bf;
+//	ZeroMemory(&bf, sizeof(bf));
+//	bf.SourceConstantAlpha = 100; //원하는 값(0~255)
+//	AlphaBlend(hdc, x, y, IMG_WSize, IMG_HSize, MemDC, 0, 0, m_Size.cx, m_Size.cy, bf);
+//	SelectObject(MemDC, OldBitmap);
+//}
 
 //void BitMap::DrawBackGroundIMG(HDC hdc)
 //{
