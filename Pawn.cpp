@@ -3,10 +3,6 @@
 
 #define GMMgr GameManager::Get_Instance()
 
-Pawn::Pawn() 
-{
-	
-}
 
 Pawn::Pawn(BitMapManager& BitMapMgr_Main, const CAMP _campColor, const IMG _Index, const int _X, const int _Y) : Piece(BitMapMgr_Main, _campColor, _Index, _X, _Y)
 {
@@ -17,37 +13,6 @@ Pawn::~Pawn()
 {
 }
 
-//bool Pawn::ColliderCheck_Piece(POINT point)
-//{
-//	if (PtInRect(&m_BitMapRect, point))
-//	{
-//		//TODO::해당 기물의 이동 방향 체크 후. 가로막는 것 없으면 이동.
-//		m_moveCheck = true; //이동 표시 체크 요청이 들어왔는지
-//		return true;
-//	}
-//	return false;
-//}
-//
-//bool Pawn::ColliderCheck_CanMove(POINT point)
-//{
-//	m_moveCheck = false; //
-//
-//	for (auto rect : m_BitMapRect_MoveList)
-//	{
-//		if (PtInRect(&rect, point))
-//		{
-//			//이동할 수 있는 칸을 누른 경우
-//			Move(rect);
-//			firstMoveCheck = false; //첫번째 이동이후 false로 유지되어야 한다.
-//			return true;
-//		}
-//	}
-//
-//	//실제 이동이 일어나지 않고 이동 가능 칸 체크만 했을때도 list가 초기화 되어야 한다.
-//	//(초기화 하지 않으면 i가 늘어나서 표시가 점진적으로 길게 늘어난다.)
-//	m_BitMapRect_MoveList.clear();
-//	return false;
-//}
 
 void Pawn::SetMoveableRect()
 {
@@ -79,10 +44,13 @@ void Pawn::SetMoveableRect()
 
 
 	//전방 대각선에 적 기물 있으면! 먹기위한 rect세팅(동북, 서북)
+	//+앙파상 기능
 	for (int i = 0; i < PAWN::MAX_MOVE_COUNT; i++)
 	{
 		RECT TmpRect;
 		
+		//먹을 기물이 특정 좌표에 있는지 확인을 하기 위한 세팅
+		//left값이 특이점이기에 별도 세팅을 해준다.
 		switch (i)
 		{
 		case PAWN::EAT_LEFT:
@@ -95,6 +63,9 @@ void Pawn::SetMoveableRect()
 			break;
 		}
 
+		//해당 기물을 먹고 차지하게될 자리를(rect) 세팅한다.
+
+		//대각선 앞에 상대방의 기물이 있는 경우 + 앙파상(적 기물을 먹는 시점)
 		if ((eatableCheck != CAMP_NONE) &&
 			(eatableCheck != m_CampColor))
 		{
@@ -104,4 +75,36 @@ void Pawn::SetMoveableRect()
 			m_BitMapRect_MoveList.push_back(TmpRect);
 		}
 	}
+
+	////+앙파상 기능
+	//for (int i = ENPASSANT_LEFT; i <= PAWN::ENPASSANT_CHECK; i++)
+	//{
+	//	RECT TmpRect;
+
+	//	//먹을 기물이 특정 좌표에 있는지 확인을 하기 위한 세팅
+	//	//left값이 특이점이기에 별도 세팅을 해준다.
+	//	switch (i)
+	//	{
+	//	case PAWN::ENPASSANT_LEFT:
+	//		eatableCheck = map[m_iX - move_iX][m_iY];
+	//		TmpRect.left = (m_iX - move_iX) * IMG_BG_SIZE;
+	//		break;
+	//	case PAWN::ENPASSANT_RIGHT:
+	//		eatableCheck = map[m_iX + move_iX][m_iY];
+	//		TmpRect.left = (m_iX + move_iX) * IMG_BG_SIZE;
+	//		break;
+	//	}
+
+	//	//해당 기물을 먹고 차지하게될 자리를(rect) 세팅한다.
+
+	//	//left나 right에 직전 턴에 2칸 이동한 상대방의 기물이 있는 경우 + 앙파상(적 기물을 먹는 시점)
+	//	if ((eatableCheck != CAMP_NONE) &&
+	//		(eatableCheck != m_CampColor))
+	//	{
+	//		TmpRect.top = (m_iY + move_iY) * IMG_BG_SIZE;
+	//		TmpRect.right = TmpRect.left + IMG_BG_SIZE;
+	//		TmpRect.bottom = TmpRect.top + IMG_BG_SIZE;
+	//		m_BitMapRect_MoveList.push_back(TmpRect);
+	//	}
+	//}
 }

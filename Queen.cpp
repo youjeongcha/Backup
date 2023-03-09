@@ -3,9 +3,6 @@
 
 #define GMMgr GameManager::Get_Instance()
 
-Queen::Queen()
-{
-}
 
 Queen::Queen(Piece _piece, IMG _Index) : Piece(_piece)
 {
@@ -20,16 +17,6 @@ Queen::Queen(BitMapManager& BitMapMgr_Main, const CAMP _campColor, const IMG _In
 Queen::~Queen()
 {
 }
-
-//bool Queen::ColliderCheck_Piece(POINT point)
-//{
-//	return false;
-//}
-//
-//bool Queen::ColliderCheck_CanMove(POINT point)
-//{
-//	return false;
-//}
 
 
 void Queen::SetMoveableRect()

@@ -21,11 +21,10 @@ void GameManager::Init(BitMapManager* BitMapMgr_Main, BitMapManager* BitMapMgr_S
 {
 	m_HWND_Main = hWnd_Main;
 	m_HWND_Sub = hWnd_Sub;
-	//m_HWND_Sub_Promotion = hWnd_Sub_Promotion;
-
+	
 	m_BitMapMgr_Main = BitMapMgr_Main;
 	m_BitMapMgr_Sub = BitMapMgr_Sub;
-	m_BitMapMgr_Sub_Promotion = BitMapMgr_Sub_Promtion;
+	//m_BitMapMgr_Sub_Promotion = BitMapMgr_Sub_Promtion;
 
 	nCmdShow = _nCmdShow;
 	IpszClassSub_Promotion = _IpszClassSub_Promotion;
@@ -48,13 +47,8 @@ void GameManager::Init(BitMapManager* BitMapMgr_Main, BitMapManager* BitMapMgr_S
 	exitRect.top = RECT_EXIT_T;
 	exitRect.right = RECT_EXIT_R;
 	exitRect.bottom = RECT_EXIT_B;
-
-	////subPromotion 디버깅 위해 임시 거주
-	//SubPromotion(); //
-	//m_GameStopCheck = true;
-	//m_GameEndCheck = false;
-	//InvalidateRect(Get_HWND_Sub_Promotion(), NULL, true);
 }
+
 
 bool GameManager::ColliderCheck(POINT point)
 {
@@ -71,15 +65,6 @@ bool GameManager::ColliderCheck(POINT point)
 			if (PtInRect(&exitRect, point))
 				PostQuitMessage(0);
 		}
-		//else
-		//{
-		//	//승진 Piece 선택한 경우
-		//	if (PiecesMgr->ColliderCheck_SubPromotion(point))
-		//	{
-		//		DestroyWindow(m_HWND_Sub_Promotion);
-		//		m_GameStopCheck = false;
-		//	}
-		//}
 		return false;
 	}
 }
@@ -100,6 +85,8 @@ bool GameManager::ColliderCheck_SubPromotion(POINT point)
 	return false;
 }
 
+
+
 void GameManager::Draw(HDC hdc, HINSTANCE g_hInst)
 {
 	BoardDraw(hdc);
@@ -110,51 +97,6 @@ void GameManager::Draw(HDC hdc, HINSTANCE g_hInst)
 
 	//게임 승리시 처리
 	WinCheck(hdc);
-}
-
-void GameManager::WinCheck(HDC hdc)
-{
-	if (m_GameEndCheck)
-	{
-		std::wstring str;
-		HFONT font;
-
-		//검은 이미지 투명도 높여서 게임이 끝남을 알림
-		m_BitMapMgr_Main->GetImage(IMG::IMG_BG_BLACK)->DrawTransparent(hdc, 0, 0, BOARD_SQUARE_SIZE * BOARD_X, BOARD_SQUARE_SIZE * BOARD_Y);
-
-		//글자 크기 변경
-		font = CreateFont(VICTORY_FONTSIZE, 0, 0, 0, FW_BOLD, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"Times New Roman");
-		SelectObject(hdc, font);
-		SetBkMode(hdc, TRANSPARENT); //글자 뒷배경 투명화
-		//SetBkColor(hdc, RGB(0, 0, 0));
-		SetTextColor(hdc, RGB(255, 230, 230)); //글자 색 변경
-
-		switch (m_PlayerTurn)
-		{
-		case CAMP_BLACK:
-			str = L"B L A C K";
-			break;
-		case CAMP_WHITE:
-			str = L"W H I T E";
-			break;
-		}
-
-		str += L"  W I N";
-		TextOut(hdc, RECT_EXIT_L - 32, MAIN_H / 3 + 10, str.c_str(), str.length());
-
-		font = CreateFont(END_FONTSIZE, 0, 0, 0, FW_BOLD, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"Times New Roman");
-		SelectObject(hdc, font);
-		str = L"E n d";
-		DrawText(hdc, str.c_str(), str.length(), &exitRect, DT_CENTER | DT_WORDBREAK);
-	}
-}
-
-void GameManager::MainMenu()
-{
-}
-
-void GameManager::Game()
-{
 }
 
 void GameManager::BoardDraw(HDC hdc)
@@ -184,8 +126,8 @@ void GameManager::SquareDraw(HDC hdc)
 	{
 		for (int y = 0; y <= BOARD_Y; y++)
 		{
-			if ( ((y & 1) == 0 && (x & 1) == 0) ||
-				((y & 1) == 1 && (x & 1) == 1) )
+			if (((y & 1) == 0 && (x & 1) == 0) ||
+				((y & 1) == 1 && (x & 1) == 1))
 				//x와 y가 둘다 짝수일 
 				m_BitMapMgr_Main->GetImage(IMG::IMG_BG_WHITE)->DrawBG(hdc, x * BOARD_SQUARE_SIZE, y * BOARD_SQUARE_SIZE, BOARD_SQUARE_SIZE, BOARD_SQUARE_SIZE);
 			else
@@ -193,6 +135,47 @@ void GameManager::SquareDraw(HDC hdc)
 		}
 	}
 }
+
+
+
+void GameManager::WinCheck(HDC hdc)
+{
+	if (m_GameEndCheck)
+	{
+		std::wstring str;
+		HFONT font;
+
+		//검은 이미지 투명도 높여서 게임이 끝남을 알림
+		m_BitMapMgr_Main->GetImage(IMG::IMG_BG_BLACK)->DrawTransparent(hdc, 0, 0, BOARD_SQUARE_SIZE * BOARD_X, BOARD_SQUARE_SIZE * BOARD_Y);
+
+		//글자 크기 변경
+		font = CreateFont(VICTORY_FONTSIZE, 0, 0, 0, FW_BOLD, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"Times New Roman");
+		SelectObject(hdc, font);
+		SetBkMode(hdc, TRANSPARENT); //글자 뒷배경 투명화
+		//SetBkColor(hdc, RGB(0, 0, 0));
+		SetTextColor(hdc, RGB(255, 255, 255)); //글자 색 변경
+
+		switch (m_PlayerTurn)
+		{
+		case CAMP_BLACK:
+			str = L"B L A C K";
+			break;
+		case CAMP_WHITE:
+			str = L"W H I T E";
+			break;
+		}
+
+		str += L"  W I N";
+		TextOut(hdc, RECT_EXIT_L - 32, MAIN_H / 3 + 10, str.c_str(), str.length());
+
+		font = CreateFont(END_FONTSIZE, 0, 0, 0, FW_BOLD, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"Times New Roman");
+		SelectObject(hdc, font);
+		str = L"E n d";
+		DrawText(hdc, str.c_str(), str.length(), &exitRect, DT_CENTER | DT_WORDBREAK);
+	}
+}
+
+
 
 
 void GameManager::SubDraw(HDC hdc)

@@ -3,9 +3,6 @@
 
 #define GMMgr GameManager::Get_Instance()
 
-Rook::Rook()
-{
-}
 
 Rook::Rook(Piece _piece, IMG _Index) : Piece(_piece)
 {
@@ -20,17 +17,6 @@ Rook::Rook(BitMapManager& BitMapMgr_Main, const CAMP _campColor, const IMG _Inde
 Rook::~Rook()
 {
 }
-
-//bool Rook::ColliderCheck_Piece(POINT point)
-//{
-//	return false;
-//}
-//
-//bool Rook::ColliderCheck_CanMove(POINT point)
-//{
-//	return false;
-//}
-
 
 
 void Rook::SetMoveableRect()

@@ -48,8 +48,9 @@ private:
 	HWND m_HWND_Sub_Promotion;
 	BitMapManager* m_BitMapMgr_Main;
 	BitMapManager* m_BitMapMgr_Sub;
-	BitMapManager* m_BitMapMgr_Sub_Promotion;
+	//BitMapManager* m_BitMapMgr_Sub_Promotion;
 
+	//SubPromotion 등록하기 위해
 	int nCmdShow;
 	LPCTSTR IpszClassSub_Promotion;
 	HINSTANCE hInstance;
@@ -63,8 +64,6 @@ private:
 	RECT exitRect; //메인
 
 	GameManager();
-	void MainMenu();
-	void Game();
 
 	//보드판 그리기
 	void BoardDraw(HDC hdc);
@@ -104,5 +103,4 @@ public:
 	void Set_PlayerTurn() { m_PlayerTurn = (m_PlayerTurn == CAMP_WHITE) ? CAMP_BLACK : CAMP_WHITE; }
 	void Set_GameStopCheck(bool check) { m_GameStopCheck = check; }
 	void Set_GameEndCheck(bool check) { m_GameEndCheck = check; }
-	//void Set_Map(CAMP(*_Map())[BOARD_Y]) { (*m_Map)[BOARD_Y] = (*_Map())[BOARD_Y]; }
 };

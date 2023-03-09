@@ -3,9 +3,6 @@
 
 #define GMMgr GameManager::Get_Instance()
 
-Knight::Knight()
-{
-}
 
 Knight::Knight(Piece _piece, IMG _Index) : Piece(_piece)
 {
@@ -20,16 +17,6 @@ Knight::Knight(BitMapManager& BitMapMgr_Main, const CAMP _campColor, const IMG _
 Knight::~Knight()
 {
 }
-
-//bool Knight::ColliderCheck_Piece(POINT point)
-//{
-//	return false;
-//}
-//
-//bool Knight::ColliderCheck_CanMove(POINT point)
-//{
-//	return false;
-//}
 
 
 void Knight::SetMoveableRect()
@@ -46,7 +33,9 @@ void Knight::SetMoveableRect()
 	Set_Rect(map, -2, 1, KNIGHT_LINE_COUNT);
 	//4.º≠∫œ ¿Ãµø
 	Set_Rect(map, -2, -1, KNIGHT_LINE_COUNT);
+
 	//------------------------------------------
+	
 	//5.∫œµø ¿Ãµø
 	Set_Rect(map, 1, -2, KNIGHT_LINE_COUNT);
 	//6.∫œº≠ ¿Ãµø

@@ -32,102 +32,6 @@ void PiecesManager::Init(BitMapManager* BitMapMgr_Main)
 		m_promotionRect[i].right = PROMOTION_RECT_R;
 		m_promotionRect[i].bottom = PROMOTION_RECT_B + PROMOTION_RECT_GAP * i;
 	}
-	
-	
-	/*int black_PieceCount = 0;
-	int white_PieceCount = 0;
-
-	MakePieces<Pawn>(BitMapMgr_Main, IMG_BLACK_PAWN, FIRST_PAWN_X, BLACK_PAWN_Y, PIECES_PAWN);
-	//폰
-	/*for (auto _piece : )
-	{
-		switch (_piece->Get_CampColor())
-		{
-		case CAMP_BLACK:
-			m_Pieces[CAMP_BLACK][black_PieceCount++] = _piece;
-			break;
-		case CAMP_WHITE:
-			m_Pieces[CAMP_WHITE][white_PieceCount++] = _piece;
-			break;
-		}
-	}*/
-
-	//룩
-	//for (auto _piece : MakePieces<Pawn>(BitMapMgr_Main, IMG_BLACK_ROOK, FIRST_ROOK_X, BLACK_OTHER_Y, PIECES_ROOK))
-	//{
-	//	switch (_piece->Get_CampColor())
-	//	{
-	//	case CAMP_BLACK:
-	//		m_Pieces[CAMP_BLACK][black_PieceCount++] = _piece;
-	//		break;
-	//	case CAMP_WHITE:
-	//		m_Pieces[CAMP_WHITE][white_PieceCount++] = _piece;
-	//		break;
-	//	}
-	//}
-
-	////나이트
-	//for (auto _piece : MakePieces<Knight>(BitMapMgr_Main, IMG_BLACK_KNIGHT, FIRST_KNIGHT_X, BLACK_OTHER_Y, PIECES_KNIGHT))
-	//{
-	//	switch (_piece->Get_CampColor())
-	//	{
-	//	case CAMP_BLACK:
-	//		m_Pieces[CAMP_BLACK][black_PieceCount++] = _piece;
-	//		break;
-	//	case CAMP_WHITE:
-	//		m_Pieces[CAMP_WHITE][white_PieceCount++] = _piece;
-	//		break;
-	//	}
-	//}
-
-	////비숍
-	//for (auto _piece : MakePieces<Bishop>(BitMapMgr_Main, IMG_BLACK_BISHOP, FIRST_BISHOP_X, BLACK_OTHER_Y, PIECES_BISHOP))
-	//{
-	//	switch (_piece->Get_CampColor())
-	//	{
-	//	case CAMP_BLACK:
-	//		m_Pieces[CAMP_BLACK][black_PieceCount++] = _piece;
-	//		break;
-	//	case CAMP_WHITE:
-	//		m_Pieces[CAMP_WHITE][white_PieceCount++] = _piece;
-	//		break;
-	//	}
-	//}
-
-	////퀸
-	//for (auto _piece : MakePieces<Queen>(BitMapMgr_Main, IMG_BLACK_QUEEN, QUEEN_X, BLACK_OTHER_Y, PIECES_QUEEN))
-	//{
-	//	switch (_piece->Get_CampColor())
-	//	{
-	//	case CAMP_BLACK:
-	//		m_Pieces[CAMP_BLACK][black_PieceCount++] = _piece;
-	//		break;
-	//	case CAMP_WHITE:
-	//		m_Pieces[CAMP_WHITE][white_PieceCount++] = _piece;
-	//		break;
-	//	}
-	//}
-
-
-	////킹
-	//for (auto _piece : MakePieces<Pawn>(BitMapMgr_Main, IMG_BLACK_KING, KING_X, BLACK_OTHER_Y, PIECES_KING))
-	//{
-	//	switch (_piece->Get_CampColor())
-	//	{
-	//	case CAMP_BLACK:
-	//		m_Pieces[CAMP_BLACK][black_PieceCount++] = _piece;
-	//		break;
-	//	case CAMP_WHITE:
-	//		m_Pieces[CAMP_WHITE][white_PieceCount++] = _piece;
-	//		break;
-	//	}
-	//}*/
-
-	//m_Pieces[CAMP_BLACK][black_PieceCount++] = new Knight(*BitMapMgr_Main, CAMP_BLACK, IMG_BLACK_KNIGHT, FIRST_KNIGHT_X, BLACK_OTHER_Y);
-	//m_Pieces[CAMP_BLACK][black_PieceCount++] = new Bishop(*BitMapMgr_Main, CAMP_BLACK, IMG_BLACK_BISHOP, FIRST_BISHOP_X, BLACK_OTHER_Y);
-	//m_Pieces[CAMP_BLACK][black_PieceCount++] = new Queen(*BitMapMgr_Main, CAMP_BLACK, IMG_BLACK_QUEEN, QUEEN_X, BLACK_OTHER_Y);
-	//m_Pieces[CAMP_BLACK][black_PieceCount++] = new King(*BitMapMgr_Main, CAMP_BLACK, IMG_BLACK_KING, KING_X, BLACK_OTHER_Y);
-	
 }
 
 
@@ -239,6 +143,7 @@ bool PiecesManager::ColliderCheck(POINT point)
 		{
 			pieceTmp = m_Pieces[campColor][piece];
 
+			//기물 클릭
 			if (m_MoveTurn == false)
 			{//이동 가능 이미지 콜라이더 rect 적용(말 클릭 안 했을 시 이동 가능해버리면 안되므로)
 				if (pieceTmp->ColliderCheck_Piece(point))
@@ -248,13 +153,13 @@ bool PiecesManager::ColliderCheck(POINT point)
 				}
 			}
 			else
-			{
+			{//기물의 moveable 클릭
 				if (pieceTmp->ColliderCheck_Moveable(point))
 				{//이동 movealbe 클릭
 					m_MoveTurn = false;
 
 					//적 기물을 먹는 경우
-					PieceErase(campColor, piece);
+					PieceErase(campColor, piece); //현재 움직이는 말의 정보
 
 					//XY 좌표와 Rect 이동
 					pieceTmp->Move();
@@ -266,7 +171,7 @@ bool PiecesManager::ColliderCheck(POINT point)
 						//승진중에 입력 막기
 						GMMgr->Set_GameStopCheck(true);
 						m_ErasePawn = pieceTmp;
-						//GMMgr->SubPromotion();
+						GMMgr->Set_PlayerTurn();
 						InvalidateRect(GMMgr->Get_HWND_Sub_Promotion(), NULL, true);
 					}
 
@@ -338,7 +243,6 @@ bool PiecesManager::ColliderCheck_SubPromotion(POINT point)
 						break;
 					case PROMOTION_KNIGHT_T:
 						newPiece = new Knight(*m_ErasePawn, IMG(imgColor + PROMOTION_KNIGHT));
-						//*piece = new Knight(*GMMgr->Get_BitMapMain(), CAMP_BLACK, IMG_BLACK_BISHOP, _x, _y);
 						break;
 					case PROMOTION_BISHOP_T:
 						newPiece = new Bishop(*m_ErasePawn, IMG(imgColor + PROMOTION_BISHOP));
@@ -395,42 +299,74 @@ void PiecesManager::DrawPawnPromotion(HDC hdc_SubPromotion)
 }
 
 void PiecesManager::PieceErase(int _campColor, int _piece)
-{//TODO::적 기물을 먹는 경우
+{//적 기물을 먹는 경우 //현재 움직이는 말의 정보
 
 	CAMP(*map)[BOARD_Y] = GMMgr->Get_Map();
-	IMG IMG_PieceType;
 
 	//특정 위치로 이동할 기물
-	RECT moveRect = m_Pieces[_campColor][_piece]->Get_moveRect();
-	CAMP moveCampColor = m_Pieces[_campColor][_piece]->Get_CampColor();
+	Piece* movePiece = m_Pieces[_campColor][_piece];
+	RECT moveRect = movePiece->Get_moveRect();
+	//CAMP moveCampColor = movePiece->Get_CampColor();
 
 	//moveRect의 Piece가 이동할 위치에 있는 기물
-	RECT bitmapRect;
-	CAMP bitmapCampColor = map[moveRect.left / IMG_BG_SIZE][moveRect.top / IMG_BG_SIZE];
+	RECT delete_BitmapRect;
+	CAMP delete_bitmapCampColor = map[moveRect.left / IMG_BG_SIZE][moveRect.top / IMG_BG_SIZE];
+	//먹히는 기물의 종류 체크 위해
+	IMG delete_IMG_PieceType;
+
+	//앙파상용 : moveRect의 Piece가 이동할 위치에 있는 기물
+	//IMG movePieceType = movePiece->Get_PieceType();
 
 
-	if (bitmapCampColor != CAMP_NONE &&
-		bitmapCampColor != moveCampColor)
+	if ((delete_bitmapCampColor != CAMP_NONE) &&
+		(delete_bitmapCampColor != movePiece->Get_CampColor()))
 	{
 		//m_Pieces 돌리면서 겹치는 것이 있는지 확인
 		for (int campColor = 0; campColor < CAMP_COUNT; campColor++)
 		{
 			for (int piece = 0; piece < CAMP_PIECE_COUNT; piece++)
 			{
-				bitmapCampColor = m_Pieces[campColor][piece]->Get_CampColor();
-				bitmapRect = m_Pieces[campColor][piece]->Get_BitMapRect();
+				//moveCampColor = m_Pieces[campColor][piece]->Get_CampColor();
+				delete_BitmapRect = m_Pieces[campColor][piece]->Get_BitMapRect();
 
-				if ((bitmapRect.left == moveRect.left) &&
-					(bitmapRect.top == moveRect.top))
+				//폰과 킹을 체크 위해
+				//delete_IMG_PieceType = m_Pieces[campColor][piece]->Get_PieceType();
+
+
+				////앙파상
+				////움직이고 있는 PAWN
+				//switch (movePieceType)
+				//{
+				//case IMG_BLACK_PAWN :
+				//	//TODO::목표 상대가 지난턴 2칸 움직인 폰인지 확인(2칸!)
+				//	if (delete_IMG_PieceType == IMG_WHITE_PAWN)
+				//	{
+				//		m_Pieces[campColor][piece].
+				//	}
+				//	break;
+				//case IMG_WHITE_PAWN:
+				//	//TODO::목표 상대가 지난턴 2칸 움직인 폰인지 확인(2칸!)
+				//	if (delete_IMG_PieceType == IMG_BLACK_PAWN)
+				//	{
+				//	}
+				//	break;
+				//default:
+				//	break;
+				//}
+
+
+				//일반적인 movableRect와 삭제될 말이 겹치는 경우
+				if ((delete_BitmapRect.left == moveRect.left) && (delete_BitmapRect.top == moveRect.top))
 				{
 					//GMMgr->Set_Map(CAMP_NONE, m_iX, m_iY);
+					//기물을 시야에서 지우고 비활성화
 					m_Pieces[campColor][piece]->Set_Inactive();
 
 					//게임 승리 체크
 					//킹인지 체크 위해
-					IMG_PieceType = m_Pieces[campColor][piece]->Get_PieceType();
+					delete_IMG_PieceType = m_Pieces[campColor][piece]->Get_PieceType();
 
-					if ((IMG_PieceType == IMG_BLACK_KING) || (IMG_PieceType == IMG_WHITE_KING))
+					if ((delete_IMG_PieceType == IMG_BLACK_KING) || (delete_IMG_PieceType == IMG_WHITE_KING))
 					{
 						GMMgr->Set_GameStopCheck(true);
 						GMMgr->Set_GameEndCheck(true);
@@ -452,7 +388,6 @@ void PiecesManager::DrawPices(HDC hdc)
 		for (int piece = 0; piece < CAMP_PIECE_COUNT; piece++)
 		{
 			m_Pieces[campColor][piece]->Draw(hdc);
-			//m_Pieces[campColor][piece]->CanMoveDraw(hdc);
 		}
 	}
 }

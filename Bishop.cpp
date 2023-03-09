@@ -3,9 +3,6 @@
 
 #define GMMgr GameManager::Get_Instance()
 
-Bishop::Bishop()
-{
-}
 
 Bishop::Bishop(Piece _piece, IMG _Index) : Piece(_piece)
 {
@@ -20,16 +17,6 @@ Bishop::Bishop(BitMapManager& BitMapMgr_Main, const CAMP _campColor, const IMG _
 Bishop::~Bishop()
 {
 }
-
-//bool Bishop::ColliderCheck_Piece(POINT point)
-//{
-//	return false;
-//}
-//
-//bool Bishop::ColliderCheck_CanMove(POINT point)
-//{
-//	return false;
-//}
 
 
 void Bishop::SetMoveableRect()

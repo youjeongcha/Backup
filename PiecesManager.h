@@ -146,7 +146,5 @@ public:
 
 	//콜라이더 체크 후, 움직임 가능한 칸 보여주기
 	void DrawMoveable(HDC hdc);
-
-	//void Set_Piece_InativeXY(int _campColor, int _piece) { m_Pieces[_campColor][_piece]->Set_XY(-1, -1); }
 };
 

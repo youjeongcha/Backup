@@ -23,6 +23,16 @@ enum CAMP
 	CAMP_PIECE_COUNT = 16,
 };
 
+//enum MOVESTATE
+//{
+//	CAN_FIRSTMOVE, //해당 말이 첫번째 움직임을 했는지 파악(폰, 룩(캐슬링))
+//	ENPASSANT, //앙파상을 진행할 수 있는(먹힐수 있는) 상태
+//	//KING_CASTLING, //캐슬링을 진행할 수 있는(킹의 상태)
+//	NONE,
+//
+//	//FISTMOVE이후 기물의 종류에 따라 ENPASSANT이나 KING_CATLEING을 거치고 모든 기물들이 NONE에 도달한다.
+//};
+
 class Piece
 {
 private:
@@ -39,13 +49,10 @@ protected: //private 으로 하면 자식에서 접근 불가 > protected
 	IMG m_Piece; //해당 기물의 enum;
 	CAMP m_CampColor; //해당 기물의 진영
 	bool firstMoveCheck; //첫번째 이동인지 확인
+	//MOVESTATE m_MoveState; //이동 허용 상태 확인, 첫번째 이동, 앙파상, 캐슬링, 등
 
 public:
-	Piece();
-	Piece(const Piece& piece);//& piece);
-	//Piece(BitMap* _pBitMap, BitMap* _pBitMap_Move, bool _moveCheck,
-	//	RECT _BitMapRect, int _iX, int _iY, IMG _Piece, CAMP _CampColor);
-	//Piece(BitMapManager& BitMapMgr_Main, const CAMP _campColor, const IMG _Index, const int _X, const int _Y);
+	Piece(const Piece& piece);
 	Piece(BitMapManager& BitMapMgr_Main, CAMP _campColor, IMG _Index, int _X, int _Y);
 	~Piece();
 
@@ -54,19 +61,15 @@ public:
 	bool ColliderCheck_Piece(POINT point);
 	//이동 가능한 칸을 나타낸 이미지를 클릭한 경우
 	bool ColliderCheck_Moveable(POINT point);
-	//bool ColliderCheck_Move(POINT point);
-	//virtual bool ColliderCheck_Piece(POINT point);
-	//virtual bool ColliderCheck_CanMove(POINT point);
+
 	//이동 가능한 칸들을 그린다.
-	//virtual void DrawMoveable(HDC hdc);
 	virtual void SetMoveableRect();
 	void DrawMoveable(HDC hdc);
 	//기물의 실제 이동
 	void Move();
 	void Draw(HDC hdc);
-	//void DrawMovealbe(HDC hdc);
 
-	//void Set_Rect(RECT _rect);
+
 	void Set_XY(int _X, int _Y) { m_iX = _X; m_iY = _Y; }
 	void Set_Inactive() {
 		m_iX = -1; m_iY = -1; //화면상 뜨지 않도록
@@ -82,6 +85,5 @@ public:
 	IMG Get_PieceType() { return m_Piece; } //기물의 종류를 판단하기 위해
 	int Get_iX() { return m_iX; }
 	int Get_iY() { return m_iY; }
-	//void Set_MoveCheck(bool _moveCheck) { m_moveCheck = _moveCheck; }
 };
 
