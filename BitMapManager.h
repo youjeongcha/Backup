@@ -61,6 +61,8 @@ class BitMapManager
 private:
 	BitMap* m_parrBitMap; //BitMap은 하나만 있어도 되기때문에 객체를 생성하지 않고 *로 사용한다. 배열 사용.
 	static BitMapManager* m_hThis;
+	BitMapManager();
+
 public:
 	static BitMapManager* GetInstance()
 	{
@@ -68,7 +70,6 @@ public:
 			m_hThis = new BitMapManager;
 		return m_hThis;
 	}
-	BitMapManager();
 	~BitMapManager();
 
 	BitMap* GetImage(IMG index) { return &m_parrBitMap[index]; }
