@@ -18,9 +18,9 @@ HINSTANCE g_hInst;                                // 현재 인스턴스입니�
 LPCTSTR IpszClassMain = TEXT("Chess");
 LPCTSTR IpszClassSub = TEXT("Turn");
 LPCTSTR IpszClassSub_Promotion = TEXT("Promotion");
-BitMapManager BitMapMgr_Main;
-BitMapManager BitMapMgr_Sub;
-BitMapManager BitMapMgr_Sub_Promotion;
+//BitMapManager BitMapMgr_Main;
+//BitMapManager BitMapMgr_Sub;
+//BitMapManager BitMapMgr_Sub_Promotion;
 
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -69,7 +69,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     //---------------------------------------
 
     //메인 and 서브 창 초기화는 여기서
-    GMMgr->Init(&BitMapMgr_Main, &BitMapMgr_Sub, &BitMapMgr_Sub_Promotion, hWnd_Main, hWnd_Sub, nCmdShow, IpszClassSub_Promotion, hInstance);
+    GMMgr->Init(hWnd_Main, hWnd_Sub, nCmdShow, IpszClassSub_Promotion, hInstance);
 
     ShowWindow(hWnd_Main, nCmdShow);
     ShowWindow(hWnd_Sub, nCmdShow);
@@ -109,7 +109,6 @@ LRESULT CALLBACK WndProc_Main(HWND hWnd_Main, UINT message, WPARAM wParam, LPARA
             {
                 //서브 일정 단계가 지나고 출력하도록(Pawn 승진)
                 GMMgr->SubPromotion();
-                //InvalidateRect(GMMgr->Get_HWND_Sub_Promotion(), NULL, true);
             }
         }
 

@@ -1,6 +1,6 @@
 #include "BitMapManager.h"
 
-//BitMapManager* BitMapManager::m_hThis = NULL;
+BitMapManager* BitMapManager::m_hThis = NULL;
 
 BitMapManager::BitMapManager()
 {

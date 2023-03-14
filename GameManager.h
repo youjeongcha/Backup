@@ -5,6 +5,11 @@
 #include <string>
 #include <algorithm>
 
+//★ 여기에 기록해두고 중복 선언 없이 사용
+#define GMMgr GameManager::Get_Instance()
+#define PiecesMgr PiecesManager::Get_Instance()
+#define BitMapMgr BitMapManager::GetInstance()
+
 enum BOARD
 {
 	BOARD_X = 8,
@@ -46,8 +51,9 @@ private:
 	HWND m_HWND_Main;
 	HWND m_HWND_Sub;
 	HWND m_HWND_Sub_Promotion;
-	BitMapManager* m_BitMapMgr_Main;
-	BitMapManager* m_BitMapMgr_Sub;
+	//★ BitMapManager로써의 의미가 퇴색되었다. 싱글톤으로 만들어서 사용하는 것을 권장. main이나 sub나 인자를 넣어서(?) 해당 BitMapManager를 사용하도록
+	//BitMapManager* m_BitMapMgr_Main;
+	//BitMapManager* m_BitMapMgr_Sub;
 	//BitMapManager* m_BitMapMgr_Sub_Promotion;
 
 	//SubPromotion 등록하기 위해
@@ -79,7 +85,8 @@ public:
 		return m_pInstance;
 	}
 
-	void Init(BitMapManager* BitMapMgr_Main, BitMapManager* BitMapMgr_Sub, BitMapManager* BitMapMgr_Sub_Promtion, HWND hWnd_Main, HWND hWnd_Sub, int nCmdShow, LPCTSTR IpszClassSub_Promotion, HINSTANCE hInstance);
+	//void Init(BitMapManager* BitMapMgr_Main, BitMapManager* BitMapMgr_Sub, BitMapManager* BitMapMgr_Sub_Promtion, HWND hWnd_Main, HWND hWnd_Sub, int nCmdShow, LPCTSTR IpszClassSub_Promotion, HINSTANCE hInstance);
+	void Init(HWND hWnd_Main, HWND hWnd_Sub, int nCmdShow, LPCTSTR IpszClassSub_Promotion, HINSTANCE hInstance);
 	bool ColliderCheck(POINT point);
 	bool ColliderCheck_SubPromotion(POINT point);
 	void Draw(HDC hdc, HINSTANCE g_hInst);
@@ -93,7 +100,7 @@ public:
 	HWND Get_HWND_Sub_Promotion() { return m_HWND_Sub_Promotion; }
 
 	CAMP(*Get_Map())[BOARD_Y] { return m_Map; }
-	BitMapManager* Get_BitMapMain() { return m_BitMapMgr_Main; }
+	//BitMapManager* Get_BitMapMain() { return m_BitMapMgr_Main; }
 	CAMP Get_PlayerTurn() { return m_PlayerTurn; }
 	bool Get_GameStopCheck() { return m_GameStopCheck; }
 	bool Get_GameEndCheck() { return m_GameEndCheck; }

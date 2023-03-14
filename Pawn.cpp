@@ -1,8 +1,13 @@
 #include "Pawn.h"
 #include "GameManager.h"
 
-#define GMMgr GameManager::Get_Instance()
 
+Pawn::Pawn(Piece _piece, IMG _Index) : Piece(_piece)
+{
+	//승진을 위해서 이 멤버 이니셜라이저는 사용하지 않는다.
+	/*m_Piece = _Index;
+	m_pBitMap = GMMgr->Get_BitMapMain()->GetImage(_Index);*/
+}
 
 Pawn::Pawn(BitMapManager& BitMapMgr_Main, const CAMP _campColor, const IMG _Index, const int _X, const int _Y) : Piece(BitMapMgr_Main, _campColor, _Index, _X, _Y)
 {
@@ -76,8 +81,8 @@ void Pawn::SetMoveableRect()
 		}
 	}
 
-	////+앙파상 기능
-	//for (int i = ENPASSANT_LEFT; i <= PAWN::ENPASSANT_CHECK; i++)
+	////☆+앙파상 기능//삭제를 위해선 갈아 엎어야 해서 삭제 전까지(이동)만 구현
+	//for (int i = ENPASSANT_LEFT; i <= PAWN::ENPASSANT_RIGHT; i++)
 	//{
 	//	RECT TmpRect;
 

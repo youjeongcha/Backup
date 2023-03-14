@@ -1,9 +1,10 @@
 #include "Piece.h"
 #include "GameManager.h"
-#include "PiecesManager.h"
-
-#define GMMgr GameManager::Get_Instance()
-#define PiecesMgr PiecesManager::Get_Instance()
+//#include "PiecesManager.h"
+//
+//#define GMMgr GameManager::Get_Instance()
+//#define PiecesMgr PiecesManager::Get_Instance()
+//★GameManager.h에다 선언해두고 사용한다. cpp마다 중복 선언할 필요 없이
 
 
 Piece::Piece(const Piece& piece)
@@ -61,8 +62,8 @@ Piece::~Piece()
 bool Piece::ColliderCheck_Piece(POINT point)
 {
 	//검은, 흰 말을 클릭했는지 and 해당 말이 움직일 턴이 맞는지(해당 순서에만 말 선택 가능)
-	if (PtInRect(&m_BitMapRect, point) &&
-		(GMMgr->Get_PlayerTurn() == m_CampColor))
+	//★턴 확인은 get으로 PieceMgr에서 반복문 들어오기 전에 확인
+	if (PtInRect(&m_BitMapRect, point))//) &&(GMMgr->Get_PlayerTurn() == m_CampColor))
 	{
 		//해당 기물의 이동 방향 체크 후. 가로막는 것 없으면 이동.
 		m_moveCheck = true; //이동 표시 체크 요청이 들어왔는지
@@ -103,9 +104,10 @@ bool Piece::ColliderCheck_Moveable(POINT point)
 	return false;
 }
 
-
+//★peice SetMoveableRect는 가상함수로 사용한다.
 void Piece::SetMoveableRect()
 {
+
 }
 
 void Piece::DrawMoveable(HDC hdc)

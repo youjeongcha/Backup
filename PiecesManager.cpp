@@ -1,10 +1,7 @@
 #include "PiecesManager.h"
 #include "GameManager.h"
 
-#define GMMgr GameManager::Get_Instance()
-
 PiecesManager* PiecesManager::m_pInstance = NULL;
-
 
 
 PiecesManager::PiecesManager()
@@ -23,7 +20,7 @@ PiecesManager::~PiecesManager()
 
 void PiecesManager::Init(BitMapManager* BitMapMgr_Main)
 {
-	InitLoaction(BitMapMgr_Main);
+	InitLocation(BitMapMgr_Main);
 
 	for (int i = 0; i < PROMOTION_COUNT; i++)
 	{
@@ -36,105 +33,59 @@ void PiecesManager::Init(BitMapManager* BitMapMgr_Main)
 
 
 
-void PiecesManager::InitLoaction(BitMapManager* BitMapMgr_Main)
+void PiecesManager::InitLocation(BitMapManager* BitMapMgr_Main)
 {
-	//int black_Y = 1; //흑말 기준의 폰 시작 y index
-	//int next_Y; //흰말 검은말 대칭이라 y축 변경이 달라야 한다.
-	//int oneLinePieces = CAMP_PIECE_COUNT / 2; //한줄에 올 수 있는 말의 개수 8
-	//int halfLinePieces = oneLinePieces / 2; //한줄의 절반 말 개수 4
-	//int x_Symmetry = 7; //좌우 대칭 확인 위해 x축 대칭의 합
-	//int y_Pawn_Gap = 5; //흑백 말 Pawn의 y좌표 차이값
-	//int y_Pawn_Gap = 7; //흑백 말 Pawn 제외 y좌표 차이값
-	int pieceCount = 0;
+	int pieceCount;
 	IMG pieceIndex;
-	//Piece* tmpPiece;
-
-	//switch (campColor)
-	//{
-	//case CAMP_WHITE:
-	//	y = 1;
-	//	next_Y = -1;
-	//	break;
-	//case CAMP_BLACK:
-	//	y = 6;
-	//	next_Y = 1;
-	//	break;
-	//default:
-	//	break;
-	//}
+	int imgColor;
+	int colorPiece_Pawn_Y, colorPiece_Other_Y;
 
 	//폰이 있는 줄 > 다른 말의 줄 순서 초기화
 
-	//폰
-	for (int x = 0; x <= ONELINE_PIECES_COUNT; x++) //말의 개수이자 x축의 id number
+	for (int camp = CAMP_BLACK; camp <= CAMP_WHITE; camp++)
 	{
-		//tmpPiece = new Pawn(*BitMapMgr_Main, campColor, pieceIndex, x, y);
-		m_Pieces[CAMP_BLACK][pieceCount] = new Pawn(*BitMapMgr_Main, CAMP_BLACK, IMG_BLACK_PAWN, x, BLACK_PAWN_Y);
-		m_Pieces[CAMP_WHITE][pieceCount++] = new Pawn(*BitMapMgr_Main, CAMP_WHITE, IMG_WHITE_PAWN, x, WHITE_PAWN_Y);
-		//m_Pieces[campColor][pieceCount++]->Init(BitMapMgr_Main, campColor, pieceIndex, x, y);
+		pieceCount = 0;
+
+		switch (camp)
+		{
+		case CAMP_BLACK:
+			imgColor = IMG_BLACK_START;
+			colorPiece_Pawn_Y = BLACK_PAWN_Y;
+			colorPiece_Other_Y = BLACK_OTHER_Y;
+			break;
+		case CAMP_WHITE:
+			imgColor = IMG_WHITE_START;
+			colorPiece_Pawn_Y = WHITE_PAWN_Y;
+			colorPiece_Other_Y = WHITE_OTHER_Y;
+			break;
+		}
+
+		//폰*8 //★생성 개수와 딱 들어맞는 enum을 쓰기 바람
+		for (int x = 0; x < PIECES_PAWN; x++) //말의 개수이자 x축의 id number
+			m_Pieces[camp][pieceCount++] = new Pawn(*BitMapMgr_Main, (CAMP)camp, (IMG)(PAWN + imgColor), x, colorPiece_Pawn_Y);
+
+		//룩*2
+		m_Pieces[camp][pieceCount++] = new Rook(*BitMapMgr_Main, (CAMP)camp, (IMG)(ROOK + imgColor), FIRST_ROOK_X, colorPiece_Other_Y);
+		m_Pieces[camp][pieceCount++] = new Rook(*BitMapMgr_Main, (CAMP)camp, (IMG)(ROOK + imgColor), SECOND_ROOK_X, colorPiece_Other_Y);
+
+		//나이트*2
+		m_Pieces[camp][pieceCount++] = new Knight(*BitMapMgr_Main, (CAMP)camp, (IMG)(KNIGHT + imgColor), FIRST_KNIGHT_X, colorPiece_Other_Y);
+		m_Pieces[camp][pieceCount++] = new Knight(*BitMapMgr_Main, (CAMP)camp, (IMG)(KNIGHT + imgColor), SECOND_KNIGHT_X, colorPiece_Other_Y);
+
+		//비숍*2
+		m_Pieces[camp][pieceCount++] = new Bishop(*BitMapMgr_Main, (CAMP)camp, (IMG)(BISHOP + imgColor), FIRST_BISHOP_X, colorPiece_Other_Y);
+		m_Pieces[camp][pieceCount++] = new Bishop(*BitMapMgr_Main, (CAMP)camp, (IMG)(BISHOP + imgColor), SECOND_BISHOP_X, colorPiece_Other_Y);
+
+		//퀸
+		m_Pieces[camp][pieceCount++] = new Queen(*BitMapMgr_Main, (CAMP)camp, (IMG)(QUEEN + imgColor), QUEEN_X, colorPiece_Other_Y);
+
+		//킹
+		m_Pieces[camp][pieceCount++] = new King(*BitMapMgr_Main, (CAMP)camp, (IMG)(KING + imgColor), KING_X, colorPiece_Other_Y);
 	}
-
-	//y += next_Y;
-
-	//pieceIndex = (IMG)(pieceIndex + 1);
-	
-	//MakePiece<Rook>(BitMapMgr_Main, CAMP_BLACK, IMG_BLACK_ROOK, FIRST_ROOK_X, BLACK_OTHER_Y);
-
-
-	//룩*2
-	//for (int x = 0; x < PIECES_ROOK; x++) //말의 개수이자 x축의 id number
-	{
-		m_Pieces[CAMP_BLACK][pieceCount] = new Rook(*BitMapMgr_Main, CAMP_BLACK, IMG_BLACK_ROOK, FIRST_ROOK_X, BLACK_OTHER_Y);
-		m_Pieces[CAMP_WHITE][pieceCount++] = new Rook(*BitMapMgr_Main, CAMP_WHITE, IMG_WHITE_ROOK, FIRST_ROOK_X, WHITE_OTHER_Y);
-
-		m_Pieces[CAMP_BLACK][pieceCount] = new Rook(*BitMapMgr_Main, CAMP_BLACK, IMG_BLACK_ROOK, SECOND_ROOK_X, BLACK_OTHER_Y);
-		m_Pieces[CAMP_WHITE][pieceCount++] = new Rook(*BitMapMgr_Main, CAMP_WHITE, IMG_WHITE_ROOK, SECOND_ROOK_X, WHITE_OTHER_Y);
-	}
-
-	//나이트*2
-	m_Pieces[CAMP_BLACK][pieceCount] = new Knight(*BitMapMgr_Main, CAMP_BLACK, IMG_BLACK_KNIGHT, FIRST_KNIGHT_X, BLACK_OTHER_Y);
-	m_Pieces[CAMP_WHITE][pieceCount++] = new Knight(*BitMapMgr_Main, CAMP_WHITE, IMG_WHITE_KNIGHT, FIRST_KNIGHT_X, WHITE_OTHER_Y);
-
-
-	m_Pieces[CAMP_BLACK][pieceCount] = new Knight(*BitMapMgr_Main, CAMP_BLACK, IMG_BLACK_KNIGHT, SECOND_KNIGHT_X, BLACK_OTHER_Y);
-	m_Pieces[CAMP_WHITE][pieceCount++] = new Knight(*BitMapMgr_Main, CAMP_WHITE, IMG_WHITE_KNIGHT, SECOND_KNIGHT_X, WHITE_OTHER_Y);
-
-	//비숍*2
-	m_Pieces[CAMP_BLACK][pieceCount] = new Bishop(*BitMapMgr_Main, CAMP_BLACK, IMG_BLACK_BISHOP, FIRST_BISHOP_X, BLACK_OTHER_Y);
-	m_Pieces[CAMP_WHITE][pieceCount++] = new Bishop(*BitMapMgr_Main, CAMP_WHITE, IMG_WHITE_BISHOP, FIRST_BISHOP_X, WHITE_OTHER_Y);
-
-	m_Pieces[CAMP_BLACK][pieceCount] = new Bishop(*BitMapMgr_Main, CAMP_BLACK, IMG_BLACK_BISHOP, SECOND_BISHOP_X, BLACK_OTHER_Y);
-	m_Pieces[CAMP_WHITE][pieceCount++] = new Bishop(*BitMapMgr_Main, CAMP_WHITE, IMG_WHITE_BISHOP, SECOND_BISHOP_X, WHITE_OTHER_Y);
-
-	//퀸
-	m_Pieces[CAMP_BLACK][pieceCount] = new Queen(*BitMapMgr_Main, CAMP_BLACK, IMG_BLACK_QUEEN, QUEEN_X, BLACK_OTHER_Y);
-	m_Pieces[CAMP_WHITE][pieceCount++] = new Queen(*BitMapMgr_Main, CAMP_WHITE, IMG_WHITE_QUEEN, QUEEN_X, WHITE_OTHER_Y);
-
-	//킹
-	m_Pieces[CAMP_BLACK][pieceCount] = new King(*BitMapMgr_Main, CAMP_BLACK, IMG_BLACK_KING, KING_X, BLACK_OTHER_Y);
-	m_Pieces[CAMP_WHITE][pieceCount++] = new King(*BitMapMgr_Main, CAMP_WHITE, IMG_WHITE_KING, KING_X, WHITE_OTHER_Y);
-
-	//for (int x = 0; x < HALFLINE_PIECES_COUNT; x++)
-	//{
-	//	//대칭되는 같은 말 세팅(룩, 나이트, 비숍)
-	//	//m_Pieces[CAMP_BLACK][pieceCount] = new Rook(*BitMapMgr_Main, CAMP_BLACK, IMG_BLACK_ROOK, FIRST_ROOK_X, BLACK_OTHER_Y);
-	//	//Piece tmpPiece1 = Piece(*BitMapMgr_Main, campColor, pieceIndex, x, y);
-	//	//m_Pieces[campColor][pieceCount++] = &tmpPiece1;
-	//	//m_Pieces[campColor][pieceCount++]->Init(BitMapMgr_Main, campColor, pieceIndex, x, y);
-
-	//	if (x == PIECES::PIECES_QUEEN - 1) //퀸과 킹은 다르게 세팅 필요
-	//		pieceIndex = (IMG)(pieceIndex + 1);
-
-	//	//Piece tmpPiece2 = Piece(*BitMapMgr_Main, campColor, pieceIndex, x_Symmetry - x, y);
-	//	//m_Pieces[campColor][pieceCount++] = &tmpPiece2;
-	//	//m_Pieces[campColor][pieceCount++]->Init(BitMapMgr_Main, campColor, pieceIndex, x_Symmetry - x, y);
-
-	//	pieceIndex = (IMG)(pieceIndex + 1);
-	//}
 }
 
 bool PiecesManager::ColliderCheck(POINT point)
-{
+{//★반복문을 다 돌아야 하는 구조가 마음에 들지 않지만 지금와서 고치기에는 코드를 다 뜯어고쳐야 한다. 다음엔 주의 바람
 	Piece* pieceTmp;
 
 	for (int campColor = 0; campColor < CAMP_COUNT; campColor++)
@@ -146,7 +97,7 @@ bool PiecesManager::ColliderCheck(POINT point)
 			//기물 클릭
 			if (m_MoveTurn == false)
 			{//이동 가능 이미지 콜라이더 rect 적용(말 클릭 안 했을 시 이동 가능해버리면 안되므로)
-				if (pieceTmp->ColliderCheck_Piece(point))
+				if ((GMMgr->Get_PlayerTurn() == pieceTmp->Get_CampColor()) && (pieceTmp->ColliderCheck_Piece(point)))
 				{//기물 이동 클릭
 					m_MoveTurn = true;
 					return true;
@@ -158,14 +109,17 @@ bool PiecesManager::ColliderCheck(POINT point)
 				{//이동 movealbe 클릭
 					m_MoveTurn = false;
 
-					//적 기물을 먹는 경우
-					PieceErase(campColor, piece); //현재 움직이는 말의 정보
+					//적 기물을 먹는 경우 + 킹 게임오버 체크 //endCheck와 stopCheck를 조정한다.
+					MovingObject_Does_ErasePiece(campColor, piece); //현재 움직이는 말의 정보
 
-					//XY 좌표와 Rect 이동
+					//XY 좌표와 Rect 이동 //시각적으로 나타내주기 전 현재 이동중인 기물의 좌표를 이동
 					pieceTmp->Move();
 
+					//PieceErase()에서 게임 종료 확인 했음
+					if (GMMgr->Get_GameEndCheck())
+						return true;
 
-					//Pawn이 상대측 y축 끝까지 도달 > 승진 진행
+					//Pawn이 상대측 y축 끝까지 도달 > 승진 진행(킹을 잡은 경우 제외
 					if (PawnPromotionCheck(pieceTmp))
 					{
 						//승진중에 입력 막기
@@ -239,16 +193,16 @@ bool PiecesManager::ColliderCheck_SubPromotion(POINT point)
 					switch (m_promotionRect[i].top)
 					{
 					case PROMOTION_ROOK_T:
-						newPiece = new Rook(*m_ErasePawn, IMG(imgColor + PROMOTION_ROOK));
+						newPiece = new Rook(*m_ErasePawn, IMG(imgColor + ROOK));
 						break;
 					case PROMOTION_KNIGHT_T:
-						newPiece = new Knight(*m_ErasePawn, IMG(imgColor + PROMOTION_KNIGHT));
+						newPiece = new Knight(*m_ErasePawn, IMG(imgColor + KNIGHT));
 						break;
 					case PROMOTION_BISHOP_T:
-						newPiece = new Bishop(*m_ErasePawn, IMG(imgColor + PROMOTION_BISHOP));
+						newPiece = new Bishop(*m_ErasePawn, IMG(imgColor + BISHOP));
 						break;
 					case PROMOTION_QUEEN_T:
-						newPiece = new Queen(*m_ErasePawn, IMG(imgColor + PROMOTION_QUEEN));
+						newPiece = new Queen(*m_ErasePawn, IMG(imgColor + QUEEN));
 						break;
 					}
 
@@ -298,7 +252,7 @@ void PiecesManager::DrawPawnPromotion(HDC hdc_SubPromotion)
 	}
 }
 
-void PiecesManager::PieceErase(int _campColor, int _piece)
+void PiecesManager::MovingObject_Does_ErasePiece(int _campColor, int _piece)
 {//적 기물을 먹는 경우 //현재 움직이는 말의 정보
 
 	CAMP(*map)[BOARD_Y] = GMMgr->Get_Map();
@@ -386,9 +340,7 @@ void PiecesManager::DrawPices(HDC hdc)
 	for (int campColor = 0; campColor < CAMP_COUNT; campColor++)
 	{
 		for (int piece = 0; piece < CAMP_PIECE_COUNT; piece++)
-		{
 			m_Pieces[campColor][piece]->Draw(hdc);
-		}
 	}
 }
 

@@ -9,13 +9,17 @@
 #include "King.h"
 
 
-enum PROMOTION_PIECES
+enum PIECES
 {
-	PROMOTION_ROOK = 1,
-	PROMOTION_KNIGHT,
-	PROMOTION_BISHOP,
-	PROMOTION_QUEEN,
-	PROMOTION_COUNT = PROMOTION_QUEEN,
+	PAWN = 0,
+	//promotion~
+	ROOK = 1,
+	KNIGHT,
+	BISHOP,
+	QUEEN,
+	//~promotion
+	KING,
+	PROMOTION_COUNT = QUEEN,
 };
 
 enum PROMOTION_RECT
@@ -46,7 +50,7 @@ enum PIECES_COUNT
 	PIECES_KING = 1,
 };
 
-enum PIECE_XY_ID
+enum PIECE_XY_ID//m_Pieces의 기물 xy좌표
 {
 	BLACK_PAWN_Y = 1,
 	BLACK_OTHER_Y = 0,
@@ -79,50 +83,11 @@ private:
 	RECT m_promotionRect[PROMOTION_COUNT];
 	Piece* m_ErasePawn;
 
-	void InitLoaction(BitMapManager* BitMapMgr_Main);
-	void PieceErase(int _campColor, int _piece);
+	void InitLocation(BitMapManager* BitMapMgr_Main);
+	//인자는 현재 움직이는 말의 정보를 받아서 지울 대상을 찾는다.
+	void MovingObject_Does_ErasePiece(int _campColor, int _piece); //★명칭 변경(알아보기 쉬운 것으로)
 	bool PawnPromotionCheck(Piece* pieceTmp);
 	
-	template<typename TPieces, typename = std::enable_if<std::is_base_of<Piece, TPieces>::value>>
-	std::vector<Piece*> MakePieces(BitMapManager* _BitMapMgr, IMG _pieceID, int _X, int _Y, int _count)
-	//std::vector<std::vector<TPieces*>> MakePieces(BitMapManager* BitMapMgr, CAMP campColor, IMG pieceID, int x, int y)
-	//std::vector<std::vector<TPieces*>> MakePieces(BitMapManager* BitMapMgr)
-	{//종류별로 받기
-		std::vector<Piece*> piecesList;
-		//int pieceCount = 0;
-		//IMG pieceIndex;
-
-		switch (_pieceID)
-		{
-		case IMG_BLACK_PAWN: //폰
-			for (int x = 0; x < _count; x++) //말의 개수이자 x축의 id number
-			{
-				//검은 기물
-				piecesList.push_back(new TPieces(_BitMapMgr, CAMP_BLACK, _pieceID, _X + x, _Y));
-				//흰 기물
-				piecesList.push_back(new TPieces(_BitMapMgr, CAMP_WHITE, _pieceID + IMG_BLACK_COUNT, _X + x, _Y + 5)); //gap TODO
-			}
-			break;
-		case IMG_BLACK_QUEEN: //퀸
-		case IMG_BLACK_KING: //킹
-			//검은 기물
-			piecesList.push_back(new TPieces(_BitMapMgr, CAMP_BLACK, _pieceID, _X, _Y));
-			//흰 기물
-			piecesList.push_back(new TPieces(_BitMapMgr, CAMP_WHITE, _pieceID + IMG_BLACK_COUNT, _X, _Y + 7)); //gap TODO
-			break;
-		default: //룩, 나이트, 비숍
-			for (int x = 0; x < _count; x++) //말의 개수이자 x축의 id number
-			{
-				//검은 기물
-				piecesList.push_back(new TPieces(_BitMapMgr, CAMP_BLACK, _pieceID, abs(ONELINE_PIECES_COUNT * x - _X), _Y));
-				//흰 기물
-				piecesList.push_back(new TPieces(_BitMapMgr, CAMP_WHITE, _pieceID + IMG_BLACK_COUNT, abs(ONELINE_PIECES_COUNT * x - _X), _Y + 7)); //gap TODO
-			}
-			break;
-		}
-
-		return piecesList;
-	}
 
 	PiecesManager();
 

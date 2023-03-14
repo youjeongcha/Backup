@@ -25,7 +25,6 @@ enum IMG
 	IMG_WHITE_COUNT = 6,
 
 
-
 	IMG_COUNT = IMG_WHITE_COUNT + IMG_BLACK_COUNT,
 
 	//배경
@@ -61,14 +60,14 @@ class BitMapManager
 {
 private:
 	BitMap* m_parrBitMap; //BitMap은 하나만 있어도 되기때문에 객체를 생성하지 않고 *로 사용한다. 배열 사용.
-	//static BitMapManager* m_hThis;
+	static BitMapManager* m_hThis;
 public:
-	//static BitMapManager* GetInstance()
-	//{
-	//	if (m_hThis == NULL)
-	//		m_hThis = new BitMapManager;
-	//	return m_hThis;
-	//}
+	static BitMapManager* GetInstance()
+	{
+		if (NULL == m_hThis)
+			m_hThis = new BitMapManager;
+		return m_hThis;
+	}
 	BitMapManager();
 	~BitMapManager();
 

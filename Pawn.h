@@ -21,6 +21,7 @@ class Pawn : public Piece
 {
 private:
 public:
+	Pawn(Piece _piece, IMG _Index); //승진을 위해서 이 이니셜라이저는 사용하지 않는다.
 	Pawn(BitMapManager& BitMapMgr_Main, const CAMP _campColor, const IMG _Index, const int _X, const int _Y); //부모의 생성자를 상속.cpp참고
 	~Pawn();
 

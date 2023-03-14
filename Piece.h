@@ -35,12 +35,13 @@ enum CAMP
 
 class Piece
 {
-private:
 protected: //private 으로 하면 자식에서 접근 불가 > protected
 	BitMap* m_pBitMap;
 	BitMap* m_pBitMap_Move; //이동 표시
 	bool m_moveCheck; //이동 표시 체크 요청이 들어왔는지
+	//★BitmapRect 이동 표시는 Piece가 지니고 있을 것이 아니라 PieceMgr이 지니고 있어야 한다.
 	RECT m_BitMapRect;
+	//★m_BitMapRect_MoveList을 사용
 	RECT m_moveRect; //이동 시킬 rect 임시 저장용
 	std::vector<RECT> m_BitMapRect_MoveList;
 	int m_iX; //map에서의 인덱스
@@ -53,6 +54,7 @@ protected: //private 으로 하면 자식에서 접근 불가 > protected
 
 public:
 	Piece(const Piece& piece);
+	//★BitmapMgr을 이용하면 Mgr즉 싱글톤적인 성격이 없어져버린다.
 	Piece(BitMapManager& BitMapMgr_Main, CAMP _campColor, IMG _Index, int _X, int _Y);
 	~Piece();
 
@@ -63,7 +65,8 @@ public:
 	bool ColliderCheck_Moveable(POINT point);
 
 	//이동 가능한 칸들을 그린다.
-	virtual void SetMoveableRect();
+	//★순수 가상함수로 사용하는 것이 좋을 것
+	virtual void SetMoveableRect();// abstract;
 	void DrawMoveable(HDC hdc);
 	//기물의 실제 이동
 	void Move();
