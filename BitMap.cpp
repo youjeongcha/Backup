@@ -1,5 +1,7 @@
-#include "BitMap.h"
 #pragma comment(lib, "msimg32.lib")
+#include "GameManager.h"
+#include "BitMap.h"
+
 
 BitMap::BitMap()
 {
@@ -18,22 +20,19 @@ void BitMap::Init(HDC hdc, char* FileName)
 	m_Size.cy = BitMap_Info.bmHeight;
 }
 
+
+
 void BitMap::Draw(HDC hdc, int x, int y, int IMG_WSize, int IMG_HSize)
 {//카드 크기를 바꾸면 선택 영역인 이것도 같이 바꿔야 할 것
-	HBITMAP OldBitmap = (HBITMAP)SelectObject(MemDC, m_BitMap);
 	TransparentBlt(hdc, x , y, IMG_WSize, IMG_HSize, MemDC, 0, 0, m_Size.cx, m_Size.cy, RGB(255, 0, 255));
-	SelectObject(MemDC, OldBitmap);
 }
 
 void BitMap::DrawTransparent(HDC hdc, int x, int y, int IMG_WSize, int IMG_HSize)
 {
-	HBITMAP OldBitmap = (HBITMAP)SelectObject(MemDC, m_BitMap);
 	BLENDFUNCTION bf;
 	ZeroMemory(&bf, sizeof(bf));
 	bf.SourceConstantAlpha = 190; //원하는 값(0~255)
 	AlphaBlend(hdc, x, y, IMG_WSize, IMG_HSize, MemDC, 0, 0, m_Size.cx, m_Size.cy, bf);
-	//TransparentBlt(hdc, x, y, IMG_WSize, IMG_HSize, MemDC, 0, 0, m_Size.cx, m_Size.cy, RGB(255, 0, 255));
-	SelectObject(MemDC, OldBitmap);
 }
 
 void BitMap::DrawBG(HDC hdc, int x, int y, int IMG_WSize, int IMG_HSize)

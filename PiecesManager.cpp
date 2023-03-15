@@ -126,7 +126,7 @@ bool PiecesManager::ColliderCheck(POINT point)
 						GMMgr->Set_GameStopCheck(true);
 						m_ErasePawn = pieceTmp;
 						GMMgr->Set_PlayerTurn();
-						InvalidateRect(GMMgr->Get_HWND_Sub_Promotion(), NULL, true);
+						InvalidateRect(GMMgr->Get_HWND_Sub_Promotion(), NULL, false);
 					}
 
 					if (GMMgr->Get_GameStopCheck() == false)
@@ -137,7 +137,7 @@ bool PiecesManager::ColliderCheck(POINT point)
 
 
 					//sub Window 색상 변경 위해
-					InvalidateRect(GMMgr->Get_HWND_Sub(), NULL, true);
+					InvalidateRect(GMMgr->Get_HWND_Sub(), NULL, false);
 
 					return true;
 				}
@@ -193,16 +193,16 @@ bool PiecesManager::ColliderCheck_SubPromotion(POINT point)
 					switch (m_promotionRect[i].top)
 					{
 					case PROMOTION_ROOK_T:
-						newPiece = new Rook(*m_ErasePawn, IMG(imgColor + ROOK));
+						newPiece = new Rook(m_ErasePawn, IMG(imgColor + ROOK));
 						break;
 					case PROMOTION_KNIGHT_T:
-						newPiece = new Knight(*m_ErasePawn, IMG(imgColor + KNIGHT));
+						newPiece = new Knight(m_ErasePawn, IMG(imgColor + KNIGHT));
 						break;
 					case PROMOTION_BISHOP_T:
-						newPiece = new Bishop(*m_ErasePawn, IMG(imgColor + BISHOP));
+						newPiece = new Bishop(m_ErasePawn, IMG(imgColor + BISHOP));
 						break;
 					case PROMOTION_QUEEN_T:
-						newPiece = new Queen(*m_ErasePawn, IMG(imgColor + QUEEN));
+						newPiece = new Queen(m_ErasePawn, IMG(imgColor + QUEEN));
 						break;
 					}
 

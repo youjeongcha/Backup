@@ -1,5 +1,6 @@
 #pragma once
 #include <Windows.h>
+#include "framework.h"
 
 enum WindowXY
 {
@@ -32,11 +33,13 @@ private:
 	HBITMAP m_BitMap;
 	SIZE m_Size;
 
+
 public:
 	BitMap();
 	~BitMap();
 
 	void Init(HDC hdc, char* FileName);
+	HBITMAP MyCreateDIBSection(HDC hdc, int width, int height); //더블 버퍼링
 	void Draw(HDC hdc, int x, int y, int IMG_WSize, int IMG_HSize); //말 출력(배경색 삭제)
 	void DrawBG(HDC hdc, int x, int y, int IMG_WSize, int IMG_HSize); //배경 출력(원본그대로)
 	void DrawSubWin(HDC hdc, int x, int y, int IMG_WSize, int IMG_HSize); //Sub Win 출력(가로 2배 늘려서)

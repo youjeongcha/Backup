@@ -2,7 +2,7 @@
 #include "GameManager.h"
 
 
-Pawn::Pawn(Piece _piece, IMG _Index) : Piece(_piece)
+Pawn::Pawn(Piece* _piece, IMG _Index) : Piece(_piece)
 {
 	//승진을 위해서 이 멤버 이니셜라이저는 사용하지 않는다.
 	/*m_Piece = _Index;

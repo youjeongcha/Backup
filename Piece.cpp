@@ -7,7 +7,8 @@
 //★GameManager.h에다 선언해두고 사용한다. cpp마다 중복 선언할 필요 없이
 
 
-Piece::Piece(const Piece& piece)
+Piece::Piece(Piece* piece)
+//Piece::Piece(Piece* piece)
 {
 	m_moveCheck = false;
 
@@ -22,6 +23,18 @@ Piece::Piece(const Piece& piece)
 	move_iY = piece.move_iY; //BW 별 이동 방향 저장
 	m_Piece = piece.m_Piece; //해당 기물의 enum;
 	m_CampColor = piece.m_CampColor; //해당 기물의 진영
+
+	//m_pBitMap = piece.m_pBitMap;
+	m_pBitMap_Move = piece->m_pBitMap_Move; //이동 표시
+	m_moveCheck = piece->m_moveCheck; //이동 표시 체크 요청이 들어왔는지
+	m_BitMapRect = piece->m_BitMapRect;
+	//m_moveRect; //이동 시킬 rect 임시 저장용
+	m_BitMapRect_MoveList = piece->m_BitMapRect_MoveList;
+	m_iX = piece->m_iX; //map에서의 인덱스
+	m_iY = piece->m_iY;
+	move_iY = piece->move_iY; //BW 별 이동 방향 저장
+	m_Piece = piece->m_Piece; //해당 기물의 enum;
+	m_CampColor = piece->m_CampColor; //해당 기물의 진영
 }
 
 Piece::Piece(BitMapManager& BitMapMgr_Main, CAMP _campColor, IMG _Index, int _X, int _Y)
@@ -105,10 +118,10 @@ bool Piece::ColliderCheck_Moveable(POINT point)
 }
 
 //★peice SetMoveableRect는 가상함수로 사용한다.
-void Piece::SetMoveableRect()
-{
-
-}
+//void Piece::SetMoveableRect()
+//{
+//
+//}
 
 void Piece::DrawMoveable(HDC hdc)
 {	//m_BitMapRect_MoveList에 미리 넣어둔 이미지 출력하기

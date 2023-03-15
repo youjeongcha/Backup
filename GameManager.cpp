@@ -1,5 +1,6 @@
 #include "GameManager.h"
 //★게임 종료는 GMMgr에서 관리
+//★다음에는 font생성을 init에서 해서 멤버변수로 지니고 있는다.
 
 #define PiecesMgr PiecesManager::Get_Instance()
 
@@ -47,6 +48,18 @@ void GameManager::Init(HWND hWnd_Main, HWND hWnd_Sub, int _nCmdShow, LPCTSTR _Ip
 	exitRect.top = RECT_EXIT_T;
 	exitRect.right = RECT_EXIT_R;
 	exitRect.bottom = RECT_EXIT_B;
+
+	//더블 버퍼링
+	HDC hdc = GetDC(hWnd_Main);
+	backDC_Main = CreateCompatibleDC(hdc);
+	GetClientRect(m_HWND_Main, &clientRect_Main);
+
+	hdc = GetDC(hWnd_Sub);
+	backDC_Sub = CreateCompatibleDC(hdc);	
+	GetClientRect(m_HWND_Sub, &clientRect_Sub);
+
+
+	ReleaseDC(hWnd_Main, hdc);
 }
 
 
@@ -77,7 +90,7 @@ bool GameManager::ColliderCheck_SubPromotion(POINT point)
 		if (PiecesMgr->ColliderCheck_SubPromotion(point))
 		{
 			m_GameStopCheck = false;
-			InvalidateRect(m_HWND_Main, NULL, true);
+			InvalidateRect(m_HWND_Main, NULL, false);
 
 			return true;
 		}
@@ -89,14 +102,27 @@ bool GameManager::ColliderCheck_SubPromotion(POINT point)
 
 void GameManager::Draw(HDC hdc, HINSTANCE g_hInst)
 {
-	BoardDraw(hdc);
+	//---------더블버퍼링----------
+	//RECT clientRect;
+	//GetClientRect(m_HWND_Main, &clientRect);
+	
+	HBITMAP backBitmap = MyCreateDIBSection(hdc, clientRect_Main.right + 1, clientRect_Main.bottom + 1);
+	SelectObject(backDC_Main, backBitmap);
 
-	PiecesMgr->DrawPices(hdc);
+	//------------------------------
+
+	BoardDraw(backDC_Main);
+
+	PiecesMgr->DrawPices(backDC_Main);
 	//질문::불필요한 반복문 도는 거 막기?
-	PiecesMgr->DrawMoveable(hdc);
+	PiecesMgr->DrawMoveable(backDC_Main);
 
 	//게임 승리시 처리
-	WinCheck(hdc);
+	WinCheck(backDC_Main);
+
+	//---------더블버퍼링----------
+	BitBlt(hdc, 0, 0, clientRect_Main.right + 1, clientRect_Main.bottom + 1, backDC_Main, 0, 0, SRCCOPY);
+	DeleteObject(backBitmap);
 }
 
 void GameManager::BoardDraw(HDC hdc)
@@ -177,24 +203,41 @@ void GameManager::WinCheck(HDC hdc)
 
 
 
-
 void GameManager::SubDraw(HDC hdc)
 {
+	//---------더블버퍼링----------
+	HBITMAP backBitmap = MyCreateDIBSection(hdc, clientRect_Sub.right + 1, clientRect_Sub.bottom + 1);
+	SelectObject(backDC_Sub, backBitmap);
+
+	//------------------------------
 	switch (m_PlayerTurn)
 	{
 	case CAMP_BLACK:
-		BitMapMgr->GetImage(IMG::IMG_BG_BLACK)->DrawSubWin(hdc, 0, 0, BOARD_SQUARE_SIZE, BOARD_SQUARE_SIZE);
+		BitMapMgr->GetImage(IMG::IMG_BG_BLACK)->DrawSubWin(backDC_Sub, 0, 0, BOARD_SQUARE_SIZE, BOARD_SQUARE_SIZE);
 		break;
 	case CAMP_WHITE:
-		BitMapMgr->GetImage(IMG::IMG_BG_WHITE)->DrawSubWin(hdc, 0, 0, BOARD_SQUARE_SIZE, BOARD_SQUARE_SIZE);
+		BitMapMgr->GetImage(IMG::IMG_BG_WHITE)->DrawSubWin(backDC_Sub, 0, 0, BOARD_SQUARE_SIZE, BOARD_SQUARE_SIZE);
 		break;
 	}
+
+	//---------더블버퍼링----------
+	BitBlt(hdc, 0, 0, clientRect_Sub.right + 1, clientRect_Sub.bottom + 1, backDC_Sub, 0, 0, SRCCOPY);
+	DeleteObject(backBitmap);
 }
 
 void GameManager::SubPromotionDraw(HDC hdc)
 {
+	//---------더블버퍼링----------
+	HBITMAP backBitmap = MyCreateDIBSection(hdc, clientRect_Sub_Promotion.right + 1, clientRect_Sub_Promotion.bottom + 1);
+	SelectObject(backDC_Sub_Promotion, backBitmap);
+
+	//------------------------------
 	if ((m_GameStopCheck == true) && (m_GameEndCheck == false))
-		PiecesMgr->DrawPawnPromotion(hdc);
+		PiecesMgr->DrawPawnPromotion(backDC_Sub_Promotion);
+
+	//---------더블버퍼링----------
+	BitBlt(hdc, 0, 0, clientRect_Sub_Promotion.right + 1, clientRect_Sub_Promotion.bottom + 1, backDC_Sub_Promotion, 0, 0, SRCCOPY);
+	DeleteObject(backBitmap);
 }
 
 void GameManager::SubPromotion()
@@ -203,5 +246,30 @@ void GameManager::SubPromotion()
 	m_HWND_Sub_Promotion = CreateWindow(IpszClassSub_Promotion, IpszClassSub_Promotion, WS_OVERLAPPED | WS_MINIMIZEBOX, SUB_PROMOTION_X, SUB_PROMOTION_Y, SUB_PROMOTION_W, SUB_PROMOTION_H,
 		NULL, (HMENU)NULL, hInstance, NULL);
 
+	HDC hdc = GetDC(m_HWND_Sub_Promotion);
+	backDC_Sub_Promotion = CreateCompatibleDC(hdc);
+	GetClientRect(m_HWND_Sub_Promotion, &clientRect_Sub_Promotion);
+
+	ReleaseDC(m_HWND_Sub_Promotion, hdc);
+
 	ShowWindow(m_HWND_Sub_Promotion, nCmdShow);
+}
+
+
+//더블 버퍼링
+HBITMAP GameManager::MyCreateDIBSection(HDC hdc, int width, int height)
+{
+	BITMAPINFO bm_info;
+	ZeroMemory(&bm_info.bmiHeader, sizeof(BITMAPINFOHEADER));
+
+	bm_info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	//color bits : 1, 4, 8, 16, 24, 32
+	//1:흑백, 4:16색, 8:256색, 16:2^15색, 24,31:2^24색
+	bm_info.bmiHeader.biBitCount = 24;
+	bm_info.bmiHeader.biWidth = width; //너비, 비트맵의 가로 픽셀 수
+	bm_info.bmiHeader.biHeight = height; //높이, 비트맵의 세로 픽셀 수
+	bm_info.bmiHeader.biPlanes = 1; //1로 고정, 반드시 1이어야 한다
+
+	LPVOID pBits;
+	return CreateDIBSection(hdc, &bm_info, DIB_RGB_COLORS, (void**)&pBits, NULL, 0);
 }

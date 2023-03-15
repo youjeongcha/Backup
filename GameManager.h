@@ -5,6 +5,8 @@
 #include <string>
 #include <algorithm>
 
+//★다음에는 font생성을 init에서 해서 멤버변수로 지니고 있는다.
+
 //★ 여기에 기록해두고 중복 선언 없이 사용
 #define GMMgr GameManager::Get_Instance()
 #define PiecesMgr PiecesManager::Get_Instance()
@@ -51,6 +53,15 @@ private:
 	HWND m_HWND_Main;
 	HWND m_HWND_Sub;
 	HWND m_HWND_Sub_Promotion;
+
+	//더블 버퍼링
+	RECT clientRect_Main;
+	RECT clientRect_Sub;
+	RECT clientRect_Sub_Promotion;
+	HDC backDC_Main;
+	HDC backDC_Sub;
+	HDC backDC_Sub_Promotion;
+	
 	//★ BitMapManager로써의 의미가 퇴색되었다. 싱글톤으로 만들어서 사용하는 것을 권장. main이나 sub나 인자를 넣어서(?) 해당 BitMapManager를 사용하도록
 	//BitMapManager* m_BitMapMgr_Main;
 	//BitMapManager* m_BitMapMgr_Sub;
@@ -110,4 +121,6 @@ public:
 	void Set_PlayerTurn() { m_PlayerTurn = (m_PlayerTurn == CAMP_WHITE) ? CAMP_BLACK : CAMP_WHITE; }
 	void Set_GameStopCheck(bool check) { m_GameStopCheck = check; }
 	void Set_GameEndCheck(bool check) { m_GameEndCheck = check; }
+
+	HBITMAP MyCreateDIBSection(HDC hdc, int width, int height);
 };

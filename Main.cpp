@@ -102,7 +102,7 @@ LRESULT CALLBACK WndProc_Main(HWND hWnd_Main, UINT message, WPARAM wParam, LPARA
 
         if (GMMgr->ColliderCheck(Point))
         {
-            InvalidateRect(hWnd_Main, NULL, true); //이미지를 클릭하면 화면 지우고 다시 그려야 > 시각화
+            InvalidateRect(hWnd_Main, NULL, false); //이미지를 클릭하면 화면 지우고 다시 그려야 > 시각화
 
             //서브 Promotion window 생성 시기
             if ((GMMgr->Get_GameStopCheck() == true) && (GMMgr->Get_GameEndCheck() == false))

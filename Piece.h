@@ -53,7 +53,8 @@ protected: //private 으로 하면 자식에서 접근 불가 > protected
 	//MOVESTATE m_MoveState; //이동 허용 상태 확인, 첫번째 이동, 앙파상, 캐슬링, 등
 
 public:
-	Piece(const Piece& piece);
+	//Piece(const Piece& piece);
+	Piece(Piece* piece);
 	//★BitmapMgr을 이용하면 Mgr즉 싱글톤적인 성격이 없어져버린다.
 	Piece(BitMapManager& BitMapMgr_Main, CAMP _campColor, IMG _Index, int _X, int _Y);
 	~Piece();
@@ -66,7 +67,7 @@ public:
 
 	//이동 가능한 칸들을 그린다.
 	//★순수 가상함수로 사용하는 것이 좋을 것
-	virtual void SetMoveableRect();// abstract;
+	virtual void SetMoveableRect() abstract;
 	void DrawMoveable(HDC hdc);
 	//기물의 실제 이동
 	void Move();

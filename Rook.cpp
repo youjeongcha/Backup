@@ -2,7 +2,7 @@
 #include "GameManager.h"
 
 
-Rook::Rook(Piece _piece, IMG _Index) : Piece(_piece)
+Rook::Rook(Piece* _piece, IMG _Index) : Piece(*_piece)
 {
 	m_Piece = _Index;
 	m_pBitMap = BitMapMgr->GetImage(_Index);

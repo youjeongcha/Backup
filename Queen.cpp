@@ -2,7 +2,7 @@
 #include "GameManager.h"
 
 
-Queen::Queen(Piece _piece, IMG _Index) : Piece(_piece)
+Queen::Queen(Piece* _piece, IMG _Index) : Piece(*_piece)
 {
 	m_Piece = _Index;
 	m_pBitMap = BitMapMgr->GetImage(_Index);
