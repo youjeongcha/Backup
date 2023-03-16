@@ -27,14 +27,14 @@ void BitMapManager::Init(HWND hWnd)
 		sprintf_s(buf, "RES//block_w_%d.bmp", j);
 		m_parrBitMap[i++].Init(hdc, buf);
 	}
-	
+
 	//배경 12~13
 	for (int j = 0; j < IMG_BG_COUNT; j++)
 	{
 		sprintf_s(buf, "RES//tile_%d.bmp", j);
 		m_parrBitMap[i++].Init(hdc, buf);
 	}
-	
+
 	//투명화 이미지 14
 	sprintf_s(buf, "RES//MoveableTileMask.bmp", i);
 	m_parrBitMap[i].Init(hdc, buf);
