@@ -30,8 +30,10 @@ void BitMap::Draw(HDC hdc, int x, int y, int IMG_WSize, int IMG_HSize)
 
 void BitMap::DrawTransparent(HDC hdc, int x, int y, int IMG_WSize, int IMG_HSize)
 {
-	BLENDFUNCTION bf;
-	ZeroMemory(&bf, sizeof(bf));
-	bf.SourceConstantAlpha = 190; //원하는 값(0~255)
-	AlphaBlend(hdc, x, y, IMG_WSize, IMG_HSize, MemDC, 0, 0, m_Size.cx, m_Size.cy, bf);
+	TransparentBlt(hdc, x, y, IMG_WSize, IMG_HSize, MemDC, 0, 0, m_Size.cx, m_Size.cy, RGB(255, 0, 255));
+
+	//BLENDFUNCTION bf;
+	//ZeroMemory(&bf, sizeof(bf));
+	//bf.SourceConstantAlpha = 190; //원하는 값(0~255)
+	//AlphaBlend(hdc, x, y, IMG_WSize, IMG_HSize, MemDC, 0, 0, m_Size.cx, m_Size.cy, bf);
 }

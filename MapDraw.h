@@ -1,5 +1,4 @@
 #pragma once
-#include "framework.h"
 #include "BitMapManager.h"
 #include <list>
 
@@ -8,13 +7,13 @@ enum SPEED
 	SPEED_BACK = 50,
 };
 
-enum IMG_XYWH
+enum MAP_IMG_XYWH
 {
 	//ÀÜµð
 	IMG_GRASS_X = 0,
-	IMG_GRASS_Y = (int)(MAIN_H * 0.27f),
+	IMG_GRASS_Y = (int)(MAIN_H / 2.9f),
 	IMG_GRASS_W = MAIN_W + MAIN_X,
-	IMG_GRASS_H = MAIN_H - (int)(IMG_GRASS_Y * 2.3f),
+	IMG_GRASS_H = (int)(MAIN_H / 2.2f),
 
 	//°üÁß(7) 
 	IMG_SPECTATOR_W = 65,
@@ -44,7 +43,7 @@ enum IMG_BACK
 class MapDraw
 {
 private:
-	float m_BacIMG_X;
+	float m_BackIMG_X;
 	std::list<IMG> mBackIMG_List;
 public:
 	MapDraw();
@@ -52,7 +51,7 @@ public:
 
 	void DrawGrass(HDC hdc);
 	void UpdateSpectator(float deltaTime);
-	void DrawSpectator(HDC hdc);
+	void DrawBack(HDC hdc);
 	void DrawRing(HDC hdc);
 	void DrawPot(HDC hdc);
 	void DrawGoal(HDC hdc);

@@ -4,7 +4,7 @@
 
 MapDraw::MapDraw()
 {
-	m_BacIMG_X = 0;
+	m_BackIMG_X = 0;
 
 	//7회 관중 -> 1회 코끼리 *2
 	for (int count = 0; count < IMG_BACK_COUNT; count++)
@@ -34,20 +34,20 @@ void MapDraw::DrawGrass(HDC hdc)
 
 void MapDraw::UpdateSpectator(float deltaTime)
 {
-	m_BacIMG_X -= deltaTime * SPEED_BACK;
-
-	if (-m_BacIMG_X >= IMG_SPECTATOR_W)
+	if (-m_BackIMG_X >= IMG_SPECTATOR_W)
 	{
-		m_BacIMG_X += IMG_SPECTATOR_W;
+		m_BackIMG_X += IMG_SPECTATOR_W;
 
 		mBackIMG_List.push_back(mBackIMG_List.front());
 		mBackIMG_List.pop_front();
 	}
+
+	m_BackIMG_X -= deltaTime * SPEED_BACK;
 }
 
-void MapDraw::DrawSpectator(HDC hdc)
+void MapDraw::DrawBack(HDC hdc)
 {
-	float x = m_BacIMG_X;
+	float x = m_BackIMG_X;
 
 	//7회 관중 1회 코끼리
 	for (auto img : mBackIMG_List)

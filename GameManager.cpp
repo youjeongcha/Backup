@@ -4,6 +4,7 @@ GameManager* GameManager::m_pInstance = NULL;
 
 GameManager::GameManager()
 {
+	m_scene = SCENE_MENU;
 }
 
 GameManager::~GameManager()
@@ -32,9 +33,21 @@ void GameManager::Draw()
 	HBITMAP backBitmap = MyCreateDIBSection(m_fDC, m_clientRect.right + 1, m_clientRect.bottom + 1);
 	SelectObject(m_bDC, backBitmap);
 
-	//ÀÜµð
-	m_mDraw.DrawGrass(m_bDC);
-	m_mDraw.DrawSpectator(m_bDC);
+	switch (m_scene)
+	{
+	case SCENE_MENU:
+		m_UI.DrawMenu(m_bDC);
+		break;
+	case SCENE_GAME:
+		//ÀÜµð
+		m_mDraw.DrawGrass(m_bDC);
+		//°üÁß + ÄÚ³¢¸®
+		m_mDraw.DrawBack(m_bDC);
+		break;
+	default:
+		break;
+	}
+
 
 	//´õºí ¹öÆÛ¸µ
 	BitBlt(m_fDC, 0, 0, m_clientRect.right + 1, m_clientRect.bottom + 1, m_bDC, 0, 0, SRCCOPY);

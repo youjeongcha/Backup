@@ -2,19 +2,28 @@
 
 #include "BitMapManager.h"
 #include "MapDraw.h"
+#include "UI.h"
 
 #define BitMapMgr BitMapManager::Get_Instance()
+
+enum SCENE
+{
+	SCENE_MENU,
+	SCENE_GAME,
+};
 
 class GameManager
 {
 private:
 	static GameManager* m_pInstance;
 	HWND m_HWND;
-	//HDC m_hdc;
 	HDC m_fDC;
 	HDC m_bDC;
 	RECT m_clientRect;
+	SCENE m_scene;
+
 	MapDraw m_mDraw;
+	UI m_UI;
 
 	GameManager();
 
