@@ -3,8 +3,11 @@
 
 #include "framework.h"
 #include "WinAPI_CircusCharlie.h"
+#include "GameManager.h"
 
 #define MAX_LOADSTRING 100
+
+#define GMMgr GameManager::Get_Instance()
 
 // 전역 변수:
 HINSTANCE hInst;                                // 현재 인스턴스입니다.
@@ -30,7 +33,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     LoadStringW(hInstance, IDC_WINAPICIRCUSCHARLIE, szWindowClass, MAX_LOADSTRING);
     MyRegisterClass(hInstance);
 
-    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_SYSMENU | WS_MINIMIZEBOX,
         CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
 
     if (!hWnd)
@@ -41,14 +44,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     ShowWindow(hWnd, nCmdShow);
     UpdateWindow(hWnd);
 
+    //초기화
+    GMMgr->init(hWnd);
+
 
     MSG msg;
-    //TODO::BitMap 세팅
-
     HDC hdc = GetDC(hWnd);
     ULONGLONG checkTime, limitTime = GetTickCount64();
 
-    int fps = 1000 / 30;
+    int fps = 1000 / 30; //초당 프레임 수
     float timer = 0;
 
     // 기본 메시지 루프입니다:
@@ -66,18 +70,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             checkTime = GetTickCount64();
             if (limitTime <= checkTime)
             {
-                float deltaTime = ((checkTime - limitTime) + fps) * 0.001f;
+                //DeltaTime이란 값은 '각 프레임 사이에 걸리는 시간'
+                float deltaTime = ((checkTime - limitTime) + fps) * 0.001f; //1000ms를 나눠서 second로 단위 변경
                 limitTime = checkTime + fps;
 
                 timer += deltaTime;
 
-                if (GetAsyncKeyState(VK_LEFT))
-                    g_nX -= 200 * deltaTime;
-                if (GetAsyncKeyState(VK_LEFT))
-                    g_nX -= 200 * deltaTime;
-
-                //TODO::GM의 Draw
-                //Draw(hWnd, hdc);
+                GMMgr->Update(deltaTime);
+                GMMgr->Draw();
             }
             
         }
@@ -111,7 +111,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
     //wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
     wcex.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-    wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_WINAPICIRCUSCHARLIE);
+    wcex.lpszMenuName = NULL;   /*MAKEINTRESOURCEW(IDC_WINAPICIRCUSCHARLIE);*/
     wcex.lpszClassName  = szWindowClass;
     wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 

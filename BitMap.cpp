@@ -28,11 +28,6 @@ void BitMap::Draw(HDC hdc, int x, int y, int IMG_WSize, int IMG_HSize)
 	//TODO::0.05f하면 출력되는 이미지 마다 다 작아지니. 출력할 크기의 인자를 받아오는 쪽으로 
 }
 
-void BitMap::DrawBG(HDC hdc, int x, int y, int IMG_WSize, int IMG_HSize)
-{
-	StretchBlt(hdc, x, y, IMG_WSize, IMG_HSize, MemDC, 0, 0, m_Size.cx, m_Size.cy, SRCCOPY);
-}
-
 void BitMap::DrawTransparent(HDC hdc, int x, int y, int IMG_WSize, int IMG_HSize)
 {
 	BLENDFUNCTION bf;
