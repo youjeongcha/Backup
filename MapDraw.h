@@ -44,13 +44,13 @@ class MapDraw
 {
 private:
 	float m_BackIMG_X;
-	std::list<IMG> mBackIMG_List;
+	std::list<IMG> m_BackIMG_List;
 public:
 	MapDraw();
 	~MapDraw();
 
 	void DrawGrass(HDC hdc);
-	void UpdateSpectator(float deltaTime);
+	void UpdateBack(float deltaTime);
 	void DrawBack(HDC hdc);
 	void DrawRing(HDC hdc);
 	void DrawPot(HDC hdc);

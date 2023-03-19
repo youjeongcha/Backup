@@ -13,10 +13,10 @@ MapDraw::MapDraw()
 		{
 		case IMG_ELEPHANT_FIRST:
 		case IMG_ELEPHANT_SECOND:
-			mBackIMG_List.push_back(IMG_BG_ELEPHANT);
+			m_BackIMG_List.push_back(IMG_BG_ELEPHANT);
 			break;
 		default:
-			mBackIMG_List.push_back(IMG_BG_SPECTATOR_1);
+			m_BackIMG_List.push_back(IMG_BG_SPECTATOR_1);
 			break;
 		}
 	}
@@ -32,14 +32,15 @@ void MapDraw::DrawGrass(HDC hdc)
 	BitMapMgr->GetImage(IMG_BG_GRASS)->Draw(hdc, IMG_GRASS_X, IMG_GRASS_Y, IMG_GRASS_W, IMG_GRASS_H);
 }
 
-void MapDraw::UpdateSpectator(float deltaTime)
+void MapDraw::UpdateBack(float deltaTime)
 {
 	if (-m_BackIMG_X >= IMG_SPECTATOR_W)
 	{
 		m_BackIMG_X += IMG_SPECTATOR_W;
 
-		mBackIMG_List.push_back(mBackIMG_List.front());
-		mBackIMG_List.pop_front();
+		//왼쪽으로 순환
+		m_BackIMG_List.push_back(m_BackIMG_List.front());
+		m_BackIMG_List.pop_front();
 	}
 
 	m_BackIMG_X -= deltaTime * SPEED_BACK;
@@ -50,23 +51,20 @@ void MapDraw::DrawBack(HDC hdc)
 	float x = m_BackIMG_X;
 
 	//7회 관중 1회 코끼리
-	for (auto img : mBackIMG_List)
+	for (auto img : m_BackIMG_List)
 	{
 		switch (img)
 		{
 		case IMG_BG_ELEPHANT:
 			BitMapMgr->GetImage(IMG_BG_ELEPHANT)->Draw(hdc, x, IMG_ELEPHANT_Y, IMG_ELEPHANT_W, IMG_ELEPHANT_H);
-			x += IMG_ELEPHANT_W;
 			break;
 		default:
 			BitMapMgr->GetImage(IMG_BG_SPECTATOR_1)->Draw(hdc, x, IMG_SPECTATOR_Y, IMG_SPECTATOR_W, IMG_SPECTATOR_H);
-			x += IMG_SPECTATOR_W;
 			break;
 		}
 
+		x += IMG_SPECTATOR_W;
 	}
-
-
 }
 
 void MapDraw::DrawRing(HDC hdc)

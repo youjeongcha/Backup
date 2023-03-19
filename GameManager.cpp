@@ -24,7 +24,17 @@ void GameManager::init(HWND hWnd)
 
 void GameManager::Update(float deltaTime)
 {
-	m_mDraw.UpdateSpectator(deltaTime);
+	switch (m_scene)
+	{
+	case SCENE_MENU:
+		m_UI.UpdateStarFlow(deltaTime); //메뉴의 별 오른쪽 순회
+		break;
+	case SCENE_GAME:
+		m_Draw.UpdateBack(deltaTime); //back 관중+코끼리 왼쪽 순회
+		break;
+	default:
+		break;
+	}
 }
 
 void GameManager::Draw()
@@ -40,9 +50,9 @@ void GameManager::Draw()
 		break;
 	case SCENE_GAME:
 		//잔디
-		m_mDraw.DrawGrass(m_bDC);
+		m_Draw.DrawGrass(m_bDC);
 		//관중 + 코끼리
-		m_mDraw.DrawBack(m_bDC);
+		m_Draw.DrawBack(m_bDC);
 		break;
 	default:
 		break;

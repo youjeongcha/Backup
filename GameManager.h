@@ -22,7 +22,7 @@ private:
 	RECT m_clientRect;
 	SCENE m_scene;
 
-	MapDraw m_mDraw;
+	MapDraw m_Draw;
 	UI m_UI;
 
 	GameManager();
