@@ -4,6 +4,7 @@
 #include <list>
 
 #define STAR_SPEED 0.25
+#define FLICKERING_SPEED 0.4
 
 enum UI_IMG_XYWH
 {
@@ -35,6 +36,15 @@ enum UI_IMG_XYWH
 	IMG_POINT_Y = IMG_SELECT_PLAYER_Y,
 	IMG_POINT_W = 30,
 	IMG_POINT_H = 20,
+
+	IMG_POINT_MAX_Y = IMG_POINT_Y + IMG_POINT_H * 3,
+
+
+	//----------------점수 + 목숨 창--------------------
+	IMG_SCORE_OUTLINE_X = 50,
+	IMG_SCORE_OUTLINE_Y = 20,
+	IMG_SCORE_OUTLINE_W = MAIN_W - 100,
+	IMG_SCORE_OUTLINE_H = 50,
 };
 
 enum SELECT_PLAYER
@@ -63,12 +73,25 @@ enum STAR
 	STAR_LEFT = 44,
 };
 
+//-----------키---------------
+enum MENU_KEY
+{
+	MENU_KEY_UP = -1,
+	MENU_KEY_DOWN = 1,
+};
+
+
 class UI
 {
 private:
 	std::list<IMG> m_StarList;
-	float m_Time;
+	float m_StarTime;
 	int m_Point_Y;
+	//Menu Select 이미지 깜빡일지 확인하기 위해
+	float m_FlickeringTime;
+	bool m_NotDrawCheck;
+	float m_PointMoveTime;
+
 public:
 	UI();
 	~UI();
@@ -78,13 +101,22 @@ public:
 	void DrawTitle(HDC hdc);
 	void UpdateStarFlow(float deltaTime);
 	void DrawStarFlow(HDC hdc);
-	void UpdateSelect(float deltaTime);
+	void UpdateFlickering(float deltaTime);
 	void DrawSelect(HDC hdc);
+	//void DrawSelectBlack(HDC hdc);
 	void DrawPoint(HDC hdc);
-	void KeyStatePoint(int move_Y) { m_Point_Y += move_Y; }
-	//점수 + 목숨 창
+	//키
+	bool KeyState_PointEnter();
+	void KeyMove(int move_Y);
 
+	//점수 + 목숨 창
+	void DrawScoreSpace(HDC hdc);
+	void DrawScore(HDC hdc);
+	void DrawBonus(HDC hdc);
+	void DrawLife(HDC hdc);
+	void DrawStage(HDC hdc);
 
 	//미터
+	void DrawMeter(HDC hdc);
 };
 

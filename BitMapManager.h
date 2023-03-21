@@ -22,6 +22,7 @@ enum IMG
 	IMG_MENU_SELECT_3,								//선택3
 	IMG_MENU_SELECT_4,								//선택4
 	IMG_MENU_SELECT_5,								//선택5
+	//IMG_MENU_SELECT_6,								//선택 검은 배경으로 //선택지 깜빡거림을 구현하기 위해 추가한 리소스
 	IMG_MENU_SELECT_COUNT = IMG_MENU_SELECT_5 - IMG_MENU_SELECT_START + 1,
 
 	//포인트

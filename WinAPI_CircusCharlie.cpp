@@ -53,7 +53,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     ULONGLONG checkTime, limitTime = GetTickCount64();
 
     int fps = 1000 / 30; //초당 프레임 수
-    //float timer = 0;
 
     // 기본 메시지 루프입니다:
     while (1)
@@ -77,11 +76,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                 float deltaTime = ((checkTime - limitTime) + fps) * 0.001f; //1000ms를 나눠서 second로 단위 변경
                 limitTime = checkTime + fps;
 
-                //timer += deltaTime;
 
                 GMMgr->Update(deltaTime);
                 GMMgr->Draw();
-                GMMgr->KeyState(); //키체크
             }
         }
     }

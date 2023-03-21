@@ -9,8 +9,9 @@ GameManager::GameManager()
 
 GameManager::~GameManager()
 {
+	//★삭제는 생성된 역순으로
+	DeleteDC(m_bDC);
 	ReleaseDC(m_HWND, m_fDC);
-	ReleaseDC(m_HWND, m_bDC);
 }
 
 void GameManager::init(HWND hWnd)
@@ -31,9 +32,21 @@ void GameManager::Update(float deltaTime)
 	{
 	case SCENE_MENU:
 		m_UI.UpdateStarFlow(deltaTime); //메뉴의 별 오른쪽 순회
+		m_UI.UpdateFlickering(deltaTime); //선택되어있는 항목 깜빡거리도록(검은 이미지를 덧씌우는 간격을 조정한다.
+
+		//★함수를 bool형으로 UI안에서 해결한다.
+		if (m_UI.KeyState_PointEnter()) //엔터 누르면 씬 전환
+			m_scene = SCENE_GAME;
+
 		break;
 	case SCENE_GAME:
 		m_Draw.UpdateBack(deltaTime); //back 관중+코끼리 왼쪽 순회
+
+		//★TODO::캐릭터 안에서 조정한다
+		if (GetAsyncKeyState(VK_SPACE) & 0x8000)
+		{
+
+		}
 		break;
 	default:
 		break;
@@ -59,6 +72,8 @@ void GameManager::Draw()
 		m_Draw.DrawGrass(m_bDC);
 		//관중 + 코끼리
 		m_Draw.DrawBack(m_bDC);
+		//상단 UI
+		m_UI.DrawScoreSpace(m_bDC);
 		break;
 	default:
 		break;
@@ -70,32 +85,40 @@ void GameManager::Draw()
 	DeleteObject(backBitmap);
 }
 
-void GameManager::KeyState()
-{
-	//TODO::
-	switch (m_scene)
-	{
-	case SCENE_MENU:
-		if (GetAsyncKeyState(VK_UP))
-		{
-			m_UI.KeyStatePoint(-IMG_POINT_H);
-		}
-		else if (GetAsyncKeyState(VK_DOWN))
-		{
-			m_UI.KeyStatePoint(+IMG_POINT_H);
-		}
-		break;
-	case SCENE_GAME:
-		if (GetAsyncKeyState(VK_SPACE))
-		{
-
-		}
-		break;
-	default:
-		break;
-	}
-
-}
+////키 조작
+//void GameManager::KeyState()
+//{
+//	switch (m_scene)
+//	{
+//	case SCENE_MENU:
+//		//space 키 누르면 끝도 없이 GGGG...GGGGetKeyState 무한 이동
+//		//&0x80 추가 GetAsyncKeyState와 동일한 움직임을 보이게 된다. GetAsyncKeyState와 결과값이 같아지게 된다
+//		//★TODO::함수를 bool형으로 UI안에서 해결한다.
+//		if (GetAsyncKeyState(VK_RETURN) & 0x8000) //엔터 누르면 씬 전환
+//			m_scene = SCENE_GAME;
+//		else
+//			m_UI.KeyStatePoint();
+//
+//
+//		//if (GetAsyncKeyState(VK_UP) & 0x8000)
+//		//	m_UI.KeyStatePoint(-IMG_POINT_H);
+//		//else if (GetAsyncKeyState(VK_DOWN) & 0x8000)
+//		//	m_UI.KeyStatePoint(+IMG_POINT_H);
+//		//else if (GetAsyncKeyState(VK_RETURN) & 0x8000) //엔터 누르면 씬 전환
+//		//	m_scene = SCENE_GAME;
+//		break;
+//	case SCENE_GAME:
+//		//★TODO::캐릭터 안에서 조정한다
+//		if (GetAsyncKeyState(VK_SPACE) & 0x8000)
+//		{
+//
+//		}
+//		break;
+//	default:
+//		break;
+//	}
+//
+//}
 
 
 //더블 버퍼링
