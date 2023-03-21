@@ -17,7 +17,10 @@ void GameManager::init(HWND hWnd)
 {
 	m_HWND = hWnd;
 	m_fDC = GetDC(m_HWND);
-	m_bDC = GetDC(m_HWND);
+	m_bDC = CreateCompatibleDC(m_fDC);
+	//CreateCompatibleDC 함수를 사용해서 DC를 생성하면 이 DC와 연결된 비트맵 객체에는 그림이 그려지지만 화면에는 출력이 되지 않는다.
+	//CreateCompatibleDC 함수로 만들어진 DC를 'Memory DC'라고 부른다.
+	GetClientRect(m_HWND, &m_clientRect); //윈도우의 클라이언트의 영역을 알려준다.
 
 	BitMapMgr->Init(hWnd);
 }
@@ -37,6 +40,9 @@ void GameManager::Update(float deltaTime)
 	}
 }
 
+/*GM의 Draw에서 backDC에 비트맵의 정보를 지정해서
+MapDraw나 UI에서 backDC로 backBitmap에 그린다.(backDC는 붓)
+BitMap에서 memDC(이미지 하나하나마다의 붓)*/
 void GameManager::Draw()
 {
 	//더블 버퍼링
@@ -62,6 +68,33 @@ void GameManager::Draw()
 	//더블 버퍼링
 	BitBlt(m_fDC, 0, 0, m_clientRect.right + 1, m_clientRect.bottom + 1, m_bDC, 0, 0, SRCCOPY);
 	DeleteObject(backBitmap);
+}
+
+void GameManager::KeyState()
+{
+	//TODO::
+	switch (m_scene)
+	{
+	case SCENE_MENU:
+		if (GetAsyncKeyState(VK_UP))
+		{
+			m_UI.KeyStatePoint(-IMG_POINT_H);
+		}
+		else if (GetAsyncKeyState(VK_DOWN))
+		{
+			m_UI.KeyStatePoint(+IMG_POINT_H);
+		}
+		break;
+	case SCENE_GAME:
+		if (GetAsyncKeyState(VK_SPACE))
+		{
+
+		}
+		break;
+	default:
+		break;
+	}
+
 }
 
 

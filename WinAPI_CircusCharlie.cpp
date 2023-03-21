@@ -53,7 +53,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     ULONGLONG checkTime, limitTime = GetTickCount64();
 
     int fps = 1000 / 30; //초당 프레임 수
-    float timer = 0;
+    //float timer = 0;
 
     // 기본 메시지 루프입니다:
     while (1)
@@ -67,19 +67,22 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
         else
         {
-            checkTime = GetTickCount64();
+            checkTime = GetTickCount64(); //5억년 가량의 시간을 카운팅 가능. (서버의 경우 고려가 필요)
             if (limitTime <= checkTime)
             {
-                //DeltaTime이란 값은 '각 프레임 사이에 걸리는 시간'
+                //DeltaTime이란 값은 '각 프레임(하나의 루프) 사이에 걸리는 시간' 
+                //만약 ms 단위로 바꾼다면 현재 int 기준으로 작동하던 함수들의 기준 다 바꾸어야 함
+                //((18067343 - 18067343) + 33) * 0.001f       사실상 밀리초의 차이가 거의 없다.
+                //(checkTime - limitTime)루프에 걸리는 시간까지 더해서 고려해야함
                 float deltaTime = ((checkTime - limitTime) + fps) * 0.001f; //1000ms를 나눠서 second로 단위 변경
                 limitTime = checkTime + fps;
 
-                timer += deltaTime;
+                //timer += deltaTime;
 
                 GMMgr->Update(deltaTime);
                 GMMgr->Draw();
+                GMMgr->KeyState(); //키체크
             }
-            
         }
     }
 

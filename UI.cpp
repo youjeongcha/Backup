@@ -26,6 +26,8 @@ UI::UI()
 		else
 			sequence = (STAR)(sequence + 1);
 	}
+
+	m_Point_Y = IMG_POINT_Y;
 }
 
 UI::~UI()
@@ -37,6 +39,7 @@ void UI::DrawMenu(HDC hdc)
 	DrawTitle(hdc);
 	DrawStarFlow(hdc);
 	DrawSelect(hdc);
+	DrawPoint(hdc);
 }
 
 void UI::DrawTitle(HDC hdc)
@@ -103,18 +106,7 @@ void UI::DrawStarFlow(HDC hdc)
 		}
 
 		//»¡->³ë->ÆÄ
-		switch (img)
-		{
-		case IMG_MENU_TITLE_3:
-			BitMapMgr->GetImage(IMG_MENU_TITLE_3)->DrawTransparent(hdc, x, y, IMG_STAR_W, IMG_STAR_H);
-			break;
-		case IMG_MENU_TITLE_4:
-			BitMapMgr->GetImage(IMG_MENU_TITLE_4)->DrawTransparent(hdc, x, y, IMG_STAR_W, IMG_STAR_H);
-			break;
-		case IMG_MENU_TITLE_2:
-			BitMapMgr->GetImage(IMG_MENU_TITLE_2)->DrawTransparent(hdc, x, y, IMG_STAR_W, IMG_STAR_H);
-			break;
-		}
+		BitMapMgr->GetImage(img)->DrawTransparent(hdc, x, y, IMG_STAR_W, IMG_STAR_H);
 
 		count++;
 	}
@@ -139,4 +131,5 @@ void UI::DrawSelect(HDC hdc)
 
 void UI::DrawPoint(HDC hdc)
 {
+	BitMapMgr->GetImage((IMG)(IMG_MENU_POINT))->DrawTransparent(hdc, IMG_POINT_X, m_Point_Y, IMG_POINT_W, IMG_POINT_H);
 }

@@ -53,15 +53,17 @@ void MapDraw::DrawBack(HDC hdc)
 	//7회 관중 1회 코끼리
 	for (auto img : m_BackIMG_List)
 	{
-		switch (img)
-		{
-		case IMG_BG_ELEPHANT:
-			BitMapMgr->GetImage(IMG_BG_ELEPHANT)->Draw(hdc, x, IMG_ELEPHANT_Y, IMG_ELEPHANT_W, IMG_ELEPHANT_H);
-			break;
-		default:
-			BitMapMgr->GetImage(IMG_BG_SPECTATOR_1)->Draw(hdc, x, IMG_SPECTATOR_Y, IMG_SPECTATOR_W, IMG_SPECTATOR_H);
-			break;
-		}
+		BitMapMgr->GetImage(img)->Draw(hdc, x, IMG_ELEPHANT_Y, IMG_ELEPHANT_W, IMG_ELEPHANT_H);
+
+		//switch (img)
+		//{
+		//case IMG_BG_ELEPHANT:
+		//	BitMapMgr->GetImage(IMG_BG_ELEPHANT)->Draw(hdc, x, IMG_ELEPHANT_Y, IMG_ELEPHANT_W, IMG_ELEPHANT_H);
+		//	break;
+		//default:
+		//	BitMapMgr->GetImage(IMG_BG_SPECTATOR_1)->Draw(hdc, x, IMG_SPECTATOR_Y, IMG_SPECTATOR_W, IMG_SPECTATOR_H);
+		//	break;
+		//}
 
 		x += IMG_SPECTATOR_W;
 	}

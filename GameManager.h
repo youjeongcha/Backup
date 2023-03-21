@@ -40,6 +40,7 @@ public:
 	void init(HWND hWnd);
 	void Update(float deltaTime);
 	void Draw();
+	void KeyState();
 
 	HBITMAP MyCreateDIBSection(HDC hdc, int width, int height);
 };

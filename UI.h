@@ -31,10 +31,10 @@ enum UI_IMG_XYWH
 	IMG_SELECT_PLAYER_H = 20,
 
 	//포인트
-	IMG_POINT_X,
-	IMG_POINT_W,
-	IMG_POINT_H,
-	IMG_POINT_Y,
+	IMG_POINT_X = IMG_SELECT_PLAYER_X - 40,
+	IMG_POINT_Y = IMG_SELECT_PLAYER_Y,
+	IMG_POINT_W = 30,
+	IMG_POINT_H = 20,
 };
 
 enum SELECT_PLAYER
@@ -68,6 +68,7 @@ class UI
 private:
 	std::list<IMG> m_StarList;
 	float m_Time;
+	int m_Point_Y;
 public:
 	UI();
 	~UI();
@@ -80,7 +81,7 @@ public:
 	void UpdateSelect(float deltaTime);
 	void DrawSelect(HDC hdc);
 	void DrawPoint(HDC hdc);
-
+	void KeyStatePoint(int move_Y) { m_Point_Y += move_Y; }
 	//점수 + 목숨 창
 
 
