@@ -4,17 +4,57 @@
 UI::UI()
 {
 	IMG sequence = IMG_MENU_TITLE_2;
-
+	POINT star_XY;
+	star_XY.x = IMG_STAR_X;
+	star_XY.y = IMG_STAR_Y;
+	
 	//빨->노->파
 	for (int count = 0; count < STAR_TOTAL_COUNT; count++)
 	{
+		//-----------------IMG를 m_StarList--------------------
 		//별을 123순으로 받으면 ++로 한줄로 구성
-		m_StarList.push_back(sequence);
+		m_StarIMG_List.push_back(sequence);
 
 		if (sequence == IMG_MENU_TITLE_4)
 			sequence = IMG_MENU_TITLE_2;
 		else
 			sequence = (IMG)(sequence + 1);
+
+		//-----------------POINT를 m_StarXY_List--------------------
+		//top,right,bottom,left 배치를 위해서 별 하나하나의 좌표를 조정한다.
+		if (count < STAR_TOP)
+			star_XY.x += IMG_STAR_W;
+		else if (count < STAR_RIGHT)
+		{
+			if (count == STAR_TOP)
+			{
+				star_XY.x += IMG_STAR_W;
+				star_XY.y += IMG_STAR_H;
+			}
+			else
+				star_XY.y += IMG_STAR_H;
+		}
+		else if (count < STAR_BOTTOM)
+		{
+			if (count == STAR_RIGHT)
+			{
+				star_XY.x -= IMG_STAR_W;
+				star_XY.y += IMG_STAR_H;
+			}
+			else
+				star_XY.x -= IMG_STAR_W;
+		}
+		else
+		{
+			if (count == STAR_BOTTOM)
+			{
+				star_XY.x -= IMG_STAR_W;
+				star_XY.y -= IMG_STAR_H;
+			}
+			else
+				star_XY.y -= IMG_STAR_W;
+		}
+		m_StarXY_List.push_back(star_XY);
 	}
 
 	m_Point_Y = SELECT_PLAYER_1A;
@@ -47,12 +87,10 @@ void UI::UpdateStarFlow(float deltaTime)
 	{
 		m_StarTime = 0;
 
-		//오른쪽으로 순환
-		//m_StarList.push_front(m_StarList.back());
 		//왼쪽으로 순환
-		m_StarList.push_back(m_StarList.front());
+		m_StarIMG_List.push_back(m_StarIMG_List.front());
 		
-		m_StarList.erase(m_StarList.begin(), m_StarList.begin() + 1);
+		m_StarIMG_List.erase(m_StarIMG_List.begin(), m_StarIMG_List.begin() + 1);
 	}
 
 	m_StarTime += deltaTime;
@@ -60,53 +98,9 @@ void UI::UpdateStarFlow(float deltaTime)
 
 void UI::DrawStarFlow(HDC hdc)
 {
-	float x = IMG_STAR_X;
-	float y = IMG_STAR_Y;
-	int count = 0;
-
-	for (auto img : m_StarList)
-	{
-		//top,right,bottom,left 배치를 위해서 별 하나하나의 좌표를 조정한다.
-		if (count < STAR_TOP)
-		{
-			x += IMG_STAR_W;
-		}
-		else if (count < STAR_RIGHT)
-		{
-			if (count == STAR_TOP)
-			{
-				x += IMG_STAR_W;
-				y += IMG_STAR_H;
-			}
-			else
-				y += IMG_STAR_H;
-		}
-		else if (count < STAR_BOTTOM)
-		{
-			if (count == STAR_RIGHT)
-			{
-				x -= IMG_STAR_W;
-				y += IMG_STAR_H;
-			}
-			else
-				x -= IMG_STAR_W;
-		}
-		else
-		{
-			if (count == STAR_BOTTOM)
-			{
-				x -= IMG_STAR_W;
-				y -= IMG_STAR_H;
-			}
-			else
-				y -= IMG_STAR_W;
-		}
-
-		//빨->노->파
-		BitMapMgr->GetImage(img)->DrawTransparent(hdc, x, y, IMG_STAR_W, IMG_STAR_H);
-
-		count++;
-	}
+	//빨->노->파
+	for (int i = 0; i < m_StarIMG_List.size(); i++)
+		BitMapMgr->GetImage(m_StarIMG_List[i])->DrawTransparent(hdc, m_StarXY_List[i].x, m_StarXY_List[i].y, IMG_STAR_W, IMG_STAR_H);
 }
 
 void UI::UpdateFlickering(float deltaTime)
@@ -139,17 +133,24 @@ void UI::DrawPoint(HDC hdc)
 	BitMapMgr->GetImage(IMG_MENU_POINT)->DrawTransparent(hdc, IMG_POINT_X, IMG_SELECT_PLAYER_Y + (IMG_SELECT_PLAYER_H * m_Point_Y), IMG_POINT_W, IMG_POINT_H);
 }
 
-bool UI::KeyState_PointEnter()
+bool UI::KeyState_PointEnter(float deltaTime)
 {
 	//space 키 누르면 끝도 없이 GGGG...GGGGetKeyState 무한 이동
 	//&0x80 추가 GetAsyncKeyState와 동일한 움직임을 보이게 된다. GetAsyncKeyState와 결과값이 같아지게 된다
+	
+	if (m_PointMoveTime >= POINT_SPEED)
+	{
+		m_PointMoveTime = 0;
 
-	if (GetAsyncKeyState(VK_RETURN) & 0x8000) //엔터 누르면 씬 전환
-		return true;
-	else if (GetAsyncKeyState(VK_UP) & 0x8000)
-		KeyMove(MENU_KEY_UP); //m_Point_Y의 단위를 i로 잡는다. 범위 체크도 1~3 같은 식으로
-	else if (GetAsyncKeyState(VK_DOWN) & 0x8000)
-		KeyMove(MENU_KEY_DOWN);
+		if (GetAsyncKeyState(VK_RETURN) & 0x8000) //엔터 누르면 씬 전환
+			return true;
+		else if (GetAsyncKeyState(VK_UP) & 0x8000)
+			KeyMove(MENU_KEY_UP); //m_Point_Y의 단위를 i로 잡는다. 범위 체크도 1~3 같은 식으로
+		else if (GetAsyncKeyState(VK_DOWN) & 0x8000)
+			KeyMove(MENU_KEY_DOWN);
+	}
+	
+	m_PointMoveTime += deltaTime;
 
 	return false;
 }

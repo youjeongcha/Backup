@@ -67,9 +67,9 @@ enum IMG
 	IMG_CHARACTER_FRONT_1 = IMG_CHARACTER_START,			//앞1
 	IMG_CHARACTER_FRONT_2,									//앞2
 	IMG_CHARACTER_FRONT_3,									//앞3	//점프
-	IMG_CHARACTER_BUMP,										//부딪힘
 	IMG_CHARACTER_GOAL_1,									//골에 도착1
 	IMG_CHARACTER_GOAL_2,									//골에 도착2
+	IMG_CHARACTER_BUMP,										//부딪힘
 	IMG_CHARACTER_COUNT = IMG_CHARACTER_GOAL_2 - IMG_CHARACTER_START + 1,
 
 	//인터페이스 (점수 + 거리 + 목숨)

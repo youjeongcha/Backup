@@ -1,11 +1,11 @@
 #pragma once
 #include "framework.h"
 #include "BitMapManager.h"
-//#include <list>
 #include <vector>
 
 #define STAR_SPEED 0.25
 #define FLICKERING_SPEED 0.4
+#define POINT_SPEED 0.12
 
 enum UI_IMG_XYWH
 {
@@ -102,13 +102,14 @@ enum LIFE
 class UI
 {
 private:
-	//std::list<IMG> m_StarList;
-	std::vector<IMG> m_StarList;
+	std::vector<IMG> m_StarIMG_List;
+	std::vector<POINT> m_StarXY_List;
 	float m_StarTime;
 	int m_Point_Y;
 	//Menu Select 이미지 깜빡일지 확인하기 위해
 	float m_FlickeringTime;
 	bool m_NotDrawCheck;
+	//선택지 이동
 	float m_PointMoveTime;
 	//유저 목숨
 	int m_UserLife;
@@ -127,7 +128,7 @@ public:
 	void DrawPoint(HDC hdc);
 	//키
 	//함수를 bool형으로 UI안에서 해결한다.
-	bool KeyState_PointEnter();
+	bool KeyState_PointEnter(float deltaTime);
 	void KeyMove(int move_Y);
 
 	//점수 + 목숨 창

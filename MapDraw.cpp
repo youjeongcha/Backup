@@ -20,7 +20,6 @@ MapDraw::MapDraw()
 			break;
 		}
 	}
-	
 }
 
 MapDraw::~MapDraw()
@@ -34,16 +33,32 @@ void MapDraw::DrawGrass(HDC hdc)
 
 void MapDraw::UpdateBack(float deltaTime)
 {
-	if (-m_BackIMG_X >= IMG_SPECTATOR_W)
-	{
-		m_BackIMG_X += IMG_SPECTATOR_W;
+	if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
+	{ //앞으로 간다. (IMG 왼쪽으로 순환)
+		
+		if (abs(m_BackIMG_X) >= IMG_SPECTATOR_W) //가장 처음 이미지가 -x라서 젋댓값을 체크한다.
+		{
+			m_BackIMG_X += IMG_SPECTATOR_W;
 
-		//왼쪽으로 순환
-		m_BackIMG_List.push_back(m_BackIMG_List.front());
-		m_BackIMG_List.pop_front();
+			m_BackIMG_List.push_back(m_BackIMG_List.front());
+			m_BackIMG_List.pop_front();
+		}
+
+		m_BackIMG_X -= deltaTime * SPEED_BACK;
 	}
+	else if (GetAsyncKeyState(VK_LEFT) & 0x8000)
+	{ //뒤로 간다. (IMG 오른쪽으로 순환)
 
-	m_BackIMG_X -= deltaTime * SPEED_BACK;
+		if (m_BackIMG_X >= -IMG_SPECTATOR_W)
+		{
+			m_BackIMG_X -= IMG_SPECTATOR_W;
+
+			m_BackIMG_List.push_front(m_BackIMG_List.back());
+			m_BackIMG_List.pop_back();
+		}
+
+		m_BackIMG_X += deltaTime * SPEED_BACK;
+	}
 }
 
 void MapDraw::DrawBack(HDC hdc)

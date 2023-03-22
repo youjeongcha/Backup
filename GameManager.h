@@ -5,6 +5,7 @@
 #include "UI.h"
 #include "Character.h"
 
+#define GMMgr GameManager::Get_Instance()
 #define BitMapMgr BitMapManager::Get_Instance()
 
 enum SCENE
@@ -20,7 +21,7 @@ private:
 	HWND m_HWND;
 	HDC m_frontDC;
 	HDC m_backDC;
-	RECT m_clientRect;
+	POINT m_Widht_Height;
 	SCENE m_scene;
 
 	MapDraw m_Draw;
@@ -43,6 +44,9 @@ public:
 	void init(HWND hWnd);
 	void Update(float deltaTime);
 	void Draw();
+	//사용 가능한 키입력이 있었는지 확인
+	bool KeyInputCheck();
+
 
 	HBITMAP MyCreateDIBSection(HDC hdc, int width, int height);
 };

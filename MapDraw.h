@@ -4,7 +4,7 @@
 
 enum SPEED
 {
-	SPEED_BACK = 50,
+	SPEED_BACK = 130,
 };
 
 enum MAP_IMG_XYWH
