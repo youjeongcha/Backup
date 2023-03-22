@@ -55,31 +55,6 @@ void MapDraw::DrawBack(HDC hdc)
 	{
 		BitMapMgr->GetImage(img)->Draw(hdc, x, IMG_ELEPHANT_Y, IMG_ELEPHANT_W, IMG_ELEPHANT_H);
 
-		//switch (img)
-		//{
-		//case IMG_BG_ELEPHANT:
-		//	BitMapMgr->GetImage(IMG_BG_ELEPHANT)->Draw(hdc, x, IMG_ELEPHANT_Y, IMG_ELEPHANT_W, IMG_ELEPHANT_H);
-		//	break;
-		//default:
-		//	BitMapMgr->GetImage(IMG_BG_SPECTATOR_1)->Draw(hdc, x, IMG_SPECTATOR_Y, IMG_SPECTATOR_W, IMG_SPECTATOR_H);
-		//	break;
-		//}
-
 		x += IMG_SPECTATOR_W;
 	}
-}
-
-void MapDraw::DrawRing(HDC hdc)
-{
-
-}
-
-void MapDraw::DrawPot(HDC hdc)
-{
-
-}
-
-void MapDraw::DrawGoal(HDC hdc)
-{
-
 }

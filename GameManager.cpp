@@ -9,16 +9,16 @@ GameManager::GameManager()
 
 GameManager::~GameManager()
 {
-	//★삭제는 생성된 역순으로
-	DeleteDC(m_bDC);
-	ReleaseDC(m_HWND, m_fDC);
+	//삭제는 생성된 역순으로
+	DeleteDC(m_backDC);
+	ReleaseDC(m_HWND, m_frontDC);
 }
 
 void GameManager::init(HWND hWnd)
 {
 	m_HWND = hWnd;
-	m_fDC = GetDC(m_HWND);
-	m_bDC = CreateCompatibleDC(m_fDC);
+	m_frontDC = GetDC(m_HWND);
+	m_backDC = CreateCompatibleDC(m_frontDC);
 	//CreateCompatibleDC 함수를 사용해서 DC를 생성하면 이 DC와 연결된 비트맵 객체에는 그림이 그려지지만 화면에는 출력이 되지 않는다.
 	//CreateCompatibleDC 함수로 만들어진 DC를 'Memory DC'라고 부른다.
 	GetClientRect(m_HWND, &m_clientRect); //윈도우의 클라이언트의 영역을 알려준다.
@@ -34,13 +34,14 @@ void GameManager::Update(float deltaTime)
 		m_UI.UpdateStarFlow(deltaTime); //메뉴의 별 오른쪽 순회
 		m_UI.UpdateFlickering(deltaTime); //선택되어있는 항목 깜빡거리도록(검은 이미지를 덧씌우는 간격을 조정한다.
 
-		//★함수를 bool형으로 UI안에서 해결한다.
-		if (m_UI.KeyState_PointEnter()) //엔터 누르면 씬 전환
+		if (m_UI.KeyState_PointEnter()) //엔터 누르면 씬 전환 //함수를 bool형으로 UI안에서 해결한다.
 			m_scene = SCENE_GAME;
 
 		break;
 	case SCENE_GAME:
 		m_Draw.UpdateBack(deltaTime); //back 관중+코끼리 왼쪽 순회
+		character.UpdateIMG(deltaTime); //캐릭터 IMG
+		character.Update_XY(deltaTime); //캐릭터 좌표
 
 		//★TODO::캐릭터 안에서 조정한다
 		if (GetAsyncKeyState(VK_SPACE) & 0x8000)
@@ -59,66 +60,35 @@ BitMap에서 memDC(이미지 하나하나마다의 붓)*/
 void GameManager::Draw()
 {
 	//더블 버퍼링
-	HBITMAP backBitmap = MyCreateDIBSection(m_fDC, m_clientRect.right + 1, m_clientRect.bottom + 1);
-	SelectObject(m_bDC, backBitmap);
+	HBITMAP backBitmap = MyCreateDIBSection(m_frontDC, m_clientRect.right + 1, m_clientRect.bottom + 1);
+	SelectObject(m_backDC, backBitmap);
 
 	switch (m_scene)
 	{
 	case SCENE_MENU:
-		m_UI.DrawMenu(m_bDC);
+		m_UI.DrawMenu(m_backDC);
 		break;
 	case SCENE_GAME:
 		//잔디
-		m_Draw.DrawGrass(m_bDC);
+		m_Draw.DrawGrass(m_backDC);
 		//관중 + 코끼리
-		m_Draw.DrawBack(m_bDC);
+		m_Draw.DrawBack(m_backDC);
 		//상단 UI
-		m_UI.DrawScoreSpace(m_bDC);
+		m_UI.DrawScoreSpace(m_backDC);
+		//목숨
+		m_UI.DrawLife(m_backDC);
+
+		//캐릭터
+		character.Draw(m_backDC);
 		break;
 	default:
 		break;
 	}
 
-
 	//더블 버퍼링
-	BitBlt(m_fDC, 0, 0, m_clientRect.right + 1, m_clientRect.bottom + 1, m_bDC, 0, 0, SRCCOPY);
+	BitBlt(m_frontDC, 0, 0, m_clientRect.right + 1, m_clientRect.bottom + 1, m_backDC, 0, 0, SRCCOPY);
 	DeleteObject(backBitmap);
 }
-
-////키 조작
-//void GameManager::KeyState()
-//{
-//	switch (m_scene)
-//	{
-//	case SCENE_MENU:
-//		//space 키 누르면 끝도 없이 GGGG...GGGGetKeyState 무한 이동
-//		//&0x80 추가 GetAsyncKeyState와 동일한 움직임을 보이게 된다. GetAsyncKeyState와 결과값이 같아지게 된다
-//		//★TODO::함수를 bool형으로 UI안에서 해결한다.
-//		if (GetAsyncKeyState(VK_RETURN) & 0x8000) //엔터 누르면 씬 전환
-//			m_scene = SCENE_GAME;
-//		else
-//			m_UI.KeyStatePoint();
-//
-//
-//		//if (GetAsyncKeyState(VK_UP) & 0x8000)
-//		//	m_UI.KeyStatePoint(-IMG_POINT_H);
-//		//else if (GetAsyncKeyState(VK_DOWN) & 0x8000)
-//		//	m_UI.KeyStatePoint(+IMG_POINT_H);
-//		//else if (GetAsyncKeyState(VK_RETURN) & 0x8000) //엔터 누르면 씬 전환
-//		//	m_scene = SCENE_GAME;
-//		break;
-//	case SCENE_GAME:
-//		//★TODO::캐릭터 안에서 조정한다
-//		if (GetAsyncKeyState(VK_SPACE) & 0x8000)
-//		{
-//
-//		}
-//		break;
-//	default:
-//		break;
-//	}
-//
-//}
 
 
 //더블 버퍼링

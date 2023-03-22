@@ -11,7 +11,7 @@ enum MAP_IMG_XYWH
 {
 	//ÀÜµð
 	IMG_GRASS_X = 0,
-	IMG_GRASS_Y = (int)(MAIN_H / 2.9f),
+	IMG_GRASS_Y = (int)(MAIN_H / 2.6), //(int)(MAIN_H / 2.9f),
 	IMG_GRASS_W = MAIN_W + MAIN_X,
 	IMG_GRASS_H = (int)(MAIN_H / 2.2f),
 
@@ -44,7 +44,7 @@ class MapDraw
 {
 private:
 	float m_BackIMG_X;
-	std::list<IMG> m_BackIMG_List;
+	std::list<IMG> m_BackIMG_List; 
 public:
 	MapDraw();
 	~MapDraw();
@@ -52,8 +52,5 @@ public:
 	void DrawGrass(HDC hdc);
 	void UpdateBack(float deltaTime);
 	void DrawBack(HDC hdc);
-	void DrawRing(HDC hdc);
-	void DrawPot(HDC hdc);
-	void DrawGoal(HDC hdc);
 };
 

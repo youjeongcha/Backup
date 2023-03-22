@@ -3,6 +3,7 @@
 #include "BitMapManager.h"
 #include "MapDraw.h"
 #include "UI.h"
+#include "Character.h"
 
 #define BitMapMgr BitMapManager::Get_Instance()
 
@@ -17,13 +18,14 @@ class GameManager
 private:
 	static GameManager* m_pInstance;
 	HWND m_HWND;
-	HDC m_fDC;
-	HDC m_bDC;
+	HDC m_frontDC;
+	HDC m_backDC;
 	RECT m_clientRect;
 	SCENE m_scene;
 
 	MapDraw m_Draw;
 	UI m_UI;
+	Character character;
 
 
 	GameManager();
@@ -41,7 +43,6 @@ public:
 	void init(HWND hWnd);
 	void Update(float deltaTime);
 	void Draw();
-	//void KeyState(); //≈∞ ¡∂¿€
 
 	HBITMAP MyCreateDIBSection(HDC hdc, int width, int height);
 };

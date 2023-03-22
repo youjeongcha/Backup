@@ -1,7 +1,8 @@
 #pragma once
 #include "framework.h"
 #include "BitMapManager.h"
-#include <list>
+//#include <list>
+#include <vector>
 
 #define STAR_SPEED 0.25
 #define FLICKERING_SPEED 0.4
@@ -41,10 +42,22 @@ enum UI_IMG_XYWH
 
 
 	//----------------점수 + 목숨 창--------------------
-	IMG_SCORE_OUTLINE_X = 50,
+	
+	//점수 창 테두리
+	IMG_SCORE_OUTLINE_X = 100,
 	IMG_SCORE_OUTLINE_Y = 20,
-	IMG_SCORE_OUTLINE_W = MAIN_W - 100,
+	IMG_SCORE_OUTLINE_W = MAIN_W - 200,
 	IMG_SCORE_OUTLINE_H = 50,
+
+	//점수
+
+	//보너스
+
+	//목숨
+	IMG_Life_W = IMG_SCORE_OUTLINE_H / 3,
+	IMG_Life_H = IMG_Life_W,
+	IMG_Life_X = IMG_SCORE_OUTLINE_X + IMG_SCORE_OUTLINE_W - IMG_Life_W * 4,
+	IMG_Life_Y = IMG_SCORE_OUTLINE_Y + IMG_SCORE_OUTLINE_H - IMG_Life_H - 10,
 };
 
 enum SELECT_PLAYER
@@ -80,17 +93,25 @@ enum MENU_KEY
 	MENU_KEY_DOWN = 1,
 };
 
+enum LIFE
+{
+	LIFE_MAX = 3,
+};
+
 
 class UI
 {
 private:
-	std::list<IMG> m_StarList;
+	//std::list<IMG> m_StarList;
+	std::vector<IMG> m_StarList;
 	float m_StarTime;
 	int m_Point_Y;
 	//Menu Select 이미지 깜빡일지 확인하기 위해
 	float m_FlickeringTime;
 	bool m_NotDrawCheck;
 	float m_PointMoveTime;
+	//유저 목숨
+	int m_UserLife;
 
 public:
 	UI();
@@ -103,9 +124,9 @@ public:
 	void DrawStarFlow(HDC hdc);
 	void UpdateFlickering(float deltaTime);
 	void DrawSelect(HDC hdc);
-	//void DrawSelectBlack(HDC hdc);
 	void DrawPoint(HDC hdc);
 	//키
+	//함수를 bool형으로 UI안에서 해결한다.
 	bool KeyState_PointEnter();
 	void KeyMove(int move_Y);
 
@@ -114,7 +135,6 @@ public:
 	void DrawScore(HDC hdc);
 	void DrawBonus(HDC hdc);
 	void DrawLife(HDC hdc);
-	void DrawStage(HDC hdc);
 
 	//미터
 	void DrawMeter(HDC hdc);
