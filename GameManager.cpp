@@ -33,24 +33,25 @@ void GameManager::init(HWND hWnd)
 
 void GameManager::Update(float deltaTime)
 {
+	float thisTurn_MoveDistance;
+
 	switch (m_scene)
 	{
 	case SCENE_MENU:
-		m_UI.UpdateStarFlow(deltaTime); //메뉴의 별 오른쪽 순회
-		m_UI.UpdateFlickering(deltaTime); //선택되어있는 항목 깜빡거리도록(검은 이미지를 덧씌우는 간격을 조정한다.
-
-		if (m_UI.KeyState_PointEnter(deltaTime)) //엔터 누르면 씬 전환 //함수를 bool형으로 UI안에서 해결한다.
+		if (m_UI.UpdateMenu(deltaTime)) //엔터 누르면 씬 전환 //함수를 bool형으로 UI안에서 해결한다.
 			m_scene = SCENE_GAME;
 
 		break;
 	case SCENE_GAME:
-		character.UpdateIMG(deltaTime); //캐릭터 IMG
-		character.Update_XY(deltaTime); //캐릭터 좌표
+		
+		m_UI.UpdateGame(deltaTime);
 
-		if (KeyInputCheck())
+		thisTurn_MoveDistance = character.Update(deltaTime);
+
+		//if (thisTurn_MoveDistance != 0) //캐릭터 좌표
 		{
 			//TODO::Goal이 특정 좌표에 오기 전까지는 배경을 움직인다.(뒤로가서 골이 멀어지면 다시 배경 이동으로 전환한다.)
-			m_Draw.UpdateBack(deltaTime); //back 관중+코끼리 왼쪽 순회
+			m_Draw.UpdateBack(deltaTime, thisTurn_MoveDistance); //back 관중+코끼리 왼쪽 순회
 		}
 
 		break;
@@ -60,16 +61,16 @@ void GameManager::Update(float deltaTime)
 }
 
 
-bool GameManager::KeyInputCheck()
-{
-	if (GetAsyncKeyState(VK_SPACE) & 0x8000)
-		return true;
-	else if (GetAsyncKeyState(VK_LEFT) & 0x8000)
-		return true;
-	else if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
-		return true;
-	return false;
-}
+//bool GameManager::KeyInputCheck()
+//{
+//	if (GetAsyncKeyState(VK_SPACE) & 0x8000)
+//		return true;
+//	else if (GetAsyncKeyState(VK_LEFT) & 0x8000)
+//		return true;
+//	else if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
+//		return true;
+//	return false;
+//}
 
 
 
@@ -89,17 +90,9 @@ void GameManager::Draw()
 		m_UI.DrawMenu(m_backDC);
 		break;
 	case SCENE_GAME:
-		//잔디
-		m_Draw.DrawGrass(m_backDC);
-		//관중 + 코끼리
-		m_Draw.DrawBack(m_backDC);
-		//상단 UI
-		m_UI.DrawScoreSpace(m_backDC);
-		//목숨
-		m_UI.DrawLife(m_backDC);
-
-		//캐릭터
-		character.Draw(m_backDC);
+		m_Draw.DrawMap(m_backDC);	//배경
+		m_UI.DrawGame(m_backDC);	//UI
+		character.Draw(m_backDC);	//캐릭터
 		break;
 	default:
 		break;

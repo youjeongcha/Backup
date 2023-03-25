@@ -4,7 +4,8 @@
 
 enum SPEED
 {
-	SPEED_BACK = 130,
+	//SPEED_BACK = 80,
+	SPEED_BACK = 140,
 };
 
 enum MAP_IMG_XYWH
@@ -45,12 +46,16 @@ class MapDraw
 private:
 	float m_BackIMG_X;
 	std::list<IMG> m_BackIMG_List; 
+
+	//배경
+	void DrawGrass(HDC hdc);	//풀
+	void DrawBack(HDC hdc);		//관중+코끼리
 public:
 	MapDraw();
 	~MapDraw();
 
-	void DrawGrass(HDC hdc);
-	void UpdateBack(float deltaTime);
-	void DrawBack(HDC hdc);
+	void DrawMap(HDC hdc);
+	void UpdateBack(float deltaTime, float thisTurn_MoveDistance);
+
 };
 

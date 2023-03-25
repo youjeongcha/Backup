@@ -1,13 +1,15 @@
 #pragma once
+#include <vector>
+#include <string>
 #include "framework.h"
 #include "BitMapManager.h"
-#include <vector>
 
 #define STAR_SPEED 0.25
 #define FLICKERING_SPEED 0.4
 #define POINT_SPEED 0.12
+#define BONUS_SPEED 0.1
 
-enum UI_IMG_XYWH
+enum UI_IMG_XYWH //UI 관련 이미지만 관리
 {
 	//타이틀
 	IMG_TITLE_X = (int)(MAIN_W / 2.7f),
@@ -41,23 +43,54 @@ enum UI_IMG_XYWH
 	IMG_POINT_MAX_Y = IMG_POINT_Y + IMG_POINT_H * 3,
 
 
-	//----------------점수 + 목숨 창--------------------
+	//----------------점수 창 + 목숨 창--------------------
 	
 	//점수 창 테두리
-	IMG_SCORE_OUTLINE_X = 100,
+	//IMG_SCORE_OUTLINE_X = 100,
+	//IMG_SCORE_OUTLINE_Y = 20,
+	//IMG_SCORE_OUTLINE_W = MAIN_W - 200,
+	//IMG_SCORE_OUTLINE_H = 50,
+
+	//점수 창 테두리
+	IMG_SCORE_OUTLINE_X = 150,
 	IMG_SCORE_OUTLINE_Y = 20,
-	IMG_SCORE_OUTLINE_W = MAIN_W - 200,
+	IMG_SCORE_OUTLINE_W = MAIN_W - 300,
 	IMG_SCORE_OUTLINE_H = 50,
-
-	//점수
-
-	//보너스
 
 	//목숨
 	IMG_Life_W = IMG_SCORE_OUTLINE_H / 3,
 	IMG_Life_H = IMG_Life_W,
 	IMG_Life_X = IMG_SCORE_OUTLINE_X + IMG_SCORE_OUTLINE_W - IMG_Life_W * 4,
 	IMG_Life_Y = IMG_SCORE_OUTLINE_Y + IMG_SCORE_OUTLINE_H - IMG_Life_H - 10,
+};
+
+enum FONT //폰트 관련
+{
+	FONT_STAGE = 0,
+	FONT_SCORE,
+	FONT_COUNT,
+
+	FONT_STAGE_SIZE = 15,
+	FONT_STAGE_X = IMG_SCORE_OUTLINE_X + 15,
+	FONT_STAGE_Y = IMG_SCORE_OUTLINE_Y + 11,
+
+	FONT_SCORE_SIZE = 18,
+	FONT_SCORE_X = IMG_SCORE_OUTLINE_X + 180,
+	FONT_SCORE_Y = IMG_SCORE_OUTLINE_Y + 15,
+
+	FONT_BONUS_X = FONT_SCORE_X + 150,
+	FONT_BONUS_Y = FONT_SCORE_Y,
+
+	FONT_BONUS_COUNTING_X = FONT_BONUS_X + FONT_SCORE_SIZE * 3 + 10,
+
+};
+
+enum SCORE
+{
+	SCORE_START = 0,
+	SCORE_BONUS = 10000,
+
+	SCORE_BONUS_REDUTION = 10,
 };
 
 enum SELECT_PLAYER
@@ -99,6 +132,8 @@ enum LIFE
 };
 
 
+
+
 class UI
 {
 private:
@@ -113,31 +148,46 @@ private:
 	float m_PointMoveTime;
 	//유저 목숨
 	int m_UserLife;
+	//점수
+	float m_ScoreTime;
+	int m_Score;
+	int m_Bonus;
+	HFONT m_Font[FONT_COUNT];
+
+	//메인메뉴------------------------------------
+	//Draw
+	void DrawTitle(HDC hdc);		//타이틀
+	void DrawStarFlow(HDC hdc);		//별
+	void DrawSelect(HDC hdc);		//선택지
+	void DrawPoint(HDC hdc);		//포인터
+	//Update
+	void UpdateStarFlow(float deltaTime);
+	void UpdateFlickering(float deltaTime);
+	bool UpdateKeyState_Enter(float deltaTime);	//키		//함수를 bool형으로 UI안에서 해결한다.
+	//키
+	void KeyMoveSelect(int move_Y);
+
+	//게임-----------------------------------------
+	void DrawScoreSpace(HDC hdc);	//인터페이스 창
+	void DrawScore(HDC hdc);		//점수
+	void DrawLife(HDC hdc);			//목숨
+	//TODO::
+	void DrawMeter(HDC hdc);		//미터
+	//Update
+	void UpdateBonus(float deltaTime);
 
 public:
 	UI();
 	~UI();
 
-	//메뉴
+	//메뉴------------------------------
 	void DrawMenu(HDC hdc);
-	void DrawTitle(HDC hdc);
-	void UpdateStarFlow(float deltaTime);
-	void DrawStarFlow(HDC hdc);
-	void UpdateFlickering(float deltaTime);
-	void DrawSelect(HDC hdc);
-	void DrawPoint(HDC hdc);
-	//키
-	//함수를 bool형으로 UI안에서 해결한다.
-	bool KeyState_PointEnter(float deltaTime);
-	void KeyMove(int move_Y);
+	bool UpdateMenu(float deltaTime);
 
-	//점수 + 목숨 창
-	void DrawScoreSpace(HDC hdc);
-	void DrawScore(HDC hdc);
-	void DrawBonus(HDC hdc);
-	void DrawLife(HDC hdc);
 
-	//미터
-	void DrawMeter(HDC hdc);
+	//게임------------------------------
+	void DrawGame(HDC hdc);
+	void UpdateGame(float deltaTime);
+
 };
 

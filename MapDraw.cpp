@@ -1,6 +1,6 @@
 #include "MapDraw.h"
 #include "GameManager.h"
-
+#include "Character.h"
 
 MapDraw::MapDraw()
 {
@@ -26,14 +26,22 @@ MapDraw::~MapDraw()
 {
 }
 
+void MapDraw::DrawMap(HDC hdc)
+{
+	//잔디
+	DrawGrass(hdc);
+	//관중 + 코끼리
+	DrawBack(hdc);
+}
+
 void MapDraw::DrawGrass(HDC hdc)
 {
 	BitMapMgr->GetImage(IMG_BG_GRASS)->Draw(hdc, IMG_GRASS_X, IMG_GRASS_Y, IMG_GRASS_W, IMG_GRASS_H);
 }
 
-void MapDraw::UpdateBack(float deltaTime)
+void MapDraw::UpdateBack(float deltaTime, float thisTurn_MoveDistance)
 {
-	if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
+	if (thisTurn_MoveDistance > 0)
 	{ //앞으로 간다. (IMG 왼쪽으로 순환)
 		
 		if (abs(m_BackIMG_X) >= IMG_SPECTATOR_W) //가장 처음 이미지가 -x라서 젋댓값을 체크한다.
@@ -46,7 +54,7 @@ void MapDraw::UpdateBack(float deltaTime)
 
 		m_BackIMG_X -= deltaTime * SPEED_BACK;
 	}
-	else if (GetAsyncKeyState(VK_LEFT) & 0x8000)
+	else if (thisTurn_MoveDistance < 0)
 	{ //뒤로 간다. (IMG 오른쪽으로 순환)
 
 		if (m_BackIMG_X >= -IMG_SPECTATOR_W)

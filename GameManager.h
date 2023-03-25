@@ -45,7 +45,7 @@ public:
 	void Update(float deltaTime);
 	void Draw();
 	//사용 가능한 키입력이 있었는지 확인
-	bool KeyInputCheck();
+	//bool KeyInputCheck();
 
 
 	HBITMAP MyCreateDIBSection(HDC hdc, int width, int height);

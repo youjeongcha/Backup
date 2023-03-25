@@ -1,8 +1,9 @@
 #pragma once
-class FireObstacle
+#include "Object.h"
+
+class FireObstacle : public Object
 {
 private:
 public:
-
+	virtual void Draw() override;
 };
-
