@@ -5,27 +5,10 @@
 enum SPEED
 {
 	//SPEED_BACK = 80,
-	SPEED_BACK = 140,
+	SPEED_BACK = 180,
 };
 
-enum MAP_IMG_XYWH
-{
-	//잔디
-	IMG_GRASS_X = 0,
-	IMG_GRASS_Y = (int)(MAIN_H / 2.6), //(int)(MAIN_H / 2.9f),
-	IMG_GRASS_W = MAIN_W + MAIN_X,
-	IMG_GRASS_H = (int)(MAIN_H / 2.2f),
 
-	//관중(7) 
-	IMG_SPECTATOR_W = 65,
-	//IMG_SPECTATOR_H = 64,
-	//IMG_SPECTATOR_Y = IMG_GRASS_Y - IMG_SPECTATOR_H,
-
-	//코끼리
-	IMG_ELEPHANT_W = 66,
-	IMG_ELEPHANT_H = 67,
-	IMG_ELEPHANT_Y = IMG_GRASS_Y - IMG_ELEPHANT_H,
-};
 
 
 enum IMG_BACK
@@ -44,18 +27,26 @@ enum IMG_BACK
 class MapDraw
 {
 private:
+	std::list<IMG> m_BackIMG_List;
 	float m_BackIMG_X;
-	std::list<IMG> m_BackIMG_List; 
+	//Meter
+	//두개의 이미지를 사용한다. 두번째 이미지가 화면 밖으로 나가면. 첫번째 이미지가 있던 x좌표가 두번째 이미지의 좌표가 되고. 기존의 첫번째 이미지의 x 좌표는 앞으로 나타날 빈 공간의 x좌표가 된다.
+	float m_MeterIMG_List[METER_SHOW_COUNT]; //meter 표시 출력 
+	int m_Meter_Value[METER_SHOW_COUNT];
 
 	//배경
 	void DrawGrass(HDC hdc);	//풀
 	void DrawBack(HDC hdc);		//관중+코끼리
+	void DrawMeter(HDC hdc);	//미터
+
+	void UpdateBack(float deltaTime, float thisTurn_MoveDistance); //배경
+	void UpdateMeter(float deltaTime, float thisTurn_MoveDistance);		//미터
+
 public:
 	MapDraw();
 	~MapDraw();
-
+	
 	void DrawMap(HDC hdc);
-	void UpdateBack(float deltaTime, float thisTurn_MoveDistance);
-
+	void UpdateMap(float deltaTime, float thisTurn_MoveDistance);
 };
 

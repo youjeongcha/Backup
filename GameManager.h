@@ -23,6 +23,9 @@ private:
 	HDC m_backDC;
 	POINT m_Widht_Height;
 	SCENE m_scene;
+	std::vector<POINT> m_StarXY_List;
+	HFONT m_Font[FONT_COUNT];
+
 
 	MapDraw m_Draw;
 	UI m_UI;
@@ -49,5 +52,6 @@ public:
 
 
 	HBITMAP MyCreateDIBSection(HDC hdc, int width, int height);
+	HFONT Get_Font(FONT fontType) { return m_Font[fontType]; };
 };
 

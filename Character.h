@@ -5,14 +5,7 @@
 #define JUMP_SPEED 0.03
 
 
-enum IMG_CHARACTER
-{
-	//타이틀
-	IMG_CHARACTER_X = 100,
-	IMG_CHARACTER_Y = MAIN_H - 150,
-	IMG_CHARACTER_W = 60,
-	IMG_CHARACTER_H = IMG_CHARACTER_W + 10,
-};
+
 
 enum CHARACTER_JUMP
 {
@@ -26,14 +19,7 @@ enum CHARACTER_JUMP
 	CHARACTER_JUMP_MIN_Y = IMG_CHARACTER_Y, //가장 낮은 위치 == 처음의 Y
 };
 
-//-----------거리-------------
-enum TRAVELDISTANCE //사실상 배경이 움직이는 범위값이라고 보아도 무방하다
-{
-	TRAVELDISTANCE_START = 0,
-	TRAVELDISTANCE_END = 1000, //골이 나타나고 배경 움직임 > 캐릭터 움직임으로 전환되는 시점
 
-	TRAVELDISTANCE_MOVE_PER_SEC = 10, //초당 움직이는 거리
-};
 
 
 class Character

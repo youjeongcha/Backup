@@ -152,7 +152,7 @@ private:
 	float m_ScoreTime;
 	int m_Score;
 	int m_Bonus;
-	HFONT m_Font[FONT_COUNT];
+
 
 	//메인메뉴------------------------------------
 	//Draw
@@ -167,12 +167,11 @@ private:
 	//키
 	void KeyMoveSelect(int move_Y);
 
+
 	//게임-----------------------------------------
 	void DrawScoreSpace(HDC hdc);	//인터페이스 창
 	void DrawScore(HDC hdc);		//점수
 	void DrawLife(HDC hdc);			//목숨
-	//TODO::
-	void DrawMeter(HDC hdc);		//미터
 	//Update
 	void UpdateBonus(float deltaTime);
 

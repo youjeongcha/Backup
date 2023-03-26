@@ -5,6 +5,12 @@ GameManager* GameManager::m_pInstance = NULL;
 GameManager::GameManager()
 {
 	m_scene = SCENE_MENU;
+
+	//글자 크기 변경
+	//m_Font[FONT_STAGE] = CreateFont(50, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, 0, "궁서");
+	//m_Font[FONT_SCORE] = CreateFont(FONT_SCORE_SIZE, 0, 0, 0, FW_BOLD, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"Times New Roman");
+	m_Font[FONT_STAGE] = CreateFont(FONT_STAGE_SIZE, 0, 0, 0, FW_BOLD, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"Times New Roman");
+	m_Font[FONT_SCORE] = CreateFont(FONT_SCORE_SIZE, 0, 0, 0, FW_BOLD, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"Times New Roman");
 }
 
 
@@ -51,7 +57,7 @@ void GameManager::Update(float deltaTime)
 		//if (thisTurn_MoveDistance != 0) //캐릭터 좌표
 		{
 			//TODO::Goal이 특정 좌표에 오기 전까지는 배경을 움직인다.(뒤로가서 골이 멀어지면 다시 배경 이동으로 전환한다.)
-			m_Draw.UpdateBack(deltaTime, thisTurn_MoveDistance); //back 관중+코끼리 왼쪽 순회
+			m_Draw.UpdateMap(deltaTime, thisTurn_MoveDistance); //back 관중+코끼리 왼쪽 순회
 		}
 
 		break;

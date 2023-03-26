@@ -66,9 +66,7 @@ UI::UI()
 	m_Score = SCORE_START;
 	m_Bonus = SCORE_BONUS;
 
-	//글자 크기 변경
-	m_Font[FONT_STAGE] = CreateFont(FONT_STAGE_SIZE, 0, 0, 0, FW_BOLD, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"Times New Roman");
-	m_Font[FONT_SCORE] = CreateFont(FONT_SCORE_SIZE, 0, 0, 0, FW_BOLD, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"Times New Roman");
+	
 }
 
 UI::~UI()
@@ -191,6 +189,7 @@ void UI::DrawGame(HDC hdc)
 	DrawScore(hdc);
 	//목숨
 	DrawLife(hdc);
+
 }
 
 void UI::UpdateGame(float deltaTime)
@@ -215,11 +214,11 @@ void UI::DrawScore(HDC hdc)
 	//SetBkColor(hdc, RGB(0, 0, 0));
 	SetTextColor(hdc, RGB(255, 255, 255)); //글자 색 변경(흰색)
 
-	SelectObject(hdc, m_Font[FONT_STAGE]);
+	SelectObject(hdc, GMMgr->Get_Font(FONT_STAGE));
 	str = L"STAGE-01";
 	TextOut(hdc, FONT_STAGE_X, FONT_STAGE_Y, str.c_str(), str.length());
 
-	SelectObject(hdc, m_Font[FONT_SCORE]);
+	SelectObject(hdc, GMMgr->Get_Font(FONT_SCORE));
 	str = L"SCORE-" + std::to_wstring(m_Score);
 	TextOut(hdc, FONT_SCORE_X, FONT_SCORE_Y, str.c_str(), str.length());
 
@@ -231,6 +230,16 @@ void UI::DrawScore(HDC hdc)
 	str = L"-" + std::to_wstring(m_Bonus);
 	TextOut(hdc, FONT_BONUS_COUNTING_X, FONT_BONUS_Y, str.c_str(), str.length());
 }
+
+void UI::DrawLife(HDC hdc)
+{
+	for (int i = 0; i < m_UserLife; i++)
+		BitMapMgr->GetImage(IMG_INTERFACE_LIFE)->DrawTransparent(hdc, IMG_Life_X + (i * IMG_Life_W), IMG_Life_Y, IMG_Life_W, IMG_Life_H);
+}
+
+
+
+
 
 void UI::UpdateBonus(float deltaTime)
 {
@@ -244,15 +253,5 @@ void UI::UpdateBonus(float deltaTime)
 	}
 
 	m_ScoreTime += deltaTime;
-}
-
-//void UI::DrawBonus(HDC hdc)
-//{
-//}
-
-void UI::DrawLife(HDC hdc)
-{
-	for (int i = 0; i < m_UserLife; i++)
-		BitMapMgr->GetImage(IMG_INTERFACE_LIFE)->DrawTransparent(hdc, IMG_Life_X + (i * IMG_Life_W), IMG_Life_Y, IMG_Life_W, IMG_Life_H);
 }
 
