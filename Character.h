@@ -4,7 +4,12 @@
 #define MOVE_SPEED 0.1
 #define JUMP_SPEED 0.03
 
-
+enum CHARACTER_MOVE
+{
+	CHARACTER_MOVE_NONE,
+	CHARACTER_MOVE_LEFT,
+	CHARACTER_MOVE_RIGHT,
+};
 
 
 enum CHARACTER_JUMP
@@ -20,8 +25,6 @@ enum CHARACTER_JUMP
 };
 
 
-
-
 class Character
 {
 private:
@@ -34,10 +37,13 @@ private:
 	CHARACTER_JUMP m_JumpState; //캐릭터의 점프 상태를 판별(일반, 점프 상승, 점프 하강)
 	//이동거리
 	float m_TravelDistance;
+	//이동 키를 눌렀는지
+	CHARACTER_MOVE m_MoveKey;
 
 
-	void UpdateIMG(float deltaTime);
-	float Update_XY(float deltaTime);
+	void Update_Animation(float deltaTime);
+	void Update_Input(float deltaTime);
+	float Update_Move(float deltaTime);
 	void Update_Jump(float deltaTime);
 
 public:

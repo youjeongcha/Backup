@@ -7,12 +7,12 @@ Character::Character()
 	m_MoveTime = 0;
 	m_JumpTime = 0;
 	m_JumpState = CHARACTER_JUMP_NONE;
-	//m_X = IMG_CHARACTER_X;
-	//m_Y = IMG_CHARACTER_Y;
+
 	m_CharcterRect.left = IMG_CHARACTER_X;
 	m_CharcterRect.top = IMG_CHARACTER_Y;
 	m_CharcterRect.right = m_CharcterRect.left + IMG_CHARACTER_W;
 	m_CharcterRect.bottom = m_CharcterRect.top + IMG_CHARACTER_H;
+
 	m_TravelDistance = TRAVELDISTANCE_START;
 }
 
@@ -22,18 +22,18 @@ Character::~Character()
 
 float Character::Update(float deltaTime)
 {//질문 ::Update_XY먼저 호출한 다음 Jump를 해줘야하나. 어차피 조건안이면 다음번 함수 접근에 Jump를 참조하므로 상관 없나? 
-	float XY_Tmp;
-	UpdateIMG(deltaTime); //캐릭터 IMG
-	XY_Tmp = Update_XY(deltaTime);
-	Update_Jump(deltaTime);
-	return XY_Tmp;
+	float distance;
 
-	//UpdateIMG(deltaTime); //캐릭터 IMG
-	//Update_Jump(deltaTime);
-	//return Update_XY(deltaTime);
+	Update_Animation(deltaTime); //캐릭터 IMG
+	Update_Input(deltaTime);
+
+	distance = Update_Move(deltaTime); //키 입력 받기 + 이동
+
+	Update_Jump(deltaTime);
+	return distance;
 }
 
-void Character::UpdateIMG(float deltaTime)
+void Character::Update_Animation(float deltaTime)
 {
 	IMG imgLimit = IMG_CHARACTER_BUMP;
 
@@ -42,20 +42,24 @@ void Character::UpdateIMG(float deltaTime)
 		//m_MoveTime = 0; //초기화는 Update_XY에서 이루어진다.
 		if ((m_JumpState != CHARACTER_JUMP_NONE) || (GetAsyncKeyState(VK_SPACE) & 0x8000))	//점프
 			m_IMG_NowMotion = IMG_CHARACTER_FRONT_3;
-		else if (GetAsyncKeyState(VK_RIGHT) & 0x8000) //오른쪽 이동
-		{
-			m_IMG_NowMotion = (IMG)(m_IMG_NowMotion + 1);
 
-			imgLimit = IMG_CHARACTER_GOAL_1; //달리는 IMG 안에서만 작동하기 위해 IMG 범위 제한걸기
-		}
-		else if (GetAsyncKeyState(VK_LEFT) & 0x8000) //왼쪽 이동
+		switch (m_MoveKey)
 		{
-			m_IMG_NowMotion = (IMG)(m_IMG_NowMotion + 1);
-			
-			imgLimit = IMG_CHARACTER_FRONT_3; //뒤로 가는 IMG 안에서만 작동하기 위해 IMG 범위 제한걸기
-		}
-		else //멈춤 상태
+		case CHARACTER_MOVE_NONE: //멈춤 상태
 			m_IMG_NowMotion = IMG_CHARACTER_FRONT_1;
+			break;
+		case CHARACTER_MOVE_LEFT: //왼쪽 이동
+			m_IMG_NowMotion = (IMG)(m_IMG_NowMotion + 1);
+			imgLimit = IMG_CHARACTER_FRONT_3; //뒤로 가는 IMG 안에서만 작동하기 위해 IMG 범위 제한걸기
+			break;
+		case CHARACTER_MOVE_RIGHT: //오른쪽 이동
+			m_IMG_NowMotion = (IMG)(m_IMG_NowMotion + 1);
+			imgLimit = IMG_CHARACTER_GOAL_1; //달리는 IMG 안에서만 작동하기 위해 IMG 범위 제한걸기
+			break;
+		default:
+			break;
+		}
+		
 
 		//해당 움직임 모션 범위 IMG 안에서만 작동하기 위해 IMG 범위 제한걸기
 		if (m_IMG_NowMotion >= imgLimit) //점프 + 뒤이동의 경우 imgLmit를 넘어서 >=가 필요
@@ -65,7 +69,22 @@ void Character::UpdateIMG(float deltaTime)
 	m_MoveTime += deltaTime;
 }
 
-float Character::Update_XY(float deltaTime)
+void Character::Update_Input(float deltaTime)
+{
+	//if (m_JumpState != CHARACTER_JUMP_NONE) //Jump 한 상태에서는 이동키 누르지 못하게 해야한다.
+	{
+		if (GetAsyncKeyState(VK_LEFT) & 0x8000)
+			m_MoveKey = CHARACTER_MOVE_LEFT;
+		else if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
+			m_MoveKey = CHARACTER_MOVE_RIGHT;
+		else if ((GetAsyncKeyState(VK_SPACE) & 0x8000) && (m_JumpState == CHARACTER_JUMP_NONE)) //캐릭터가 원 상태일때만 점프 가능
+			m_JumpState = CHARACTER_JUMP_UP;
+		else
+			m_MoveKey = CHARACTER_MOVE_NONE;
+	}
+}
+
+float Character::Update_Move(float deltaTime)
 {
 	float thisTurn_MoveDistance = 0;
 	//TODO::마지막 목표에 도달하기 전까지는 배경을 움직인다.(목표가 멀어지면 다시 배경 움직임)
@@ -76,17 +95,20 @@ float Character::Update_XY(float deltaTime)
 		m_MoveTime = 0;
 
 		//점프는 좌우 이동과 별도로 측정을 해야 좌우이동 중에 점프를 했을 때 배경 끊김 현상이 발생X
-		if ((GetAsyncKeyState(VK_SPACE) & 0x8000) && (m_JumpState == CHARACTER_JUMP_NONE)) //캐릭터가 원 상태일때만 점프 가능
-			m_JumpState = CHARACTER_JUMP_UP;
-		
-		if (GetAsyncKeyState(VK_LEFT) & 0x8000)
-			thisTurn_MoveDistance -= TRAVELDISTANCE_MOVE_PER_SEC;
-		else if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
-			thisTurn_MoveDistance += TRAVELDISTANCE_MOVE_PER_SEC;
+
+		switch (m_MoveKey)
+		{
+		case CHARACTER_MOVE_LEFT:
+			thisTurn_MoveDistance = -TRAVELDISTANCE_MOVE_PER_SEC;
+			break;
+		case CHARACTER_MOVE_RIGHT:
+			thisTurn_MoveDistance = TRAVELDISTANCE_MOVE_PER_SEC;
+			break;
+		}
 
 		m_TravelDistance += thisTurn_MoveDistance;
 
-		//시작점 배경 고정 (캐릭터 이동 범위 제한)
+		//캐릭터 이동 범위 제한(시작점 배경 고정)
 		if (m_TravelDistance < TRAVELDISTANCE_START)
 			m_TravelDistance = TRAVELDISTANCE_START;
 		else if (m_TravelDistance > TRAVELDISTANCE_END)
@@ -96,12 +118,6 @@ float Character::Update_XY(float deltaTime)
 	m_MoveTime += deltaTime;
 
 
-	//else if (GetAsyncKeyState(VK_LEFT) & 0x8000)
-	//	m_CharcterRect.left -= 20;
-	//else if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
-	//	m_CharcterRect.left += 20;
-
-	
 	//거리 이동에 제한을 두기 위해(배경의 움직임 제한)
 	if ((m_TravelDistance <= TRAVELDISTANCE_START) || (m_TravelDistance >= TRAVELDISTANCE_END)) //가장 왼쪽에 도달한 경우
 		return 0;

@@ -6,11 +6,15 @@
 MapDraw::MapDraw()
 {
 	m_BackIMG_X = 0;
-	m_MeterIMG_List[METER_SHOW_FISRT] = METER_X;
-	m_MeterIMG_List[METER_SHOW_SECOND] = m_MeterIMG_List[METER_SHOW_FISRT] + METER_GAP;
 
-	m_Meter_Value[METER_SHOW_FISRT] = METER_VALUE_START;
-	m_Meter_Value[METER_SHOW_SECOND] = METER_VALUE_START - METER_VALUE_GAP;
+	m_Meter[METER_SHOW_FISRT].setMeter(METER_X, METER_VALUE_START);
+	m_Meter[METER_SHOW_SECOND].setMeter(METER_X + METER_GAP, METER_VALUE_START - METER_VALUE_GAP);
+	//m_Meter[]
+	//m_MeterIMG_List[METER_SHOW_FISRT] = METER_X;
+	//m_MeterIMG_List[METER_SHOW_SECOND] = m_MeterIMG_List[METER_SHOW_FISRT] + METER_GAP;
+
+	//m_Meter_Value[METER_SHOW_FISRT] = METER_VALUE_START;
+	//m_Meter_Value[METER_SHOW_SECOND] = METER_VALUE_START - METER_VALUE_GAP;
 
 	//7회 관중 -> 1회 코끼리 *2
 	for (int count = 0; count < IMG_BACK_COUNT; count++)
@@ -39,7 +43,8 @@ void MapDraw::DrawMap(HDC hdc)
 	//관중 + 코끼리
 	DrawBack(hdc);
 	//meter
-	DrawMeter(hdc);
+	for (int i = 0; i < METER_SHOW_COUNT; i++)
+		m_Meter[i].DrawMeter(hdc);
 }
 
 void MapDraw::UpdateMap(float deltaTime, float thisTurn_MoveDistance)
@@ -47,7 +52,8 @@ void MapDraw::UpdateMap(float deltaTime, float thisTurn_MoveDistance)
 	//map
 	UpdateBack(deltaTime, thisTurn_MoveDistance);
 	//meter
-	UpdateMeter(deltaTime, thisTurn_MoveDistance);
+	for (int i = 0; i < METER_SHOW_COUNT; i++)
+		m_Meter[i].UpdateMeter(deltaTime, thisTurn_MoveDistance);
 
 }
 
@@ -69,23 +75,7 @@ void MapDraw::DrawBack(HDC hdc)
 	}
 }
 
-void MapDraw::DrawMeter(HDC hdc)
-{
-	std::wstring str;
 
-	for (int i = 0; i < METER_SHOW_COUNT; i++)
-	{
-		BitMapMgr->GetImage(IMG_INTERFACE_METER_OUTLINE)->DrawTransparent(hdc, m_MeterIMG_List[i], METER_Y, METER_W, METER_H);
-
-		SetBkMode(hdc, TRANSPARENT); //글자 뒷배경 투명화
-		//SetBkColor(hdc, RGB(0, 0, 0));
-		SetTextColor(hdc, RGB(255, 255, 255)); //글자 색 변경(흰색)
-
-		SelectObject(hdc, GMMgr->Get_Font(FONT_STAGE));
-		str = std::to_wstring(m_Meter_Value[i]);
-		TextOut(hdc, m_MeterIMG_List[i] + METER_VALUE_X_GAP, METER_VALUE_Y, str.c_str(), str.length());
-	}
-}
 
 //void MapDraw::DrawMeterValue()
 //{
@@ -95,6 +85,10 @@ void MapDraw::DrawMeter(HDC hdc)
 
 void MapDraw::UpdateBack(float deltaTime, float thisTurn_MoveDistance)
 {
+	//먼저 이동을 하고 범위에 어긋나는지 확인하는게 맞다.
+	//thisTurn_MoveDistance로 캐릭터가 이동한 만큼 이동하는게 맞다.
+	m_BackIMG_X -= deltaTime * thisTurn_MoveDistance * SPEED_BACK;
+	
 	if (thisTurn_MoveDistance > 0)
 	{ //앞으로 간다. (IMG 왼쪽으로 순환)
 		
@@ -106,7 +100,7 @@ void MapDraw::UpdateBack(float deltaTime, float thisTurn_MoveDistance)
 			m_BackIMG_List.pop_front();
 		}
 
-		m_BackIMG_X -= deltaTime * SPEED_BACK;
+		//m_BackIMG_X -= deltaTime * SPEED_BACK;
 	}
 	else if (thisTurn_MoveDistance < 0)
 	{ //뒤로 간다. (IMG 오른쪽으로 순환)
@@ -118,49 +112,5 @@ void MapDraw::UpdateBack(float deltaTime, float thisTurn_MoveDistance)
 			m_BackIMG_List.push_front(m_BackIMG_List.back());
 			m_BackIMG_List.pop_back();
 		}
-
-		m_BackIMG_X += deltaTime * SPEED_BACK;
-	}
-}
-
-
-
-void MapDraw::UpdateMeter(float deltaTime, float thisTurn_MoveDistance)
-{
-	if (thisTurn_MoveDistance > 0)
-	{ //앞으로 간다. (IMG 왼쪽으로 순환)
-
-		if (m_MeterIMG_List[METER_SHOW_FISRT] <= METER_START_SHOW_X) //가장 처음 이미지가 -x라서 젋댓값을 체크한다.
-		{
-			m_MeterIMG_List[METER_SHOW_FISRT] += METER_GAP;
-			m_MeterIMG_List[METER_SHOW_SECOND] += METER_GAP;
-
-			m_Meter_Value[METER_SHOW_FISRT] -= METER_VALUE_GAP;
-			m_Meter_Value[METER_SHOW_SECOND] -= METER_VALUE_GAP;
-
-			//m_Meter_List.push_back(m_BackIMG_List.front());
-			//m_BackIMG_List.pop_front();
-		}
-
-		m_MeterIMG_List[METER_SHOW_FISRT] -= deltaTime * SPEED_BACK;
-		m_MeterIMG_List[METER_SHOW_SECOND] -= deltaTime * SPEED_BACK;
-	}
-	else if (thisTurn_MoveDistance < 0)
-	{ //뒤로 간다. (IMG 오른쪽으로 순환)
-
-		if (m_MeterIMG_List[METER_SHOW_SECOND] >= METER_END_SHOW_X)
-		{
-			m_MeterIMG_List[METER_SHOW_FISRT] -= METER_GAP;
-			m_MeterIMG_List[METER_SHOW_SECOND] -= METER_GAP;
-
-			m_Meter_Value[METER_SHOW_FISRT] += METER_VALUE_GAP;
-			m_Meter_Value[METER_SHOW_SECOND] += METER_VALUE_GAP;
-
-			//m_BackIMG_List.push_front(m_BackIMG_List.back());
-			//m_BackIMG_List.pop_back();
-		}
-
-		m_MeterIMG_List[METER_SHOW_FISRT] += deltaTime * SPEED_BACK;
-		m_MeterIMG_List[METER_SHOW_SECOND] += deltaTime * SPEED_BACK;
 	}
 }

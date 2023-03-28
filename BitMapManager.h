@@ -1,7 +1,7 @@
 #pragma once
-#include"BitMap.h"
 #include<stdio.h>
-
+#include <string>
+#include"BitMap.h"
 
 enum IMG
 {

@@ -1,0 +1,54 @@
+#include "Meter.h"
+#include "GameManager.h"
+
+
+Meter::Meter()
+{
+	m_MeterIMG_X = 0;
+	m_Meter_Value_X = 0;
+}
+Meter::~Meter()
+{
+}
+
+void Meter::DrawMeter(HDC hdc)
+{
+	std::wstring str;
+
+	BitMapMgr->GetImage(IMG_INTERFACE_METER_OUTLINE)->DrawTransparent(hdc, m_MeterIMG_X, METER_Y, METER_W, METER_H);
+
+	SetBkMode(hdc, TRANSPARENT); //글자 뒷배경 투명화
+	//SetBkColor(hdc, RGB(0, 0, 0));
+	SetTextColor(hdc, RGB(255, 255, 255)); //글자 색 변경(흰색)
+
+	SelectObject(hdc, GMMgr->Get_Font(FONT_STAGE));
+	str = std::to_wstring(m_Meter_Value_X);
+	TextOut(hdc, m_MeterIMG_X, METER_VALUE_Y, str.c_str(), str.length());
+}
+
+
+void Meter::UpdateMeter(float deltaTime, float thisTurn_MoveDistance)
+{
+	if (thisTurn_MoveDistance > 0)
+	{ //앞으로 간다. (IMG 왼쪽으로 순환)
+
+		if (m_MeterIMG_X <= METER_START_SHOW_X) //가장 처음 이미지가 -x라서 젋댓값을 체크한다.
+		{
+			m_MeterIMG_X += METER_GAP;
+			m_Meter_Value_X += METER_GAP;
+		}
+
+		m_MeterIMG_X -= deltaTime * SPEED_BACK;
+	}
+	else if (thisTurn_MoveDistance < 0)
+	{ //뒤로 간다. (IMG 오른쪽으로 순환)
+
+		if (m_MeterIMG_X >= METER_END_SHOW_X)
+		{
+			m_MeterIMG_X -= METER_GAP;
+			m_Meter_Value_X -= METER_GAP;
+		}
+
+		m_MeterIMG_X += deltaTime * SPEED_BACK;
+	}
+}
