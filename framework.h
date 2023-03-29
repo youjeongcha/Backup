@@ -13,3 +13,16 @@
 #include <malloc.h>
 #include <memory.h>
 #include <tchar.h>
+
+enum WindowXY
+{
+	MAIN_X = 200,
+	MAIN_Y = 100,
+	MAIN_W = 900,
+	MAIN_H = 450,
+};
+
+enum SPEEDMETER
+{
+	SPEED_METER = 20,
+};

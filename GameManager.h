@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BitMapManager.h"
+#include "ObjectManager.h"
 #include "MapDraw.h"
 #include "UI.h"
 #include "Character.h"
@@ -30,6 +31,7 @@ private:
 	MapDraw m_Draw;
 	UI m_UI;
 	Character character;
+	ObjectManager ObjectMgr;
 
 
 	GameManager();

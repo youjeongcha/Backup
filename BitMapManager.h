@@ -88,7 +88,7 @@ enum MAP_IMG_XYWH
 	//잔디
 	IMG_GRASS_X = 0,
 	IMG_GRASS_Y = (int)(MAIN_H / 2.6), //(int)(MAIN_H / 2.9f),
-	IMG_GRASS_W = MAIN_W + MAIN_X,
+	IMG_GRASS_W = MAIN_W,// + MAIN_X,
 	IMG_GRASS_H = (int)(MAIN_H / 2.2f),
 
 	//관중(7) 
@@ -115,11 +115,13 @@ enum IMG_CHARACTER
 //M 이미지의 XYWH
 enum METER_IMG
 {
+	METER_GAP = IMG_SPECTATOR_W * 8,
 	METER_X = IMG_CHARACTER_X,
+	METER_SECOND_X = IMG_CHARACTER_X + METER_GAP,
 	METER_Y = IMG_GRASS_Y + IMG_GRASS_H,
 	METER_W = 80,
 	METER_H = 30,
-	METER_GAP = IMG_SPECTATOR_W * 8,
+	METER_ACROSS_ONE = METER_GAP * 2,
 
 
 	//첫째 M 표시의 제한 범위
@@ -134,12 +136,14 @@ enum METER_IMG
 //미터 수치 글자
 enum METER_VALUE
 {
-	METER_VALUE_X_GAP = 27, //이미지 시작 x와의 갭을 의미
+	//METER_VALUE_X_GAP = 27, //이미지 시작 x와의 갭을 의미
+	METER_VALUE_X_GAP = METER_W - 30, //이미지 시작 좌표인 m_MeterIMG_X에 더해준다.
 	METER_VALUE_Y = METER_Y + 6,
 
 	METER_VALUE_START = 100,
 	METER_VALUE_END = 0,
 	METER_VALUE_GAP = 10,
+	METER_VALUE_ACROSS_ONE = METER_VALUE_GAP * 2,
 };
 
 //-----------거리-------------
@@ -147,7 +151,8 @@ enum TRAVELDISTANCE //사실상 배경이 움직이는 범위값이라고 보아도 무방하다
 {
 	TRAVELDISTANCE_START = 0,
 	//골이 나타나고 배경 움직임 > 캐릭터 움직임으로 전환되는 시점
-	TRAVELDISTANCE_END = METER_GAP * 12, 
+	TRAVELDISTANCE_END = 1000, 
+	//TRAVELDISTANCE_END = METER_GAP * 11 - 120, 
 
 	TRAVELDISTANCE_MOVE_PER_SEC = 10, //초당 움직이는 거리
 };

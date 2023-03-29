@@ -8,7 +8,7 @@ MapDraw::MapDraw()
 	m_BackIMG_X = 0;
 
 	m_Meter[METER_SHOW_FISRT].setMeter(METER_X, METER_VALUE_START);
-	m_Meter[METER_SHOW_SECOND].setMeter(METER_X + METER_GAP, METER_VALUE_START - METER_VALUE_GAP);
+	m_Meter[METER_SHOW_SECOND].setMeter(METER_SECOND_X, METER_VALUE_START - METER_VALUE_GAP);
 	//m_Meter[]
 	//m_MeterIMG_List[METER_SHOW_FISRT] = METER_X;
 	//m_MeterIMG_List[METER_SHOW_SECOND] = m_MeterIMG_List[METER_SHOW_FISRT] + METER_GAP;
@@ -49,7 +49,7 @@ void MapDraw::DrawMap(HDC hdc)
 
 void MapDraw::UpdateMap(float deltaTime, float thisTurn_MoveDistance)
 {
-	//map
+	//Goal이 특정 위치에 도달하면 Map움직임 멈추기
 	UpdateBack(deltaTime, thisTurn_MoveDistance);
 	//meter
 	for (int i = 0; i < METER_SHOW_COUNT; i++)
@@ -85,22 +85,32 @@ void MapDraw::DrawBack(HDC hdc)
 
 void MapDraw::UpdateBack(float deltaTime, float thisTurn_MoveDistance)
 {
+
+	if (thisTurn_MoveDistance == 0)
+		return;
+
 	//먼저 이동을 하고 범위에 어긋나는지 확인하는게 맞다.
 	//thisTurn_MoveDistance로 캐릭터가 이동한 만큼 이동하는게 맞다.
 	m_BackIMG_X -= deltaTime * thisTurn_MoveDistance * SPEED_BACK;
-	
+
+
+
 	if (thisTurn_MoveDistance > 0)
 	{ //앞으로 간다. (IMG 왼쪽으로 순환)
 		
-		if (abs(m_BackIMG_X) >= IMG_SPECTATOR_W) //가장 처음 이미지가 -x라서 젋댓값을 체크한다.
+		if (-m_BackIMG_X > IMG_SPECTATOR_W) //가장 처음 이미지가 -x라서 젋댓값을 체크한다.
 		{
 			m_BackIMG_X += IMG_SPECTATOR_W;
+
+			//if (m_BackIMG_X >= TRAVELDISTANCE_END)
+			//{
+			//	m_BackIMG_X = TRAVELDISTANCE_END;
+			//	//return;
+			//}
 
 			m_BackIMG_List.push_back(m_BackIMG_List.front());
 			m_BackIMG_List.pop_front();
 		}
-
-		//m_BackIMG_X -= deltaTime * SPEED_BACK;
 	}
 	else if (thisTurn_MoveDistance < 0)
 	{ //뒤로 간다. (IMG 오른쪽으로 순환)
@@ -108,6 +118,12 @@ void MapDraw::UpdateBack(float deltaTime, float thisTurn_MoveDistance)
 		if (m_BackIMG_X >= -IMG_SPECTATOR_W)
 		{
 			m_BackIMG_X -= IMG_SPECTATOR_W;
+
+			//if (m_BackIMG_X <= TRAVELDISTANCE_START)
+			//{
+			//	m_BackIMG_X = TRAVELDISTANCE_START;
+			//	//return;
+			//}
 
 			m_BackIMG_List.push_front(m_BackIMG_List.back());
 			m_BackIMG_List.pop_back();

@@ -4,13 +4,7 @@
 #include<Windows.h>
 #include "framework.h"
 
-enum WindowXY
-{
-	MAIN_X = 200,
-	MAIN_Y = 100,
-	MAIN_W = 900,
-	MAIN_H = 450,
-};
+
 class BitMap
 {
 private:

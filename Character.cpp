@@ -77,10 +77,12 @@ void Character::Update_Input(float deltaTime)
 			m_MoveKey = CHARACTER_MOVE_LEFT;
 		else if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
 			m_MoveKey = CHARACTER_MOVE_RIGHT;
-		else if ((GetAsyncKeyState(VK_SPACE) & 0x8000) && (m_JumpState == CHARACTER_JUMP_NONE)) //캐릭터가 원 상태일때만 점프 가능
-			m_JumpState = CHARACTER_JUMP_UP;
 		else
 			m_MoveKey = CHARACTER_MOVE_NONE;
+
+		//점프는 방향고 별도로 체크가 이루어져야 한다. 키 하나만 입력 체크되기 때문에
+		if ((GetAsyncKeyState(VK_SPACE) & 0x8000) && (m_JumpState == CHARACTER_JUMP_NONE)) //캐릭터가 원 상태일때만 점프 가능
+			m_JumpState = CHARACTER_JUMP_UP;
 	}
 }
 
@@ -108,11 +110,11 @@ float Character::Update_Move(float deltaTime)
 
 		m_TravelDistance += thisTurn_MoveDistance;
 
-		//캐릭터 이동 범위 제한(시작점 배경 고정)
-		if (m_TravelDistance < TRAVELDISTANCE_START)
-			m_TravelDistance = TRAVELDISTANCE_START;
-		else if (m_TravelDistance > TRAVELDISTANCE_END)
-			m_TravelDistance = TRAVELDISTANCE_END;
+		////캐릭터 이동 범위 제한(시작점 배경 고정)
+		//if (m_TravelDistance <= TRAVELDISTANCE_START)
+		//	m_TravelDistance = TRAVELDISTANCE_START;
+		//else if (m_TravelDistance >= TRAVELDISTANCE_END)
+		//	m_TravelDistance = TRAVELDISTANCE_END;
 	}
 
 	m_MoveTime += deltaTime;
@@ -120,7 +122,9 @@ float Character::Update_Move(float deltaTime)
 
 	//거리 이동에 제한을 두기 위해(배경의 움직임 제한)
 	if ((m_TravelDistance <= TRAVELDISTANCE_START) || (m_TravelDistance >= TRAVELDISTANCE_END)) //가장 왼쪽에 도달한 경우
+	{
 		return 0;
+	}
 	else
 		return thisTurn_MoveDistance;
 }

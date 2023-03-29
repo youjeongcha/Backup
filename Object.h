@@ -10,10 +10,11 @@ enum RECTTYPE
 
 class Object
 {
-private:
+protected:
 	RECT m_Rect[RECTTYPE_COUNT];
 public:
-	virtual void Draw() abstract;
+	virtual void Draw(HDC hdc) abstract;
+	virtual void Update(float deltaTime, float thisTurn_MoveDistance) abstract;
 	//virtual bool BumpCheck() abstract;
 
 };

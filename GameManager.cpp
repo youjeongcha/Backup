@@ -55,11 +55,13 @@ void GameManager::Update(float deltaTime)
 
 		thisTurn_MoveDistance = character.Update(deltaTime);
 
-		//if (thisTurn_MoveDistance != 0) //캐릭터 좌표
+		//TODO::Goal이 특정 좌표에 오기 전까지는 배경을 움직인다.(뒤로가서 골이 멀어지면 다시 배경 이동으로 전환한다.)
+		//if (ObjectMgr.Get_EndCheck() == false)
 		{
-			//TODO::Goal이 특정 좌표에 오기 전까지는 배경을 움직인다.(뒤로가서 골이 멀어지면 다시 배경 이동으로 전환한다.)
 			m_Draw.UpdateMap(deltaTime, thisTurn_MoveDistance); //back 관중+코끼리 왼쪽 순회
 		}
+
+		ObjectMgr.Update(deltaTime, thisTurn_MoveDistance);
 
 		break;
 	default:
@@ -100,6 +102,7 @@ void GameManager::Draw()
 		m_Draw.DrawMap(m_backDC);	//배경
 		m_UI.DrawGame(m_backDC);	//UI
 		character.Draw(m_backDC);	//캐릭터
+		ObjectMgr.Draw(m_backDC);	//오브젝트
 		break;
 	default:
 		break;
