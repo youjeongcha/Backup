@@ -48,5 +48,7 @@ public:
 	
 	void DrawMap(HDC hdc);
 	void UpdateMap(float deltaTime, float thisTurn_MoveDistance);
+	//미터가 0이 되면 Goal을 활성화한다. 그리기 + 충돌체크
+	bool MeterEnd_GoalActiveCheck(); 
 };
 

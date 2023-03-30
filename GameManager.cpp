@@ -55,13 +55,16 @@ void GameManager::Update(float deltaTime)
 
 		thisTurn_MoveDistance = character.Update(deltaTime);
 
-		//TODO::Goal이 특정 좌표에 오기 전까지는 배경을 움직인다.(뒤로가서 골이 멀어지면 다시 배경 이동으로 전환한다.)
-		//if (ObjectMgr.Get_EndCheck() == false)
+		//Goal이 특정 좌표에 오기 전까지는 배경을 움직인다.(뒤로가서 골이 멀어지면 다시 배경 이동으로 전환한다.)
+		//if (ObjectMgr.Get_GoalEndPositionCheck() == false)
+		//if (Get_GoalEndPositionCheck())
+		if (Get_GoalEndPositionCheck() == false)
 		{
 			m_Draw.UpdateMap(deltaTime, thisTurn_MoveDistance); //back 관중+코끼리 왼쪽 순회
 		}
 
-		ObjectMgr.Update(deltaTime, thisTurn_MoveDistance);
+		if (m_Draw.MeterEnd_GoalActiveCheck() == true)
+			ObjectMgr.Update(deltaTime, thisTurn_MoveDistance);
 
 		break;
 	default:
@@ -102,6 +105,15 @@ void GameManager::Draw()
 		m_Draw.DrawMap(m_backDC);	//배경
 		m_UI.DrawGame(m_backDC);	//UI
 		character.Draw(m_backDC);	//캐릭터
+		if (m_Draw.MeterEnd_GoalActiveCheck() == true)
+		{
+			//active체크만 하고 초기 goal의 x 값은 meter의 오른쪽 화면에 숨어있을때의 세팅 값으로 해둔다.
+			//+ 세팅은 생성자에서 처리를 하기로 한다.
+			ObjectMgr.Set_ActiveCheck(true);
+		}
+		else
+			ObjectMgr.Set_ActiveCheck(false);
+
 		ObjectMgr.Draw(m_backDC);	//오브젝트
 		break;
 	default:

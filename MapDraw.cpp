@@ -57,6 +57,8 @@ void MapDraw::UpdateMap(float deltaTime, float thisTurn_MoveDistance)
 
 }
 
+
+
 void MapDraw::DrawGrass(HDC hdc)
 {
 	BitMapMgr->GetImage(IMG_BG_GRASS)->Draw(hdc, IMG_GRASS_X, IMG_GRASS_Y, IMG_GRASS_W, IMG_GRASS_H);
@@ -129,4 +131,19 @@ void MapDraw::UpdateBack(float deltaTime, float thisTurn_MoveDistance)
 			m_BackIMG_List.pop_back();
 		}
 	}
+}
+
+
+bool MapDraw::MeterEnd_GoalActiveCheck()
+{
+	//for (int i = 0; i < METER_SHOW_COUNT; i++)
+	//{
+	//	if (m_Meter[i].Get_Meter_Value() == METER_VALUE_END)
+	//		return true;
+	//}
+
+	if (m_Meter[METER_SHOW_FISRT].Get_Meter_Value() == METER_VALUE_END)
+		return true;
+
+	return false;
 }

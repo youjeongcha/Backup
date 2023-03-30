@@ -29,6 +29,8 @@ float Character::Update(float deltaTime)
 
 	distance = Update_Move(deltaTime); //키 입력 받기 + 이동
 
+
+
 	Update_Jump(deltaTime);
 	return distance;
 }
@@ -110,23 +112,28 @@ float Character::Update_Move(float deltaTime)
 
 		m_TravelDistance += thisTurn_MoveDistance;
 
-		////캐릭터 이동 범위 제한(시작점 배경 고정)
-		//if (m_TravelDistance <= TRAVELDISTANCE_START)
-		//	m_TravelDistance = TRAVELDISTANCE_START;
-		//else if (m_TravelDistance >= TRAVELDISTANCE_END)
-		//	m_TravelDistance = TRAVELDISTANCE_END;
+
+		//캐릭터의 x좌표 이동
+		if (GMMgr->Get_GoalEndPositionCheck())
+			m_CharcterRect.left += thisTurn_MoveDistance;
+
+
+		//거리 이동에 제한을 두기 위해(배경의 움직임 제한, 배경 고정)
+		if (m_TravelDistance < TRAVELDISTANCE_START)
+		{
+			thisTurn_MoveDistance = 0; 
+			m_TravelDistance = TRAVELDISTANCE_START;
+		}
+		else if (m_TravelDistance > TRAVELDISTANCE_END)
+		{
+			thisTurn_MoveDistance = 0;
+			m_TravelDistance = TRAVELDISTANCE_END;
+		}
 	}
 
 	m_MoveTime += deltaTime;
 
-
-	//거리 이동에 제한을 두기 위해(배경의 움직임 제한)
-	if ((m_TravelDistance <= TRAVELDISTANCE_START) || (m_TravelDistance >= TRAVELDISTANCE_END)) //가장 왼쪽에 도달한 경우
-	{
-		return 0;
-	}
-	else
-		return thisTurn_MoveDistance;
+	return thisTurn_MoveDistance;
 }
 
 void Character::Update_Jump(float deltaTime)

@@ -3,7 +3,6 @@
 //#include <list>
 
 
-
 class Meter
 {
 private:
@@ -21,5 +20,6 @@ public:
 
 	void Set_MeterIMG_X(float _IMG_X) { m_MeterIMG_X = _IMG_X; }
 	void Set_MeterValue(int _Meter_Value) { m_Meter_Value = _Meter_Value; }
+	int Get_Meter_Value() { return m_Meter_Value; }
 };
 

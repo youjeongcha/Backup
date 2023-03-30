@@ -12,6 +12,8 @@ public:
 	void Update(float deltaTime, float thisTurn_MoveDistance);
 	bool BumpCheck();
 
-	bool Get_EndCheck() { return m_Goal.Get_EndCheck(); };
+	bool Get_GoalEndPositionCheck() { return m_Goal.Get_EndPositionCheck(); };
+	void Set_ActiveCheck(bool _ActiveCheck) { m_Goal.Set_ActiveCheck(_ActiveCheck); }
+	//void Set_Goal_X(float _X) { m_Goal.Set_Goal_X(_X); } //M가 0이 출력될 차례가 오면 goal의 x 좌표 세팅
 };
 

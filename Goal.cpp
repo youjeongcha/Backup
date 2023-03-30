@@ -3,9 +3,11 @@
 
 Goal::Goal()
 {
-	m_EndCheck = false;
+	m_EndPositionCheck = false;
 
-	m_Rect[RECTTYPE_BITMAP].left = TRAVELDISTANCE_END - 20;
+	//m_Rect[RECTTYPE_BITMAP].left = TRAVELDISTANCE_END - 20;
+	//m_Rect[RECTTYPE_BITMAP].left = -999; //이건 Goal이 나타날때 세팅을 해준다.
+	m_Rect[RECTTYPE_BITMAP].left = METER_END_SHOW_X; //이건 Goal이 나타날때 세팅을 해준다.
 	m_Rect[RECTTYPE_BITMAP].top = IMG_CHARACTER_Y + 20;
 	m_Rect[RECTTYPE_BITMAP].right = m_Rect[RECTTYPE_BITMAP].left + GOAL_IMG_W;
 	m_Rect[RECTTYPE_BITMAP].bottom = m_Rect[RECTTYPE_BITMAP].top + GOAL_IMG_H;
@@ -26,24 +28,23 @@ void Goal::Draw(HDC hdc)
 }
 
 void Goal::Update(float deltaTime, float thisTurn_MoveDistance)
-{
-	
+{	
 	m_Rect[RECTTYPE_BITMAP].left -= deltaTime * SPEED_METER * thisTurn_MoveDistance;
 
 	if (thisTurn_MoveDistance > 0)
 	{ //앞으로 간다. (IMG 왼쪽으로 순환)
 		//특정 x좌표에 도착한 경우
-		if (m_Rect[RECTTYPE_BITMAP].left <= GOAL_IMG_ARRIVE_X)
+		if (m_Rect[RECTTYPE_BITMAP].left <= GOAL_IMG_ARRIVE_X) //도착하기 전까지는 GOAL_IMG_ARRIVE_X가 더 작아야 한다.
 		{
 			m_Rect[RECTTYPE_BITMAP].left = GOAL_IMG_ARRIVE_X;
-			//m_EndCheck = true;
+			m_EndPositionCheck = true;
 		}
-		//else
-			//m_EndCheck = false;
+		else
+			m_EndPositionCheck = false;
 	}
 	else if (thisTurn_MoveDistance < 0)
 	{ //뒤로 간다. (IMG 오른쪽으로 순환)
-		//m_EndCheck = false;
+		m_EndPositionCheck = false;
 	}
 
 

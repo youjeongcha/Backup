@@ -52,6 +52,7 @@ public:
 	//사용 가능한 키입력이 있었는지 확인
 	//bool KeyInputCheck();
 
+	bool Get_GoalEndPositionCheck() { return ObjectMgr.Get_GoalEndPositionCheck(); }
 
 	HBITMAP MyCreateDIBSection(HDC hdc, int width, int height);
 	HFONT Get_Font(FONT fontType) { return m_Font[fontType]; };
