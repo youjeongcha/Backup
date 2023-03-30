@@ -52,7 +52,11 @@ public:
 	//사용 가능한 키입력이 있었는지 확인
 	//bool KeyInputCheck();
 
-	bool Get_GoalEndPositionCheck() { return ObjectMgr.Get_GoalEndPositionCheck(); }
+	//질문 
+	//GM의 배경 이동 확인 + 캐릭터의 update 이동 확인에서 
+	bool Get_GoalEndPositionCheck() { return ObjectMgr.Get_GoalEndPositionCheck(); } //골이 특정 x 좌표에 닿는것 체크 : 배경 > 캐릭터 이동을 담당
+	//Character에서 사용
+	void Set_GoalEndPositionCheck(bool _EndPositionCheck) { ObjectMgr.Set_GoalEndPositionCheck(_EndPositionCheck); }
 
 	HBITMAP MyCreateDIBSection(HDC hdc, int width, int height);
 	HFONT Get_Font(FONT fontType) { return m_Font[fontType]; };

@@ -162,7 +162,8 @@ enum TRAVELDISTANCE //사실상 배경이 움직이는 범위값이라고 보아도 무방하다
 	//TRAVELDISTANCE_END = 1000, 
 	TRAVELDISTANCE_END = METER_GAP * 11 - 120, 
 
-	TRAVELDISTANCE_MOVE_PER_SEC = 10, //초당 움직이는 거리
+	//TRAVELDISTANCE_MOVE_PER_SEC = 10, //초당 움직이는 거리
+	TRAVELDISTANCE_MOVE_PER_SEC = 200, //초당 움직이는 거리
 };
 
 

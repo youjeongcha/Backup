@@ -23,6 +23,7 @@ public:
 
 	//void Set_Goal_X(float _X) { m_Rect[RECTTYPE_BITMAP].left = _X; } //M가 0이 출력될 차례가 오면 goal의 x 좌표 세팅
 	void Set_ActiveCheck(bool _ActiveCheck) { m_ActiveCheck = _ActiveCheck; }
+	void Set_EndPositionCheck(bool _EndPositionCheck) { m_EndPositionCheck = _EndPositionCheck; }
 	bool Get_ActiveCheck() { return m_ActiveCheck; }
 	bool Get_EndPositionCheck() { return m_EndPositionCheck; }
 	//virtual bool BumpCheck() override;

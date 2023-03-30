@@ -29,7 +29,8 @@ void Meter::DrawMeter(HDC hdc)
 
 void Meter::UpdateMeter(float deltaTime, float thisTurn_MoveDistance)
 {
-	m_MeterIMG_X -= deltaTime * SPEED_METER * thisTurn_MoveDistance;
+	//m_MeterIMG_X -= deltaTime * SPEED_METER * thisTurn_MoveDistance;
+	m_MeterIMG_X -= deltaTime * thisTurn_MoveDistance;
 
 	if (thisTurn_MoveDistance > 0)
 	{ //앞으로 간다. (IMG 왼쪽으로 순환)

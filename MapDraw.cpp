@@ -93,7 +93,7 @@ void MapDraw::UpdateBack(float deltaTime, float thisTurn_MoveDistance)
 
 	//먼저 이동을 하고 범위에 어긋나는지 확인하는게 맞다.
 	//thisTurn_MoveDistance로 캐릭터가 이동한 만큼 이동하는게 맞다.
-	m_BackIMG_X -= deltaTime * thisTurn_MoveDistance * SPEED_BACK;
+	m_BackIMG_X -= deltaTime * thisTurn_MoveDistance;// *SPEED_BACK;
 
 
 

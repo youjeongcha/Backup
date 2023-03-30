@@ -8,8 +8,8 @@ Character::Character()
 	m_JumpTime = 0;
 	m_JumpState = CHARACTER_JUMP_NONE;
 
-	m_CharcterRect.left = IMG_CHARACTER_X;
-	m_CharcterRect.top = IMG_CHARACTER_Y;
+	m_CharcterRect.left = m_X = IMG_CHARACTER_X;
+	m_CharcterRect.top = m_Y = IMG_CHARACTER_Y;
 	m_CharcterRect.right = m_CharcterRect.left + IMG_CHARACTER_W;
 	m_CharcterRect.bottom = m_CharcterRect.top + IMG_CHARACTER_H;
 
@@ -29,8 +29,6 @@ float Character::Update(float deltaTime)
 
 	distance = Update_Move(deltaTime); //키 입력 받기 + 이동
 
-
-
 	Update_Jump(deltaTime);
 	return distance;
 }
@@ -41,9 +39,8 @@ void Character::Update_Animation(float deltaTime)
 
 	if (m_MoveTime >= MOVE_SPEED)
 	{
-		//m_MoveTime = 0; //초기화는 Update_XY에서 이루어진다.
-		if ((m_JumpState != CHARACTER_JUMP_NONE) || (GetAsyncKeyState(VK_SPACE) & 0x8000))	//점프
-			m_IMG_NowMotion = IMG_CHARACTER_FRONT_3;
+		m_MoveTime = 0; //초기화는 Update_XY에서 이루어진다.
+
 
 		switch (m_MoveKey)
 		{
@@ -62,9 +59,10 @@ void Character::Update_Animation(float deltaTime)
 			break;
 		}
 		
-
+		if ((m_JumpState != CHARACTER_JUMP_NONE))	//점프중이면
+			m_IMG_NowMotion = IMG_CHARACTER_FRONT_3;
 		//해당 움직임 모션 범위 IMG 안에서만 작동하기 위해 IMG 범위 제한걸기
-		if (m_IMG_NowMotion >= imgLimit) //점프 + 뒤이동의 경우 imgLmit를 넘어서 >=가 필요
+		else if (m_IMG_NowMotion >= imgLimit) //점프 + 뒤이동의 경우 imgLmit를 넘어서 >=가 필요
  			m_IMG_NowMotion = IMG_CHARACTER_FRONT_1;
 	}
 
@@ -73,8 +71,10 @@ void Character::Update_Animation(float deltaTime)
 
 void Character::Update_Input(float deltaTime)
 {
-	//if (m_JumpState != CHARACTER_JUMP_NONE) //Jump 한 상태에서는 이동키 누르지 못하게 해야한다.
+	switch (m_JumpState)
 	{
+	case CHARACTER_JUMP_NONE:
+
 		if (GetAsyncKeyState(VK_LEFT) & 0x8000)
 			m_MoveKey = CHARACTER_MOVE_LEFT;
 		else if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
@@ -83,8 +83,12 @@ void Character::Update_Input(float deltaTime)
 			m_MoveKey = CHARACTER_MOVE_NONE;
 
 		//점프는 방향고 별도로 체크가 이루어져야 한다. 키 하나만 입력 체크되기 때문에
-		if ((GetAsyncKeyState(VK_SPACE) & 0x8000) && (m_JumpState == CHARACTER_JUMP_NONE)) //캐릭터가 원 상태일때만 점프 가능
+		if ((GetAsyncKeyState(VK_SPACE) & 0x8000)) //캐릭터가 원 상태일때만 점프 가능
 			m_JumpState = CHARACTER_JUMP_UP;
+		break;
+
+	default:
+		break;
 	}
 }
 
@@ -94,9 +98,9 @@ float Character::Update_Move(float deltaTime)
 	//TODO::마지막 목표에 도달하기 전까지는 배경을 움직인다.(목표가 멀어지면 다시 배경 움직임)
 	//GM에서 goal 위치 확인 bool값 받아와서 제한 걸기
 
-	if (m_MoveTime >= MOVE_SPEED)
+	//if (m_MoveTime >= MOVE_SPEED)
 	{
-		m_MoveTime = 0;
+		//m_MoveTime = 0;
 
 		//점프는 좌우 이동과 별도로 측정을 해야 좌우이동 중에 점프를 했을 때 배경 끊김 현상이 발생X
 
@@ -110,12 +114,21 @@ float Character::Update_Move(float deltaTime)
 			break;
 		}
 
-		m_TravelDistance += thisTurn_MoveDistance;
+		m_TravelDistance += thisTurn_MoveDistance * deltaTime;
 
 
-		//캐릭터의 x좌표 이동
+		//배경 이동 > 캐릭터의 x좌표 이동
 		if (GMMgr->Get_GoalEndPositionCheck())
-			m_CharcterRect.left += thisTurn_MoveDistance;
+		{
+			m_X  += thisTurn_MoveDistance * deltaTime;
+
+			if (m_X <= IMG_CHARACTER_X) //캐릭터 이동에서 배경 이동으로 전환
+			{
+				m_X = IMG_CHARACTER_X;
+				GMMgr->Set_GoalEndPositionCheck(false);
+			}
+			m_CharcterRect.left = m_X;
+		}
 
 
 		//거리 이동에 제한을 두기 위해(배경의 움직임 제한, 배경 고정)
@@ -131,7 +144,7 @@ float Character::Update_Move(float deltaTime)
 		}
 	}
 
-	m_MoveTime += deltaTime;
+	//m_MoveTime += deltaTime;
 
 	return thisTurn_MoveDistance;
 }
@@ -139,35 +152,33 @@ float Character::Update_Move(float deltaTime)
 void Character::Update_Jump(float deltaTime)
 {
 	//캐릭터가 점프 키를 누르고 공중에 떠있는 상태
-	if (m_JumpState != CHARACTER_JUMP_NONE)
+	//if (m_JumpState != CHARACTER_JUMP_NONE)
 	{
-		if (m_JumpTime >= JUMP_SPEED)
-		{
-			m_JumpTime = 0;
-
-			if ((m_JumpState == CHARACTER_JUMP_UP) && (m_CharcterRect.top <= CHARACTER_JUMP_MAX_Y))
-			{
-				m_CharcterRect.top = CHARACTER_JUMP_MAX_Y;
-				m_JumpState = CHARACTER_JUMP_DOWN;
-			}
-			else if ((m_JumpState == CHARACTER_JUMP_DOWN) && (m_CharcterRect.top >= CHARACTER_JUMP_MIN_Y))
-			{
-				m_CharcterRect.top = CHARACTER_JUMP_MIN_Y;
-				m_JumpState = CHARACTER_JUMP_NONE;
-			}
-
 			switch (m_JumpState)
 			{
 			case CHARACTER_JUMP_UP:
-				m_CharcterRect.top -= CHARACTER_JUMP_GAP;
+				m_Y -= CHARACTER_JUMP_GAP * deltaTime;
+				
+				if ((m_Y <= CHARACTER_JUMP_MAX_Y))
+			{
+					m_Y = CHARACTER_JUMP_MAX_Y;
+				m_JumpState = CHARACTER_JUMP_DOWN;
+			}
+				m_CharcterRect.top = m_Y;
 				break;
 			case CHARACTER_JUMP_DOWN:
-				m_CharcterRect.top += CHARACTER_JUMP_GAP;
+				m_Y += CHARACTER_JUMP_GAP * deltaTime;
+				if ((m_Y >= CHARACTER_JUMP_MIN_Y))
+				{
+					m_Y = CHARACTER_JUMP_MIN_Y;
+					m_JumpState = CHARACTER_JUMP_NONE;
+				}
+				m_CharcterRect.top = m_Y;
 				break;
-			}
-		}
 
-		m_JumpTime += deltaTime;
+			}
+
+			 
 	}
 }
 
