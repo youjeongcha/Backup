@@ -40,7 +40,7 @@ void GameManager::init(HWND hWnd)
 
 void GameManager::Update(float deltaTime)
 {
-	float thisTurn_MoveDistance;
+	float total_MoveDistance;
 
 	switch (m_scene)
 	{
@@ -53,18 +53,16 @@ void GameManager::Update(float deltaTime)
 		
 		m_UI.UpdateGame(deltaTime);
 
-		thisTurn_MoveDistance = character.Update(deltaTime);
+		total_MoveDistance = character.Update(deltaTime);
 
 		//Goal이 특정 좌표에 오기 전까지는 배경을 움직인다.(뒤로가서 골이 멀어지면 다시 배경 이동으로 전환한다.)
-		//if (ObjectMgr.Get_GoalEndPositionCheck() == false)
-		//if (Get_GoalEndPositionCheck())
 		if (Get_GoalEndPositionCheck() == false)
 		{
-			m_Draw.UpdateMap(deltaTime, thisTurn_MoveDistance); //back 관중+코끼리 왼쪽 순회
+			m_Draw.UpdateMap(total_MoveDistance); //back 관중+코끼리 왼쪽 순회
 		}
 
 		if (m_Draw.MeterEnd_GoalActiveCheck() == true)
-			ObjectMgr.Update(deltaTime, thisTurn_MoveDistance);
+			ObjectMgr.Update(total_MoveDistance);
 
 		break;
 	default:

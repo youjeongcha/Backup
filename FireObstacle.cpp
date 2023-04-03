@@ -4,6 +4,6 @@ void FireObstacle::Draw(HDC hdc)
 {
 }
 
-void FireObstacle::Update(float deltaTime, float thisTurn_MoveDistance)
+void FireObstacle::Update(float thisTurn_MoveDistance)
 {
 }

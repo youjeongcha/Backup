@@ -18,7 +18,7 @@ public:
 	Goal();
 	~Goal();
 	virtual void Draw(HDC hdc) override;
-	virtual void Update(float deltaTime, float thisTurn_MoveDistance) override;
+	virtual void Update(float thisTurn_MoveDistance) override;
 
 
 	//void Set_Goal_X(float _X) { m_Rect[RECTTYPE_BITMAP].left = _X; } //M가 0이 출력될 차례가 오면 goal의 x 좌표 세팅

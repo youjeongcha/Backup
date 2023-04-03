@@ -14,7 +14,7 @@ protected:
 	RECT m_Rect[RECTTYPE_COUNT];
 public:
 	virtual void Draw(HDC hdc) abstract;
-	virtual void Update(float deltaTime, float thisTurn_MoveDistance) abstract;
+	virtual void Update(float thisTurn_MoveDistance) abstract;
 	//virtual bool BumpCheck() abstract;
 
 };

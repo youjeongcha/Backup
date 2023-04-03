@@ -27,27 +27,20 @@ void Meter::DrawMeter(HDC hdc)
 }
 
 
-void Meter::UpdateMeter(float deltaTime, float thisTurn_MoveDistance)
+void Meter::UpdateMeter(float total_MoveDistance)
 {
-	//m_MeterIMG_X -= deltaTime * SPEED_METER * thisTurn_MoveDistance;
-	m_MeterIMG_X -= deltaTime * thisTurn_MoveDistance;
-
-	if (thisTurn_MoveDistance > 0)
+	m_MeterIMG_X += (m_Prev_MoveDistance - total_MoveDistance);
+	
+	if (m_MeterIMG_X <= METER_START_SHOW_X) //가장 처음 이미지가 -x라서 절댓값을 체크한다.
 	{ //앞으로 간다. (IMG 왼쪽으로 순환)
-
-		if (m_MeterIMG_X <= METER_START_SHOW_X) //가장 처음 이미지가 -x라서 절댓값을 체크한다.
-		{
-			m_MeterIMG_X += METER_ACROSS_ONE; //이미지 하나 건너서 출력
-			m_Meter_Value -= METER_VALUE_ACROSS_ONE; //이미지 하나 건너서 -20
-		}
+		m_MeterIMG_X += METER_ACROSS_ONE; //이미지 하나 건너서 출력
+		m_Meter_Value -= METER_VALUE_ACROSS_ONE; //이미지 하나 건너서 -20
 	}
-	else if (thisTurn_MoveDistance < 0)
+	else if (m_MeterIMG_X >= METER_END_SHOW_X)
 	{ //뒤로 간다. (IMG 오른쪽으로 순환)
-
-		if (m_MeterIMG_X >= METER_END_SHOW_X)
-		{
-			m_MeterIMG_X -= METER_ACROSS_ONE;
-			m_Meter_Value += METER_VALUE_ACROSS_ONE;
-		}
+		m_MeterIMG_X -= METER_ACROSS_ONE;
+		m_Meter_Value += METER_VALUE_ACROSS_ONE;
 	}
+
+	m_Prev_MoveDistance = total_MoveDistance;
 }

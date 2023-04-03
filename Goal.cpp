@@ -27,11 +27,12 @@ void Goal::Draw(HDC hdc)
 	BitMapMgr->GetImage(IMG_OBJECT_GOAL)->DrawTransparent(hdc, m_Rect[RECTTYPE_BITMAP].left, m_Rect[RECTTYPE_BITMAP].top, GOAL_IMG_W, GOAL_IMG_H);
 }
 
-void Goal::Update(float deltaTime, float thisTurn_MoveDistance)
+void Goal::Update(float thisTurn_MoveDistance)
 {	
 	//캐릭터가 뒤로 가자마자 goal이 없어지고. 다시 앞으로 가서 goal이 갑자기 나타나는 거 해결
 	if (m_EndPositionCheck == false)// || (thisTurn_MoveDistance < 0 && m_ActiveCheck == true))
-		m_Rect[RECTTYPE_BITMAP].left -= deltaTime * SPEED_METER * thisTurn_MoveDistance;
+		m_Rect[RECTTYPE_BITMAP].left -= thisTurn_MoveDistance;
+		//m_Rect[RECTTYPE_BITMAP].left -= deltaTime * SPEED_METER * thisTurn_MoveDistance;
 
 	if (thisTurn_MoveDistance > 0)
 	{ //앞으로 간다. (IMG 왼쪽으로 순환)

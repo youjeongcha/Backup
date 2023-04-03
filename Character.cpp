@@ -22,15 +22,15 @@ Character::~Character()
 
 float Character::Update(float deltaTime)
 {//질문 ::Update_XY먼저 호출한 다음 Jump를 해줘야하나. 어차피 조건안이면 다음번 함수 접근에 Jump를 참조하므로 상관 없나? 
-	float distance;
+	float totalDistance;
 
 	Update_Animation(deltaTime); //캐릭터 IMG
 	Update_Input(deltaTime);
 
-	distance = Update_Move(deltaTime); //키 입력 받기 + 이동
+	totalDistance = Update_Move(deltaTime); //키 입력 받기 + 이동
 
 	Update_Jump(deltaTime);
-	return distance;
+	return totalDistance;
 }
 
 void Character::Update_Animation(float deltaTime)
@@ -146,7 +146,7 @@ float Character::Update_Move(float deltaTime)
 
 	//m_MoveTime += deltaTime;
 
-	return thisTurn_MoveDistance;
+	return m_TravelDistance;
 }
 
 void Character::Update_Jump(float deltaTime)
