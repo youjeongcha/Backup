@@ -55,7 +55,9 @@ public:
 
 	float Update(float deltaTime);
 	void Draw(HDC hdc);
+	//bool ColliderCheck();
 
 	float Get_TravelDistance() { return m_TravelDistance; }
+	RECT Get_CharacterRect() { return m_CharcterRect; }
 };
 

@@ -7,13 +7,13 @@ void ObjectManager::Draw(HDC hdc)
 		m_Goal.Draw(hdc);
 }
 
-void ObjectManager::Update(float thisTurn_MoveDistance)
+void ObjectManager::Update(float thisTurn_MoveDistance, float _Prev_MoveDistance)
 {
 	if (m_Goal.Get_ActiveCheck() == true)
-		m_Goal.Update(thisTurn_MoveDistance);
+		m_Goal.Update(thisTurn_MoveDistance, _Prev_MoveDistance);
 }
 
-bool ObjectManager::BumpCheck()
+bool ObjectManager::ColliderCheck()
 {
 	//TODO::ObjectMgr에서 rect 체크 후에 해당 object의 범위와 캐릭터의 범위가 겹치면 true를 리턴한다.
 

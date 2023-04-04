@@ -95,6 +95,7 @@ void Character::Update_Input(float deltaTime)
 float Character::Update_Move(float deltaTime)
 {
 	float thisTurn_MoveDistance = 0;
+	float residualDistance = 0;
 	//TODO::마지막 목표에 도달하기 전까지는 배경을 움직인다.(목표가 멀어지면 다시 배경 움직임)
 	//GM에서 goal 위치 확인 bool값 받아와서 제한 걸기
 
@@ -114,37 +115,33 @@ float Character::Update_Move(float deltaTime)
 			break;
 		}
 
-		m_TravelDistance += thisTurn_MoveDistance * deltaTime;
-
-
-		//배경 이동 > 캐릭터의 x좌표 이동
+		//캐릭터 이동 상태
 		if (GMMgr->Get_GoalEndPositionCheck())
 		{
-			m_X  += thisTurn_MoveDistance * deltaTime;
+			m_X += thisTurn_MoveDistance * deltaTime;
 
-			if (m_X <= IMG_CHARACTER_X) //캐릭터 이동에서 배경 이동으로 전환
+			if (m_X <= IMG_CHARACTER_X) //캐릭터 이동 > 배경 이동으로 전환
 			{
+				m_TravelDistance += m_X - IMG_CHARACTER_X;
 				m_X = IMG_CHARACTER_X;
 				GMMgr->Set_GoalEndPositionCheck(false);
 			}
 			m_CharcterRect.left = m_X;
 		}
+		else
+		{ //배경 이동 상태
+			m_TravelDistance += thisTurn_MoveDistance * deltaTime;
 
-
-		//거리 이동에 제한을 두기 위해(배경의 움직임 제한, 배경 고정)
-		if (m_TravelDistance < TRAVELDISTANCE_START)
-		{
-			thisTurn_MoveDistance = 0; 
-			m_TravelDistance = TRAVELDISTANCE_START;
-		}
-		else if (m_TravelDistance > TRAVELDISTANCE_END)
-		{
-			thisTurn_MoveDistance = 0;
-			m_TravelDistance = TRAVELDISTANCE_END;
+			//거리 이동에 제한을 두기 위해(배경의 움직임 제한, 배경 고정)
+			if (m_TravelDistance <= TRAVELDISTANCE_START)
+				m_TravelDistance = TRAVELDISTANCE_START;
+			else if (m_TravelDistance >= TRAVELDISTANCE_END)
+			{ //배경이동이 끝나고 남은 거리 캐릭터에게 주기
+				m_X += m_TravelDistance - TRAVELDISTANCE_END; //배경 이동이 끝나고 캐릭터 이동으로 전환되는 것
+				m_TravelDistance = TRAVELDISTANCE_END;
+			}
 		}
 	}
-
-	//m_MoveTime += deltaTime;
 
 	return m_TravelDistance;
 }
@@ -177,8 +174,6 @@ void Character::Update_Jump(float deltaTime)
 				break;
 
 			}
-
-			 
 	}
 }
 
@@ -190,3 +185,8 @@ void Character::Draw(HDC hdc)
 {
 	BitMapMgr->GetImage(m_IMG_NowMotion)->DrawTransparent(hdc, m_CharcterRect.left, m_CharcterRect.top, IMG_CHARACTER_W, IMG_CHARACTER_H);
 }
+
+//bool Character::ColliderCheck()
+//{
+//	return false;
+//}

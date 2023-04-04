@@ -51,18 +51,26 @@ void GameManager::Update(float deltaTime)
 		break;
 	case SCENE_GAME:
 		
+		total_MoveDistance = m_Character.Update(deltaTime);
 		m_UI.UpdateGame(deltaTime);
 
-		total_MoveDistance = character.Update(deltaTime);
+		m_Map.UpdateMap(total_MoveDistance, m_Prev_MoveDistance); //back 관중+코끼리 왼쪽 순회
 
-		//Goal이 특정 좌표에 오기 전까지는 배경을 움직인다.(뒤로가서 골이 멀어지면 다시 배경 이동으로 전환한다.)
-		if (Get_GoalEndPositionCheck() == false)
+
+		if (m_Map.MeterEnd_GoalActiveCheck() == true)
 		{
-			m_Draw.UpdateMap(total_MoveDistance); //back 관중+코끼리 왼쪽 순회
+			//active체크만 하고 초기 goal의 x 값은 meter의 오른쪽 화면에 숨어있을때의 세팅 값으로 해둔다.
+			//+ 세팅은 생성자에서 처리를 하기로 한다.
+			m_ObjectMgr.Set_Goal_ActiveCheck(true); //Goal이 그려짐+이동+충돌체크가 가능한 상태
+			m_ObjectMgr.Update(total_MoveDistance, m_Prev_MoveDistance);
 		}
+		else
+			m_ObjectMgr.Set_Goal_ActiveCheck(false);
 
-		if (m_Draw.MeterEnd_GoalActiveCheck() == true)
-			ObjectMgr.Update(total_MoveDistance);
+
+
+
+		m_Prev_MoveDistance = total_MoveDistance;
 
 		break;
 	default:
@@ -70,18 +78,11 @@ void GameManager::Update(float deltaTime)
 	}
 }
 
-
-//bool GameManager::KeyInputCheck()
-//{
-//	if (GetAsyncKeyState(VK_SPACE) & 0x8000)
-//		return true;
-//	else if (GetAsyncKeyState(VK_LEFT) & 0x8000)
-//		return true;
-//	else if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
-//		return true;
-//	return false;
-//}
-
+bool GameManager::GameVictoryCheck()
+{
+	m_Character.ColliderCheck();
+	return false;
+}
 
 
 /*GM의 Draw에서 backDC에 비트맵의 정보를 지정해서
@@ -100,19 +101,12 @@ void GameManager::Draw()
 		m_UI.DrawMenu(m_backDC);
 		break;
 	case SCENE_GAME:
-		m_Draw.DrawMap(m_backDC);	//배경
+		m_Map.DrawMap(m_backDC);	//배경
 		m_UI.DrawGame(m_backDC);	//UI
-		character.Draw(m_backDC);	//캐릭터
-		if (m_Draw.MeterEnd_GoalActiveCheck() == true)
-		{
-			//active체크만 하고 초기 goal의 x 값은 meter의 오른쪽 화면에 숨어있을때의 세팅 값으로 해둔다.
-			//+ 세팅은 생성자에서 처리를 하기로 한다.
-			ObjectMgr.Set_ActiveCheck(true);
-		}
-		else
-			ObjectMgr.Set_ActiveCheck(false);
+		m_Character.Draw(m_backDC);	//캐릭터
 
-		ObjectMgr.Draw(m_backDC);	//오브젝트
+
+		m_ObjectMgr.Draw(m_backDC);	//오브젝트
 		break;
 	default:
 		break;
@@ -122,6 +116,8 @@ void GameManager::Draw()
 	BitBlt(m_frontDC, 0, 0, m_Widht_Height.x, m_Widht_Height.y, m_backDC, 0, 0, SRCCOPY);
 	DeleteObject(backBitmap);
 }
+
+
 
 
 
