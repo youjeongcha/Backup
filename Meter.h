@@ -14,7 +14,14 @@ public:
 	Meter();
 	~Meter();
 
-	void setMeter(int _IMG_X, int _Meter_Value) { m_MeterIMG_X = _IMG_X; m_Meter_Value = _Meter_Value; }
+	//초기 세팅
+	void InitialSet();
+
+	void setMeter(int _IMG_X, int _Meter_Value)
+	{ 
+		m_MeterIMG_X = _IMG_X;
+		m_Meter_Value = _Meter_Value; 
+	}
 
 	void DrawMeter(HDC hdc);	//미터
 	void UpdateMeter(float total_MoveDistance, float _Prev_MoveDistance);		//미터

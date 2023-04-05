@@ -3,23 +3,25 @@
 
 Goal::Goal()
 {
-	m_EndPositionCheck = false;
-
-	//m_Rect[RECTTYPE_BITMAP].left = TRAVELDISTANCE_END - 20;
-	//m_Rect[RECTTYPE_BITMAP].left = -999; //이건 Goal이 나타날때 세팅을 해준다.
-	m_Rect[RECTTYPE_BITMAP].left = METER_END_SHOW_X; //이건 Goal이 나타날때 세팅을 해준다.
-	m_Rect[RECTTYPE_BITMAP].top = IMG_CHARACTER_Y + 20;
-	m_Rect[RECTTYPE_BITMAP].right = m_Rect[RECTTYPE_BITMAP].left + GOAL_IMG_W;
-	m_Rect[RECTTYPE_BITMAP].bottom = m_Rect[RECTTYPE_BITMAP].top + GOAL_IMG_H;
-
-	m_Rect[RECTTYPE_BUMP].left = m_Rect[RECTTYPE_BITMAP].left;
-	m_Rect[RECTTYPE_BUMP].top = m_Rect[RECTTYPE_BITMAP].top;
-	m_Rect[RECTTYPE_BUMP].right = m_Rect[RECTTYPE_BITMAP].right;
-	m_Rect[RECTTYPE_BUMP].bottom = m_Rect[RECTTYPE_BITMAP].bottom;
+	InitialSet();
 }
 
 Goal::~Goal()
 {
+}
+
+void Goal::InitialSet()
+{
+	m_EndPositionCheck = false;
+
+	//m_Rect[RECTTYPE_BITMAP].left = TRAVELDISTANCE_END - 20;
+	//m_Rect[RECTTYPE_BITMAP].left = -999; //이건 Goal이 나타날때 세팅을 해준다.
+	m_Rect[RECTTYPE_BITMAP].left = GOAL_IMG_L; //이건 Goal이 나타날때 세팅을 해준다.
+	m_Rect[RECTTYPE_BITMAP].top = GOAL_IMG_T;
+	m_Rect[RECTTYPE_BITMAP].right = m_Rect[RECTTYPE_BITMAP].left + GOAL_IMG_W;
+	m_Rect[RECTTYPE_BITMAP].bottom = m_Rect[RECTTYPE_BITMAP].top + GOAL_IMG_H;
+
+	m_Rect[RECTTYPE_BUMP] = m_Rect[RECTTYPE_BITMAP];
 }
 
 void Goal::Draw(HDC hdc)
@@ -31,7 +33,7 @@ void Goal::Update(float total_MoveDistance, float _Prev_MoveDistance)
 {	
 	//캐릭터가 뒤로 가자마자 goal이 없어지고. 다시 앞으로 가서 goal이 갑자기 나타나는 거 해결
 	if (m_EndPositionCheck == false)// || (thisTurn_MoveDistance < 0 && m_ActiveCheck == true))
-		m_Rect[RECTTYPE_BITMAP].left += (_Prev_MoveDistance - total_MoveDistance);// *10;
+		m_Rect[RECTTYPE_BITMAP].left += (_Prev_MoveDistance - total_MoveDistance) *10;
 		//m_Rect[RECTTYPE_BITMAP].left -= deltaTime * SPEED_METER * thisTurn_MoveDistance;
 
 
@@ -69,11 +71,13 @@ void Goal::Update(float total_MoveDistance, float _Prev_MoveDistance)
 	//}
 
 
-	//Bump체크에 필요
+	//Draw Rect의 right 갱신
 	m_Rect[RECTTYPE_BITMAP].right = m_Rect[RECTTYPE_BITMAP].left + GOAL_IMG_W;
+	//Bump체크에 필요
+	m_Rect[RECTTYPE_BUMP] = m_Rect[RECTTYPE_BITMAP];
 }
 
-bool Goal::ColliderCheck()
-{
-	return false;
-}
+//RECT Goal::Get_Rect()
+//{
+//	return m_Rect[RECTTYPE_BUMP];
+//}

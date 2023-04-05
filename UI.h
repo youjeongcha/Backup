@@ -126,10 +126,7 @@ enum MENU_KEY
 	MENU_KEY_DOWN = 1,
 };
 
-enum LIFE
-{
-	LIFE_MAX = 3,
-};
+
 
 
 
@@ -146,8 +143,8 @@ private:
 	bool m_NotDrawCheck;
 	//선택지 이동
 	float m_PointMoveTime;
-	//유저 목숨
-	int m_UserLife;
+	////유저 목숨
+	//int m_UserLife;
 	//점수
 	float m_ScoreTime;
 	int m_Score;
@@ -179,6 +176,9 @@ public:
 	UI();
 	~UI();
 
+	//초기 세팅
+	void InitialSet();
+
 	//메뉴------------------------------
 	void DrawMenu(HDC hdc);
 	bool UpdateMenu(float deltaTime);
@@ -187,6 +187,7 @@ public:
 	//게임------------------------------
 	void DrawGame(HDC hdc);
 	void UpdateGame(float deltaTime);
+
 
 };
 

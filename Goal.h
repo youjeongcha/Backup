@@ -1,13 +1,7 @@
 #pragma once
 #include "Object.h"
 
-enum GOAL_IMG
-{
-	GOAL_IMG_W = 60,
-	GOAL_IMG_H = 50,
 
-	//GOAL_IMG_ARRIVE_X = MAIN_W - 150,
-};
 
 class Goal : public Object
 {
@@ -17,6 +11,10 @@ private:
 public:
 	Goal();
 	~Goal();
+
+	//초기 세팅
+	void InitialSet();
+
 	virtual void Draw(HDC hdc) override;
 	virtual void Update(float total_MoveDistance, float _Prev_MoveDistance) override;
 
@@ -29,5 +27,6 @@ public:
 
 	void Set_EndPositionCheck(bool _EndPositionCheck) { m_EndPositionCheck = _EndPositionCheck; }
 	bool Get_EndPositionCheck() { return m_EndPositionCheck; }
-	virtual bool ColliderCheck() override;
+	//virtual bool ColliderCheck() override;
+	//virtual RECT Get_Rect() override;
 };

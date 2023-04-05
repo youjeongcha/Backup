@@ -1,9 +1,11 @@
 #pragma once
+#include <list>
 #include "BitMapManager.h"
 #include "Meter.h"
-#include <list>
+//#include "framework.h"
 
 #define SPEED_BACK 0.5
+#define CLAP_BACK 0.05
 
 enum IMG_BACK
 {
@@ -24,6 +26,7 @@ class MapDraw
 private:
 	std::list<IMG> m_BackIMG_List;
 	float m_BackIMG_X;
+	float m_ClapTime;
 	//float m_Prev_MoveDistance;
 	//Meter
 	Meter m_Meter[METER_SHOW_COUNT]; //맨앞이 사라지고 한칸 건너 맨 뒤에 출력하는 식
@@ -33,18 +36,26 @@ private:
 
 	//배경
 	void DrawGrass(HDC hdc);	//풀
-	void DrawBack(HDC hdc);		//관중+코끼리
+	//관중+코끼리
+	void DrawBack(HDC hdc);		
 	//void DrawMeter(HDC hdc);	//미터
+	
+	//배경 이동
+	void UpdateBack(float total_MoveDistance, float _Prev_MoveDistance); 
 
-	void UpdateBack(float total_MoveDistance, float _Prev_MoveDistance); //배경
 	//void UpdateMeter(float deltaTime, float thisTurn_MoveDistance);		//미터
 
 public:
 	MapDraw();
 	~MapDraw();
+
+	//초기 세팅
+	void InitialSet();
 	
 	void DrawMap(HDC hdc);
 	void UpdateMap(float total_MoveDistance, float _Prev_MoveDistance);
+	//승리후 박수치는 씬을 관리
+	void UpdateClapBack(float deltaTime);
 	//미터가 0이 나올때가 되면 Goal을 활성화한다.
 	bool MeterEnd_GoalActiveCheck(); 
 };

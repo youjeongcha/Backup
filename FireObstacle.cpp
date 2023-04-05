@@ -8,7 +8,7 @@ void FireObstacle::Update(float thisTurn_MoveDistance, float _Prev_MoveDistance)
 {
 }
 
-bool FireObstacle::ColliderCheck()
-{
-	return false;
-}
+//bool FireObstacle::ColliderCheck()
+//{
+//	return false;
+//}

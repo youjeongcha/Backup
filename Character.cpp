@@ -3,10 +3,33 @@
 
 Character::Character()
 {
+	InitialSet();
+	//m_IMG_NowMotion = IMG_CHARACTER_FRONT_1;
+	//m_MoveTime = 0;
+	//m_JumpTime = 0;
+	//m_JumpState = CHARACTER_JUMP_NONE;
+	//m_Life = LIFE_MAX; //목숨
+
+	//m_CharcterRect.left = m_X = IMG_CHARACTER_X;
+	//m_CharcterRect.top = m_Y = IMG_CHARACTER_Y;
+	//m_CharcterRect.right = m_CharcterRect.left + IMG_CHARACTER_W;
+	//m_CharcterRect.bottom = m_CharcterRect.top + IMG_CHARACTER_H;
+
+	//m_TravelDistance = TRAVELDISTANCE_START;
+}
+
+Character::~Character()
+{
+}
+
+
+void Character::InitialSet()
+{
 	m_IMG_NowMotion = IMG_CHARACTER_FRONT_1;
 	m_MoveTime = 0;
 	m_JumpTime = 0;
 	m_JumpState = CHARACTER_JUMP_NONE;
+	m_Life = LIFE_MAX; //목숨
 
 	m_CharcterRect.left = m_X = IMG_CHARACTER_X;
 	m_CharcterRect.top = m_Y = IMG_CHARACTER_Y;
@@ -16,16 +39,13 @@ Character::Character()
 	m_TravelDistance = TRAVELDISTANCE_START;
 }
 
-Character::~Character()
-{
-}
 
 float Character::Update(float deltaTime)
 {//질문 ::Update_XY먼저 호출한 다음 Jump를 해줘야하나. 어차피 조건안이면 다음번 함수 접근에 Jump를 참조하므로 상관 없나? 
 	float totalDistance;
 
 	Update_Animation(deltaTime); //캐릭터 IMG
-	Update_Input(deltaTime);
+	Update_Input();
 
 	totalDistance = Update_Move(deltaTime); //키 입력 받기 + 이동
 
@@ -69,7 +89,7 @@ void Character::Update_Animation(float deltaTime)
 	m_MoveTime += deltaTime;
 }
 
-void Character::Update_Input(float deltaTime)
+void Character::Update_Input()
 {
 	switch (m_JumpState)
 	{
@@ -143,6 +163,7 @@ float Character::Update_Move(float deltaTime)
 		}
 	}
 
+	m_CharcterRect.right = m_CharcterRect.left + IMG_CHARACTER_W; //m_CharcterRect.right는 left가 변할때마다 갱신시켜주어야 한다.
 	return m_TravelDistance;
 }
 
@@ -184,6 +205,42 @@ void Character::Update_Jump(float deltaTime)
 void Character::Draw(HDC hdc)
 {
 	BitMapMgr->GetImage(m_IMG_NowMotion)->DrawTransparent(hdc, m_CharcterRect.left, m_CharcterRect.top, IMG_CHARACTER_W, IMG_CHARACTER_H);
+}
+
+bool Character::ReductionLife_End()
+{
+	m_Life--;
+	
+	if (m_Life == 0)
+		return false;
+
+	return true;
+}
+
+//-----------------------승리----------------------------------
+
+void Character::UpdatePerformance(float deltaTime)
+{
+	if (m_PerformanceTime >= PERFORMANCE_SPEED)
+	{
+		m_PerformanceTime = 0;
+
+		if (m_IMG_NowMotion == IMG_CHARACTER_GOAL_1)
+			m_IMG_NowMotion = IMG_CHARACTER_GOAL_2;
+		else if (m_IMG_NowMotion == IMG_CHARACTER_GOAL_2)
+			m_IMG_NowMotion = IMG_CHARACTER_GOAL_1;
+	}
+
+	m_PerformanceTime += deltaTime;
+}
+
+void Character::Set_XY_GoalMid()
+{
+	//m_X = WIN_PERFORMANCE_X;
+	//m_Y = GOAL_IMG_T - IMG_CHARACTER_H;
+	
+	m_CharcterRect.left = WIN_PERFORMANCE_X;
+	m_CharcterRect.top = WIN_PERFORMANCE_Y;
 }
 
 //bool Character::ColliderCheck()

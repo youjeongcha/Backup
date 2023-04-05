@@ -50,7 +50,7 @@ void GameManager::Update(float deltaTime)
 
 		break;
 	case SCENE_GAME:
-		
+		//-------------------좌표 이동---------------------
 		total_MoveDistance = m_Character.Update(deltaTime);
 		m_UI.UpdateGame(deltaTime);
 
@@ -68,21 +68,54 @@ void GameManager::Update(float deltaTime)
 			m_ObjectMgr.Set_Goal_ActiveCheck(false);
 
 
-
-
 		m_Prev_MoveDistance = total_MoveDistance;
 
+
+		//--------------------Collider 체크---------------------
+		//Goal 통과
+		if (m_ObjectMgr.ColliderCheck_Goal(m_Character.Get_CharacterRect()))
+		{
+			m_scene = SCENE_GAMECLEAR;
+
+			m_Character.Set_PerformanceMotion(); //캐릭터 IMG 변경
+			m_Character.Set_XY_GoalMid();//캐릭터를 goal 중앙으로 이동시킨다.
+		}
+
+		//장애물 부딪힘
+		if (m_ObjectMgr.ColliderCheck_Obstacle(m_Character.Get_CharacterRect()))  //TODO::이거 추가 필요
+		{
+			if (m_Character.ReductionLife_End()) //함수 내부 목숨 감소 > true면 GameOver
+			{ //게임 세팅 초기화
+				m_scene = SCENE_MENU; //씬 메인메뉴로
+				
+				//초기화
+				m_Prev_MoveDistance = 0;
+				m_Character.InitialSet(); //캐릭터
+				m_UI.InitialSet(); //UI
+				m_Map.InitialSet(); //배경 + M
+				m_ObjectMgr.InitialSet(); //Goal + 장애물
+			}
+		}
+
+
 		break;
-	default:
+	case SCENE_GAMECLEAR:
+		m_Map.UpdateClapBack(deltaTime);
+		m_Character.UpdatePerformance(deltaTime);
 		break;
 	}
 }
 
-bool GameManager::GameVictoryCheck()
-{
-	m_Character.ColliderCheck();
-	return false;
-}
+//bool GameManager::GameVictoryCheck()
+//{
+//	//Win > 관중 박수 치기
+//	if (m_ObjectMgr.ColliderCheck_Goal(m_Character.Get_CharacterRect()))
+//		return true;
+//	//GameOver
+//	m_ObjectMgr.ColliderCheck_Obstacle(m_Character.Get_CharacterRect());
+//		return true;
+//	return false;
+//}
 
 
 /*GM의 Draw에서 backDC에 비트맵의 정보를 지정해서
@@ -108,13 +141,29 @@ void GameManager::Draw()
 
 		m_ObjectMgr.Draw(m_backDC);	//오브젝트
 		break;
-	default:
+	case SCENE_GAMECLEAR:
+		m_Map.DrawMap(m_backDC);
+		m_UI.DrawGame(m_backDC);	//UI
+		m_ObjectMgr.Draw(m_backDC);	//오브젝트
+		m_Character.Draw(m_backDC);	//캐릭터
 		break;
 	}
 
 	//더블 버퍼링
 	BitBlt(m_frontDC, 0, 0, m_Widht_Height.x, m_Widht_Height.y, m_backDC, 0, 0, SRCCOPY);
 	DeleteObject(backBitmap);
+}
+
+bool GameManager::GameClearCheck()
+{
+	switch (m_scene)
+	{
+	case SCENE_MENU:
+	case SCENE_GAME:
+		return false;
+	case SCENE_GAMECLEAR:
+		return true;
+	}
 }
 
 

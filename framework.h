@@ -22,11 +22,13 @@ enum WindowXY
 	MAIN_H = 450,
 };
 
-enum SPEEDMETER
-{
-	SPEED_METER = 20,
-};
+//enum SPEEDMETER
+//{
+//	SPEED_METER = 20,
+//};
 
+
+//-------------------------------IMG-----------------------------------
 enum MAP_IMG_XYWH
 {
 	//잔디
@@ -56,12 +58,6 @@ enum IMG_CHARACTER
 	IMG_CHARACTER_H = IMG_CHARACTER_W + 10,
 };
 
-//Goal 이동가능
-enum GOAL_MOVE
-{
-	GOAL_IMG_ARRIVE_X = MAIN_W - 150,
-};
-
 //M 이미지의 XYWH
 enum METER_IMG
 {
@@ -84,6 +80,30 @@ enum METER_IMG
 	METER_SHOW_COUNT,
 };
 
+enum GOAL_IMG
+{
+	GOAL_IMG_W = 60,
+	GOAL_IMG_H = 50,
+
+	GOAL_IMG_L = METER_END_SHOW_X,
+	GOAL_IMG_T = IMG_CHARACTER_Y + 20,
+	//GOAL_IMG_R = GOAL_IMG_L + GOAL_IMG_W,
+	//GOAL_IMG_B = GOAL_IMG_T + GOAL_IMG_H,
+
+
+	//GOAL_IMG_ARRIVE_X = MAIN_W - 150,
+};
+
+//Goal 이동가능
+enum GOAL_IMG_ARRIVE
+{
+	GOAL_IMG_ARRIVE_X = MAIN_W - 150,
+};
+
+
+
+
+
 //미터 수치 글자
 enum METER_VALUE
 {
@@ -98,7 +118,7 @@ enum METER_VALUE
 	METER_VALUE_ACROSS_ONE = METER_VALUE_GAP * 2,
 };
 
-//-----------거리-------------
+//-------------------------------거리-----------------------------------
 enum TRAVELDISTANCE //사실상 배경이 움직이는 범위값이라고 보아도 무방하다
 {
 	TRAVELDISTANCE_START = 0,
@@ -116,6 +136,8 @@ enum TRAVELDISTANCE //사실상 배경이 움직이는 범위값이라고 보아
 //	MAP_RATIO_SECOND_X = TRAVELDISTANCE_END % IMG_SPECTATOR_W, //0~IMG_SPECTATOR_W(배경 하나의 범위)-1
 //	MAP_RATIO_FIRST_X = MAP_RATIO_SECOND_X - IMG_SPECTATOR_W, //배경 출력 시작 : MAP_RATIO_SECOND_X - IMG_SPECTATOR_W(배경 하나의 범위)
 //};
+
+//------------------------비율----------------------------
 
 enum METER_RATIO
 {

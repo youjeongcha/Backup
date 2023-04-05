@@ -4,11 +4,18 @@
 
 Meter::Meter()
 {
-	m_MeterIMG_X = 0;
-	m_Meter_Value = 0;
+	InitialSet();
+	/*m_MeterIMG_X = 0;
+	m_Meter_Value = 0;*/
 }
 Meter::~Meter()
 {
+}
+
+void Meter::InitialSet()
+{
+	m_MeterIMG_X = 0;
+	m_Meter_Value = 0;
 }
 
 void Meter::DrawMeter(HDC hdc)
@@ -29,7 +36,7 @@ void Meter::DrawMeter(HDC hdc)
 
 void Meter::UpdateMeter(float total_MoveDistance, float _Prev_MoveDistance)
 {
-	m_MeterIMG_X += (_Prev_MoveDistance - total_MoveDistance);// *10;
+	m_MeterIMG_X += (_Prev_MoveDistance - total_MoveDistance) *10;
 	
 	if (m_MeterIMG_X <= METER_START_SHOW_X) //가장 처음 이미지가 -x라서 절댓값을 체크한다.
 	{ //앞으로 간다. (IMG 왼쪽으로 순환)

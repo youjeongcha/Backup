@@ -7,10 +7,16 @@ class ObjectManager
 private:
 	Goal m_Goal;
 public:
+
+	//초기 세팅
+	void InitialSet();
+
 	//ObjectMgr에서 rect 체크 후에 해당 object의 범위와 캐릭터의 범위가 겹치면 ture를 리턴한다.
 	void Draw(HDC hdc);
 	void Update(float thisTurn_MoveDistance, float _Prev_MoveDistance);
-	bool ColliderCheck();
+	//ObjectMgr에서 rect 체크 후에 해당 object의 범위와 캐릭터의 범위가 겹치면 true를 리턴한다.
+	bool ColliderCheck_Goal(RECT* characterRect);
+	bool ColliderCheck_Obstacle(RECT* characterRect);
 	
 
 	bool Get_GoalEndPositionCheck() { return m_Goal.Get_EndPositionCheck(); };

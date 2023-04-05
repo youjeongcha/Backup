@@ -5,16 +5,33 @@
 
 MapDraw::MapDraw()
 {
+
+	InitialSet();
+
+	//m_BackIMG_X = 0;
+
+	//m_Meter[METER_SHOW_FISRT].setMeter(METER_X, METER_VALUE_START);
+	//m_Meter[METER_SHOW_SECOND].setMeter(METER_SECOND_X, METER_VALUE_START - METER_VALUE_GAP);
+
+
+	
+}
+
+MapDraw::~MapDraw()
+{
+}
+
+void MapDraw::InitialSet()
+{
 	m_BackIMG_X = 0;
+
+	m_Meter[METER_SHOW_FISRT].InitialSet();
+	m_Meter[METER_SHOW_SECOND].InitialSet();
 
 	m_Meter[METER_SHOW_FISRT].setMeter(METER_X, METER_VALUE_START);
 	m_Meter[METER_SHOW_SECOND].setMeter(METER_SECOND_X, METER_VALUE_START - METER_VALUE_GAP);
-	//m_Meter[]
-	//m_MeterIMG_List[METER_SHOW_FISRT] = METER_X;
-	//m_MeterIMG_List[METER_SHOW_SECOND] = m_MeterIMG_List[METER_SHOW_FISRT] + METER_GAP;
 
-	//m_Meter_Value[METER_SHOW_FISRT] = METER_VALUE_START;
-	//m_Meter_Value[METER_SHOW_SECOND] = METER_VALUE_START - METER_VALUE_GAP;
+	m_BackIMG_List.clear();
 
 	//7회 관중 -> 1회 코끼리 *2
 	for (int count = 0; count < IMG_BACK_COUNT; count++)
@@ -30,10 +47,6 @@ MapDraw::MapDraw()
 			break;
 		}
 	}
-}
-
-MapDraw::~MapDraw()
-{
 }
 
 void MapDraw::DrawMap(HDC hdc)
@@ -108,6 +121,24 @@ void MapDraw::UpdateBack(float total_MoveDistance, float _Prev_MoveDistance)
 	}
 
 	//m_Prev_MoveDistance = total_MoveDistance;
+}
+
+void MapDraw::UpdateClapBack(float deltaTime)
+{
+	if (m_ClapTime >= CLAP_BACK)
+	{
+		m_ClapTime = 0;
+
+		for (auto &img : m_BackIMG_List)
+		{
+			if (img == IMG_BG_SPECTATOR_1)
+				img = IMG_BG_SPECTATOR_2;
+			else if (img == IMG_BG_SPECTATOR_2)
+				img = IMG_BG_SPECTATOR_1;
+		}
+	}
+
+	m_ClapTime += deltaTime;
 }
 
 

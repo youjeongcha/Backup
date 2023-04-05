@@ -57,20 +57,34 @@ UI::UI()
 		m_StarXY_List.push_back(star_XY);
 	}
 
-	m_Point_Y = SELECT_PLAYER_1A;
-	m_NotDrawCheck = false;
-	m_StarTime = 0;
-	m_FlickeringTime = 0;
-	m_ScoreTime = 0;
-	m_UserLife = LIFE_MAX;
-	m_Score = SCORE_START;
-	m_Bonus = SCORE_BONUS;
+	InitialSet();
+
+	//m_Point_Y = SELECT_PLAYER_1A;
+	//m_NotDrawCheck = false;
+	//m_StarTime = 0;
+	//m_FlickeringTime = 0;
+	//m_ScoreTime = 0;
+	////m_UserLife = LIFE_MAX;
+	//m_Score = SCORE_START;
+	//m_Bonus = SCORE_BONUS;
 
 	
 }
 
 UI::~UI()
 {
+}
+
+void UI::InitialSet()
+{
+	m_Point_Y = SELECT_PLAYER_1A;
+	m_NotDrawCheck = false;
+	m_StarTime = 0;
+	m_FlickeringTime = 0;
+	m_ScoreTime = 0;
+	//m_UserLife = LIFE_MAX;
+	m_Score = SCORE_START;
+	m_Bonus = SCORE_BONUS;
 }
 
 void UI::DrawMenu(HDC hdc)
@@ -233,7 +247,7 @@ void UI::DrawScore(HDC hdc)
 
 void UI::DrawLife(HDC hdc)
 {
-	for (int i = 0; i < m_UserLife; i++)
+	for (int i = 0; i < GMMgr->Get_CharacterLife(); i++)
 		BitMapMgr->GetImage(IMG_INTERFACE_LIFE)->DrawTransparent(hdc, IMG_Life_X + (i * IMG_Life_W), IMG_Life_Y, IMG_Life_W, IMG_Life_H);
 }
 
