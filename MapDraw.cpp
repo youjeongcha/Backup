@@ -1,20 +1,9 @@
 ﻿#include "MapDraw.h"
 #include "GameManager.h"
-//#include "Character.h"
-//#include "UI.h"
 
 MapDraw::MapDraw()
 {
-
 	InitialSet();
-
-	//m_BackIMG_X = 0;
-
-	//m_Meter[METER_SHOW_FISRT].setMeter(METER_X, METER_VALUE_START);
-	//m_Meter[METER_SHOW_SECOND].setMeter(METER_SECOND_X, METER_VALUE_START - METER_VALUE_GAP);
-
-
-	
 }
 
 MapDraw::~MapDraw()
@@ -25,11 +14,12 @@ void MapDraw::InitialSet()
 {
 	m_BackIMG_X = 0;
 
-	m_Meter[METER_SHOW_FISRT].InitialSet();
-	m_Meter[METER_SHOW_SECOND].InitialSet();
+	//m_Meter[SHOW_FISRT].InitialSet();
+	//m_Meter[SHOW_SECOND].InitialSet();
 
-	m_Meter[METER_SHOW_FISRT].setMeter(METER_X, METER_VALUE_START);
-	m_Meter[METER_SHOW_SECOND].setMeter(METER_SECOND_X, METER_VALUE_START - METER_VALUE_GAP);
+	//초기 세팅
+	m_Meter[SHOW_FISRT].SetMeter(METER_RATIO_100, METER_VALUE_START);
+	m_Meter[SHOW_SECOND].SetMeter(METER_RATIO_90, METER_VALUE_START - METER_VALUE_GAP);
 
 	m_BackIMG_List.clear();
 
@@ -56,7 +46,7 @@ void MapDraw::DrawMap(HDC hdc)
 	//관중 + 코끼리
 	DrawBack(hdc);
 	//meter
-	for (int i = 0; i < METER_SHOW_COUNT; i++)
+	for (int i = 0; i < SHOW_COUNT; i++)
 		m_Meter[i].DrawMeter(hdc);
 }
 
@@ -68,7 +58,7 @@ void MapDraw::UpdateMap(float total_MoveDistance, float _Prev_MoveDistance)
 		//Goal이 특정 위치에 도달하면 Map움직임 멈추기
 		UpdateBack(total_MoveDistance, _Prev_MoveDistance);
 		//meter
-		for (int i = 0; i < METER_SHOW_COUNT; i++)
+		for (int i = 0; i < SHOW_COUNT; i++)
 			m_Meter[i].UpdateMeter(total_MoveDistance, _Prev_MoveDistance);
 	}
 }
@@ -150,7 +140,7 @@ bool MapDraw::MeterEnd_GoalActiveCheck()
 	//		return true;
 	//}
 
-	if (m_Meter[METER_SHOW_FISRT].Get_Meter_Value() == METER_VALUE_END)
+	if (m_Meter[SHOW_FISRT].Get_Meter_Value() == METER_VALUE_END)
 		return true;
 
 	return false;

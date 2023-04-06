@@ -12,14 +12,11 @@ public:
 	Goal();
 	~Goal();
 
-	//초기 세팅
-	void InitialSet();
-
+	//초기 세팅 Goal에서는 인자를 사용하지 않는다.
+	virtual void InitialSet(IMG _IMG_X, int _X, int _Y) override;
 	virtual void Draw(HDC hdc) override;
 	virtual void Update(float total_MoveDistance, float _Prev_MoveDistance) override;
 
-
-	//void Set_Goal_X(float _X) { m_Rect[RECTTYPE_BITMAP].left = _X; } //M가 0이 출력될 차례가 오면 goal의 x 좌표 세팅
 	
 	//Goal이 그려짐+이동+충돌체크가 가능한 상태
 	void Set_ActiveCheck(bool _ActiveCheck) { m_ActiveCheck = _ActiveCheck; }
@@ -27,6 +24,4 @@ public:
 
 	void Set_EndPositionCheck(bool _EndPositionCheck) { m_EndPositionCheck = _EndPositionCheck; }
 	bool Get_EndPositionCheck() { return m_EndPositionCheck; }
-	//virtual bool ColliderCheck() override;
-	//virtual RECT Get_Rect() override;
 };

@@ -2,5 +2,5 @@
 
 RECT* Object::Get_Rect()
 {
-	return &m_Rect[RECTTYPE_BUMP];
+	return &m_Collider_Rect;
 }

@@ -36,6 +36,13 @@ void GameManager::init(HWND hWnd)
 	m_Widht_Height.y = clientRect.bottom - clientRect.top;
 
 	BitMapMgr->Init(hWnd);
+
+	//초기화
+	m_Prev_MoveDistance = 0;
+	m_Character.InitialSet(); //캐릭터
+	m_UI.InitialSet(); //UI
+	m_Map.InitialSet(); //배경 + M
+	m_ObjectMgr.InitialSet(); //Goal + 장애물
 }
 
 void GameManager::Update(float deltaTime)
@@ -62,11 +69,12 @@ void GameManager::Update(float deltaTime)
 			//active체크만 하고 초기 goal의 x 값은 meter의 오른쪽 화면에 숨어있을때의 세팅 값으로 해둔다.
 			//+ 세팅은 생성자에서 처리를 하기로 한다.
 			m_ObjectMgr.Set_Goal_ActiveCheck(true); //Goal이 그려짐+이동+충돌체크가 가능한 상태
-			m_ObjectMgr.Update(total_MoveDistance, m_Prev_MoveDistance);
+			
 		}
 		else
 			m_ObjectMgr.Set_Goal_ActiveCheck(false);
 
+		m_ObjectMgr.Update(total_MoveDistance, m_Prev_MoveDistance);
 
 		m_Prev_MoveDistance = total_MoveDistance;
 

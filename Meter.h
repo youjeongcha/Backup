@@ -14,10 +14,11 @@ public:
 	Meter();
 	~Meter();
 
-	//초기 세팅
-	void InitialSet();
+	////초기 세팅
+	//void InitialSet();
 
-	void setMeter(int _IMG_X, int _Meter_Value)
+	//게임 시작할때 
+	void SetMeter(int _IMG_X, int _Meter_Value)
 	{ 
 		m_MeterIMG_X = _IMG_X;
 		m_Meter_Value = _Meter_Value; 

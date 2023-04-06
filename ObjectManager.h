@@ -1,11 +1,21 @@
 #pragma once
 #include "Goal.h"
-#include "FireObstacle.h"
+#include "FirJar.h"
+#include "FirRing_B.h"
+#include "FirRing_S.h"
+
+enum OBSTACLE_COUNT
+{
+	OBSTACLE_ONE,
+	OBSTACLE_TWO,
+	OBSTACLE_COUNT,
+};
 
 class ObjectManager
 {
 private:
 	Goal m_Goal;
+	FirJar m_FirJar[OBSTACLE_COUNT];
 public:
 
 	//초기 세팅
