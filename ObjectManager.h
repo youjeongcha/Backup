@@ -4,6 +4,7 @@
 #include "FirRing_B.h"
 #include "FirRing_S.h"
 
+
 enum OBSTACLE_COUNT
 {
 	OBSTACLE_ONE,
@@ -15,7 +16,9 @@ class ObjectManager
 {
 private:
 	Goal m_Goal;
-	FirJar m_FirJar[OBSTACLE_COUNT];
+	FirJar m_FirJar[OBSTACLE_COUNT]; //불항아리
+	FirRing_B m_FirRing_B[OBSTACLE_COUNT]; //불링Big
+	FirRing_S m_FirRing_S[OBSTACLE_COUNT]; //불링Small
 public:
 
 	//초기 세팅
@@ -23,10 +26,9 @@ public:
 
 	//ObjectMgr에서 rect 체크 후에 해당 object의 범위와 캐릭터의 범위가 겹치면 ture를 리턴한다.
 	void Draw(HDC hdc);
-	void Update(float thisTurn_MoveDistance, float _Prev_MoveDistance);
-	//ObjectMgr에서 rect 체크 후에 해당 object의 범위와 캐릭터의 범위가 겹치면 true를 리턴한다.
-	bool ColliderCheck_Goal(RECT* characterRect);
-	bool ColliderCheck_Obstacle(RECT* characterRect);
+	void Update(float deltaTime, float thisTurn_MoveDistance, float _Prev_MoveDistance);
+	//현재 겹친 object의 속성에 따라 처리를 다르게 한다.(ex.골-게임 클리어, 장애물-목숨감소+게임오버)
+	BUMP_CHECK ColliderCheck(RECT* characterRect);
 	
 
 	bool Get_GoalEndPositionCheck() { return m_Goal.Get_EndPositionCheck(); };

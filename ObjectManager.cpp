@@ -21,41 +21,42 @@ void ObjectManager::Draw(HDC hdc)
 	m_FirJar[OBSTACLE_TWO].Draw(hdc);
 }
 
-void ObjectManager::Update(float thisTurn_MoveDistance, float _Prev_MoveDistance)
+void ObjectManager::Update(float deltaTime, float thisTurn_MoveDistance, float _Prev_MoveDistance)
 {
 	if (m_Goal.Get_ActiveCheck() == true)
-		m_Goal.Update(thisTurn_MoveDistance, _Prev_MoveDistance);
+		m_Goal.Update(deltaTime, thisTurn_MoveDistance, _Prev_MoveDistance);
 	
-	m_FirJar[OBSTACLE_ONE].Update(thisTurn_MoveDistance, _Prev_MoveDistance);
-	m_FirJar[OBSTACLE_TWO].Update(thisTurn_MoveDistance, _Prev_MoveDistance);
+	m_FirJar[OBSTACLE_ONE].Update(deltaTime, thisTurn_MoveDistance, _Prev_MoveDistance);
+	m_FirJar[OBSTACLE_TWO].Update(deltaTime, thisTurn_MoveDistance, _Prev_MoveDistance);
 }
 
-bool ObjectManager::ColliderCheck_Goal(RECT* characterRect)
+BUMP_CHECK ObjectManager::ColliderCheck(RECT* characterRect)
 {
-	LPRECT lprcDst = NULL;
+	RECT lprcDst;
 
 	if (m_Goal.Get_ActiveCheck() == true)
 	{
 		//ObjectMgr에서 rect 체크 후에 해당 object의 범위와 캐릭터의 범위가 겹치면 true를 리턴한다.
-		//IntersectRect(lprcDst, &m_Goal.Get_Rect(), &characterRect);
-
-		if (IntersectRect(lprcDst, m_Goal.Get_Rect(), characterRect) == true)
-			return true;
-
-		if ((m_Goal.Get_Rect()->left <= characterRect->right) && // x 겹치는 경우 : goal의 left가 character의 right 보다 작거나 같으면
-			(m_Goal.Get_Rect()->top <= characterRect->bottom)) // y 겹치는 경우 : goal의 top이 character의 bottom 보다 작거나 같으면
-			return true;
+		if (IntersectRect(&lprcDst, m_Goal.Get_Rect(), characterRect))
+			return BUMP_GOAL;
 	}
+
+	for (int i = 0; i < OBSTACLE_COUNT; i++)
+	{//장애물 두개씩 존재한다.(화면상에서 돌려쓰기)
+
+		//불항아리
+		if (IntersectRect(&lprcDst, m_FirJar[i].Get_Rect(), characterRect))
+			return BUMP_OBSTACLE;
+
+		//불링B
+		if (IntersectRect(&lprcDst, m_FirRing_B[i].Get_Rect(), characterRect))
+			return BUMP_OBSTACLE;
+	}
+
+	//불링S는 하나?
+	//if (IntersectRect(&lprcDst, m_FirRing_S.Get_Rect(), characterRect))
+	//	return BUMP_OBSTACLE;
 
 	//이외에는 겹치지 않는 경우
-	return false;
-}
-
-bool ObjectManager::ColliderCheck_Obstacle(RECT* characterRect)
-{//TODO::Obstacle 
-
-	if (m_Goal.Get_ActiveCheck() == true)
-	{
-	}
-	return false;
+	return BUMP_NONE;
 }

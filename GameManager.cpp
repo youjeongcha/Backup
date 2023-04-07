@@ -74,56 +74,52 @@ void GameManager::Update(float deltaTime)
 		else
 			m_ObjectMgr.Set_Goal_ActiveCheck(false);
 
-		m_ObjectMgr.Update(total_MoveDistance, m_Prev_MoveDistance);
+		m_ObjectMgr.Update(deltaTime, total_MoveDistance, m_Prev_MoveDistance);
 
 		m_Prev_MoveDistance = total_MoveDistance;
 
 
 		//--------------------Collider 체크---------------------
-		//Goal 통과
-		if (m_ObjectMgr.ColliderCheck_Goal(m_Character.Get_CharacterRect()))
+
+		switch (m_ObjectMgr.ColliderCheck(m_Character.Get_CharacterRect()))
 		{
+		case BUMP_GOAL: //Goal 통과
 			m_scene = SCENE_GAMECLEAR;
 
+			m_Character.Set_Bump_Check(BUMP_GOAL); //캐릭터의 부딪힘 판별 상태 변경
 			m_Character.Set_PerformanceMotion(); //캐릭터 IMG 변경
 			m_Character.Set_XY_GoalMid();//캐릭터를 goal 중앙으로 이동시킨다.
-		}
+			break;
 
-		//장애물 부딪힘
-		if (m_ObjectMgr.ColliderCheck_Obstacle(m_Character.Get_CharacterRect()))  //TODO::이거 추가 필요
-		{
+		case BUMP_OBSTACLE: //장애물 부딪힘
+			m_Character.Set_Bump_Check(BUMP_OBSTACLE); //캐릭터의 부딪힘 판별 상태 변경
+
+			//TODO:: 테스트 위해 주석처리
+			/*
 			if (m_Character.ReductionLife_End()) //함수 내부 목숨 감소 > true면 GameOver
 			{ //게임 세팅 초기화
 				m_scene = SCENE_MENU; //씬 메인메뉴로
-				
+
 				//초기화
 				m_Prev_MoveDistance = 0;
 				m_Character.InitialSet(); //캐릭터
 				m_UI.InitialSet(); //UI
 				m_Map.InitialSet(); //배경 + M
 				m_ObjectMgr.InitialSet(); //Goal + 장애물
-			}
+			}*/
+			break;
+		case BUMP_NONE:
+			m_Character.Set_Bump_Check(BUMP_NONE); //캐릭터의 부딪힘 판별 상태 변경
+			break;
 		}
-
-
+		
 		break;
 	case SCENE_GAMECLEAR:
 		m_Map.UpdateClapBack(deltaTime);
-		m_Character.UpdatePerformance(deltaTime);
+		m_Character.Update_Animation(deltaTime);
 		break;
 	}
 }
-
-//bool GameManager::GameVictoryCheck()
-//{
-//	//Win > 관중 박수 치기
-//	if (m_ObjectMgr.ColliderCheck_Goal(m_Character.Get_CharacterRect()))
-//		return true;
-//	//GameOver
-//	m_ObjectMgr.ColliderCheck_Obstacle(m_Character.Get_CharacterRect());
-//		return true;
-//	return false;
-//}
 
 
 /*GM의 Draw에서 backDC에 비트맵의 정보를 지정해서
@@ -146,7 +142,7 @@ void GameManager::Draw()
 		m_UI.DrawGame(m_backDC);	//UI
 		m_Character.Draw(m_backDC);	//캐릭터
 
-
+		//TODO::왼쪽 링 > 캐릭터 > 오른쪽 링????
 		m_ObjectMgr.Draw(m_backDC);	//오브젝트
 		break;
 	case SCENE_GAMECLEAR:

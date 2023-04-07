@@ -9,6 +9,14 @@ void FirRing_B::Draw(HDC hdc)
 {
 }
 
-void FirRing_B::Update(float thisTurn_MoveDistance, float _Prev_MoveDistance)
+void FirRing_B::Update(float deltaTime, float thisTurn_MoveDistance, float _Prev_MoveDistance)
+{
+}
+
+void FirRing_B::Animation(float deltaTime)
+{
+}
+
+void FirRing_B::SetRect()
 {
 }

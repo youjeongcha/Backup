@@ -4,18 +4,6 @@
 Character::Character()
 {
 	InitialSet();
-	//m_IMG_NowMotion = IMG_CHARACTER_FRONT_1;
-	//m_MoveTime = 0;
-	//m_JumpTime = 0;
-	//m_JumpState = CHARACTER_JUMP_NONE;
-	//m_Life = LIFE_MAX; //목숨
-
-	//m_CharcterRect.left = m_X = IMG_CHARACTER_X;
-	//m_CharcterRect.top = m_Y = IMG_CHARACTER_Y;
-	//m_CharcterRect.right = m_CharcterRect.left + IMG_CHARACTER_W;
-	//m_CharcterRect.bottom = m_CharcterRect.top + IMG_CHARACTER_H;
-
-	//m_TravelDistance = TRAVELDISTANCE_START;
 }
 
 Character::~Character()
@@ -26,10 +14,9 @@ Character::~Character()
 void Character::InitialSet()
 {
 	m_IMG_NowMotion = IMG_CHARACTER_FRONT_1;
-	m_MoveTime = 0;
-	m_JumpTime = 0;
 	m_JumpState = CHARACTER_JUMP_NONE;
 	m_Life = LIFE_MAX; //목숨
+	m_Bump_Check = BUMP_NONE;
 
 	m_CharcterRect.left = m_X = IMG_CHARACTER_X;
 	m_CharcterRect.top = m_Y = IMG_CHARACTER_Y;
@@ -55,60 +42,85 @@ float Character::Update(float deltaTime)
 
 void Character::Update_Animation(float deltaTime)
 {
-	IMG imgLimit = IMG_CHARACTER_BUMP;
-
-	if (m_MoveTime >= MOVE_SPEED)
+	switch (m_Bump_Check)
 	{
-		m_MoveTime = 0; //초기화는 Update_XY에서 이루어진다.
+	case BUMP_NONE: //게임 진행
+	{
+		IMG imgLimit = IMG_CHARACTER_BUMP;
 
-
-		switch (m_MoveKey)
+		//이동 + 점프
+		if (m_AnimationTime >= MOVE_SPEED)
 		{
-		case CHARACTER_MOVE_NONE: //멈춤 상태
-			m_IMG_NowMotion = IMG_CHARACTER_FRONT_1;
-			break;
-		case CHARACTER_MOVE_LEFT: //왼쪽 이동
-			m_IMG_NowMotion = (IMG)(m_IMG_NowMotion + 1);
-			imgLimit = IMG_CHARACTER_FRONT_3; //뒤로 가는 IMG 안에서만 작동하기 위해 IMG 범위 제한걸기
-			break;
-		case CHARACTER_MOVE_RIGHT: //오른쪽 이동
-			m_IMG_NowMotion = (IMG)(m_IMG_NowMotion + 1);
-			imgLimit = IMG_CHARACTER_GOAL_1; //달리는 IMG 안에서만 작동하기 위해 IMG 범위 제한걸기
-			break;
-		default:
-			break;
-		}
-		
-		if ((m_JumpState != CHARACTER_JUMP_NONE))	//점프중이면
-			m_IMG_NowMotion = IMG_CHARACTER_FRONT_3;
-		//해당 움직임 모션 범위 IMG 안에서만 작동하기 위해 IMG 범위 제한걸기
-		else if (m_IMG_NowMotion >= imgLimit) //점프 + 뒤이동의 경우 imgLmit를 넘어서 >=가 필요
- 			m_IMG_NowMotion = IMG_CHARACTER_FRONT_1;
-	}
+			m_AnimationTime = 0; //초기화는 Update_XY에서 이루어진다.
 
-	m_MoveTime += deltaTime;
+			switch (m_MoveKey)
+			{
+			case CHARACTER_MOVE_NONE: //멈춤 상태
+				m_IMG_NowMotion = IMG_CHARACTER_FRONT_1;
+				break;
+			case CHARACTER_MOVE_LEFT: //왼쪽 이동
+				m_IMG_NowMotion = (IMG)(m_IMG_NowMotion + 1);
+				imgLimit = IMG_CHARACTER_FRONT_3; //뒤로 가는 IMG 안에서만 작동하기 위해 IMG 범위 제한걸기
+				break;
+			case CHARACTER_MOVE_RIGHT: //오른쪽 이동
+				m_IMG_NowMotion = (IMG)(m_IMG_NowMotion + 1);
+				imgLimit = IMG_CHARACTER_GOAL_1; //달리는 IMG 안에서만 작동하기 위해 IMG 범위 제한걸기
+				break;
+			default:
+				break;
+			}
+
+			if ((m_JumpState != CHARACTER_JUMP_NONE))	//점프중이면
+				m_IMG_NowMotion = IMG_CHARACTER_FRONT_3;
+			//해당 움직임 모션 범위 IMG 안에서만 작동하기 위해 IMG 범위 제한걸기
+			else if (m_IMG_NowMotion >= imgLimit) //점프 + 뒤이동의 경우 imgLmit를 넘어서 >=가 필요
+				m_IMG_NowMotion = IMG_CHARACTER_FRONT_1;
+		}
+		break;
+	}
+	case BUMP_OBSTACLE: //장애물 부딪힘
+		m_IMG_NowMotion = IMG_CHARACTER_BUMP;
+		break;
+	case BUMP_GOAL: //승리
+		if (m_AnimationTime >= PERFORMANCE_SPEED)
+		{
+			m_AnimationTime = 0;
+
+			if (m_IMG_NowMotion == IMG_CHARACTER_GOAL_1)
+				m_IMG_NowMotion = IMG_CHARACTER_GOAL_2;
+			else if (m_IMG_NowMotion == IMG_CHARACTER_GOAL_2)
+				m_IMG_NowMotion = IMG_CHARACTER_GOAL_1;
+		}
+		break;
+	}
+	
+
+	m_AnimationTime += deltaTime;
 }
 
 void Character::Update_Input()
 {
-	switch (m_JumpState)
+	//if (m_Bump_Check == BUMP_NONE) //캐릭터가 부딪히거나 게임 클리어했을 시 조작 불가
 	{
-	case CHARACTER_JUMP_NONE:
+		switch (m_JumpState)
+		{
+		case CHARACTER_JUMP_NONE:
 
-		if (GetAsyncKeyState(VK_LEFT) & 0x8000)
-			m_MoveKey = CHARACTER_MOVE_LEFT;
-		else if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
-			m_MoveKey = CHARACTER_MOVE_RIGHT;
-		else
-			m_MoveKey = CHARACTER_MOVE_NONE;
+			if (GetAsyncKeyState(VK_LEFT) & 0x8000)
+				m_MoveKey = CHARACTER_MOVE_LEFT;
+			else if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
+				m_MoveKey = CHARACTER_MOVE_RIGHT;
+			else
+				m_MoveKey = CHARACTER_MOVE_NONE;
 
-		//점프는 방향고 별도로 체크가 이루어져야 한다. 키 하나만 입력 체크되기 때문에
-		if ((GetAsyncKeyState(VK_SPACE) & 0x8000)) //캐릭터가 원 상태일때만 점프 가능
-			m_JumpState = CHARACTER_JUMP_UP;
-		break;
+			//점프는 방향고 별도로 체크가 이루어져야 한다. 키 하나만 입력 체크되기 때문에
+			if ((GetAsyncKeyState(VK_SPACE) & 0x8000)) //캐릭터가 원 상태일때만 점프 가능
+				m_JumpState = CHARACTER_JUMP_UP;
 
-	default:
-		break;
+			break;
+		default:
+			break;
+		}
 	}
 }
 
@@ -119,47 +131,43 @@ float Character::Update_Move(float deltaTime)
 	//TODO::마지막 목표에 도달하기 전까지는 배경을 움직인다.(목표가 멀어지면 다시 배경 움직임)
 	//GM에서 goal 위치 확인 bool값 받아와서 제한 걸기
 
-	//if (m_MoveTime >= MOVE_SPEED)
+	//점프는 좌우 이동과 별도로 측정을 해야 좌우이동 중에 점프를 했을 때 배경 끊김 현상이 발생X
+
+	switch (m_MoveKey)
 	{
-		//m_MoveTime = 0;
+	case CHARACTER_MOVE_LEFT:
+		thisTurn_MoveDistance = -TRAVELDISTANCE_MOVE_PER_SEC;
+		break;
+	case CHARACTER_MOVE_RIGHT:
+		thisTurn_MoveDistance = TRAVELDISTANCE_MOVE_PER_SEC;
+		break;
+	}
 
-		//점프는 좌우 이동과 별도로 측정을 해야 좌우이동 중에 점프를 했을 때 배경 끊김 현상이 발생X
+	//캐릭터 이동 상태
+	if (GMMgr->Get_GoalEndPositionCheck())
+	{
+		m_X += thisTurn_MoveDistance * deltaTime;
 
-		switch (m_MoveKey)
+		if (m_X <= IMG_CHARACTER_X) //캐릭터 이동 > 배경 이동으로 전환
 		{
-		case CHARACTER_MOVE_LEFT:
-			thisTurn_MoveDistance = -TRAVELDISTANCE_MOVE_PER_SEC;
-			break;
-		case CHARACTER_MOVE_RIGHT:
-			thisTurn_MoveDistance = TRAVELDISTANCE_MOVE_PER_SEC;
-			break;
+			m_TravelDistance += m_X - IMG_CHARACTER_X;
+			m_X = IMG_CHARACTER_X;
+			GMMgr->Set_GoalEndPositionCheck(false);
 		}
 
-		//캐릭터 이동 상태
-		if (GMMgr->Get_GoalEndPositionCheck())
-		{
-			m_X += thisTurn_MoveDistance * deltaTime;
+		m_CharcterRect.left = m_X;
+	}
+	else
+	{ //배경 이동 상태
+		m_TravelDistance += thisTurn_MoveDistance * deltaTime;
 
-			if (m_X <= IMG_CHARACTER_X) //캐릭터 이동 > 배경 이동으로 전환
-			{
-				m_TravelDistance += m_X - IMG_CHARACTER_X;
-				m_X = IMG_CHARACTER_X;
-				GMMgr->Set_GoalEndPositionCheck(false);
-			}
-			m_CharcterRect.left = m_X;
-		}
-		else
-		{ //배경 이동 상태
-			m_TravelDistance += thisTurn_MoveDistance * deltaTime;
-
-			//거리 이동에 제한을 두기 위해(배경의 움직임 제한, 배경 고정)
-			if (m_TravelDistance <= TRAVELDISTANCE_START)
-				m_TravelDistance = TRAVELDISTANCE_START;
-			else if (m_TravelDistance >= TRAVELDISTANCE_END)
-			{ //배경이동이 끝나고 남은 거리 캐릭터에게 주기
-				m_X += m_TravelDistance - TRAVELDISTANCE_END; //배경 이동이 끝나고 캐릭터 이동으로 전환되는 것
-				m_TravelDistance = TRAVELDISTANCE_END;
-			}
+		//거리 이동에 제한을 두기 위해(배경의 움직임 제한, 배경 고정)
+		if (m_TravelDistance <= TRAVELDISTANCE_START)
+			m_TravelDistance = TRAVELDISTANCE_START;
+		else if (m_TravelDistance >= TRAVELDISTANCE_END)
+		{ //배경이동이 끝나고 남은 거리 캐릭터에게 주기
+			m_X += m_TravelDistance - TRAVELDISTANCE_END; //배경 이동이 끝나고 캐릭터 이동으로 전환되는 것
+			m_TravelDistance = TRAVELDISTANCE_END;
 		}
 	}
 
@@ -169,38 +177,32 @@ float Character::Update_Move(float deltaTime)
 
 void Character::Update_Jump(float deltaTime)
 {
-	//캐릭터가 점프 키를 누르고 공중에 떠있는 상태
-	//if (m_JumpState != CHARACTER_JUMP_NONE)
+	switch (m_JumpState)
 	{
-			switch (m_JumpState)
-			{
-			case CHARACTER_JUMP_UP:
-				m_Y -= CHARACTER_JUMP_GAP * deltaTime;
-				
-				if ((m_Y <= CHARACTER_JUMP_MAX_Y))
-			{
-					m_Y = CHARACTER_JUMP_MAX_Y;
-				m_JumpState = CHARACTER_JUMP_DOWN;
-			}
-				m_CharcterRect.top = m_Y;
-				break;
-			case CHARACTER_JUMP_DOWN:
-				m_Y += CHARACTER_JUMP_GAP * deltaTime;
-				if ((m_Y >= CHARACTER_JUMP_MIN_Y))
-				{
-					m_Y = CHARACTER_JUMP_MIN_Y;
-					m_JumpState = CHARACTER_JUMP_NONE;
-				}
-				m_CharcterRect.top = m_Y;
-				break;
+	case CHARACTER_JUMP_UP:
+		m_Y -= CHARACTER_JUMP_GAP * deltaTime;
 
-			}
+		if ((m_Y <= CHARACTER_JUMP_MAX_Y))
+		{
+			m_Y = CHARACTER_JUMP_MAX_Y;
+			m_JumpState = CHARACTER_JUMP_DOWN;
+		}
+
+		m_CharcterRect.top = m_Y;
+		break;
+	case CHARACTER_JUMP_DOWN:
+		m_Y += CHARACTER_JUMP_GAP * deltaTime;
+		if ((m_Y >= CHARACTER_JUMP_MIN_Y))
+		{
+			m_Y = CHARACTER_JUMP_MIN_Y;
+			m_JumpState = CHARACTER_JUMP_NONE;
+		}
+
+		m_CharcterRect.top = m_Y;
+		break;
 	}
 }
 
-//void Character::Set_XY()
-//{
-//}
 
 void Character::Draw(HDC hdc)
 {
@@ -212,38 +214,30 @@ bool Character::ReductionLife_End()
 	m_Life--;
 	
 	if (m_Life == 0)
-		return false;
+		return true;
 
-	return true;
+	return false;
 }
 
 //-----------------------승리----------------------------------
 
-void Character::UpdatePerformance(float deltaTime)
-{
-	if (m_PerformanceTime >= PERFORMANCE_SPEED)
-	{
-		m_PerformanceTime = 0;
-
-		if (m_IMG_NowMotion == IMG_CHARACTER_GOAL_1)
-			m_IMG_NowMotion = IMG_CHARACTER_GOAL_2;
-		else if (m_IMG_NowMotion == IMG_CHARACTER_GOAL_2)
-			m_IMG_NowMotion = IMG_CHARACTER_GOAL_1;
-	}
-
-	m_PerformanceTime += deltaTime;
-}
+//void Character::UpdatePerformance_Animation(float deltaTime)
+//{
+//	if (m_AnimationTime >= PERFORMANCE_SPEED)
+//	{
+//		m_AnimationTime = 0;
+//
+//		if (m_IMG_NowMotion == IMG_CHARACTER_GOAL_1)
+//			m_IMG_NowMotion = IMG_CHARACTER_GOAL_2;
+//		else if (m_IMG_NowMotion == IMG_CHARACTER_GOAL_2)
+//			m_IMG_NowMotion = IMG_CHARACTER_GOAL_1;
+//	}
+//
+//	m_AnimationTime += deltaTime;
+//}
 
 void Character::Set_XY_GoalMid()
 {
-	//m_X = WIN_PERFORMANCE_X;
-	//m_Y = GOAL_IMG_T - IMG_CHARACTER_H;
-	
 	m_CharcterRect.left = WIN_PERFORMANCE_X;
 	m_CharcterRect.top = WIN_PERFORMANCE_Y;
 }
-
-//bool Character::ColliderCheck()
-//{
-//	return false;
-//}

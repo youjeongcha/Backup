@@ -50,18 +50,18 @@ private:
 	//유저 목숨
 	int m_Life;
 	IMG m_IMG_NowMotion;
-	float m_MoveTime;
-	float m_JumpTime;
-	float m_PerformanceTime;
+	float m_AnimationTime;
 
 	CHARACTER_JUMP m_JumpState; //캐릭터의 점프 상태를 판별(일반, 점프 상승, 점프 하강)
 	//이동거리
 	float m_TravelDistance;
 	//이동 키를 눌렀는지
 	CHARACTER_MOVE m_MoveKey;
+	//현재 object와 접촉 상태인지
+	BUMP_CHECK m_Bump_Check;
 
 
-	void Update_Animation(float deltaTime);
+
 	void Update_Input();
 	float Update_Move(float deltaTime);
 	void Update_Jump(float deltaTime);
@@ -74,10 +74,11 @@ public:
 	void InitialSet();
 
 	float Update(float deltaTime);
+	void Update_Animation(float deltaTime); //GameClear하고 Animation 보여줄때 조작 되면 안되므로 이것만 따로 호출
 	void Draw(HDC hdc);
 
 	//게임 승리 후 퍼포먼스
-	void UpdatePerformance(float deltaTime);
+	//void UpdatePerformance_Animation(float deltaTime);
 	//캐릭터를 goal 중앙으로 이동시킨다.
 	void Set_XY_GoalMid();
 
@@ -90,5 +91,6 @@ public:
 	int Get_CharacterLife() { return m_Life; }
 
 	void Set_PerformanceMotion() { m_IMG_NowMotion = IMG_CHARACTER_GOAL_1; }
+	void Set_Bump_Check(BUMP_CHECK _Bump_Check) { m_Bump_Check = _Bump_Check; };
 };
 
