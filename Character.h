@@ -1,10 +1,10 @@
 #pragma once
 #include "BitMapManager.h"
+#include "framework.h"
 
-//#define MOVE_SPEED 0.1
 #define MOVE_SPEED 0.1
-//#define JUMP_SPEED 0.03
 #define PERFORMANCE_SPEED 0.4
+#define BUMP_TIME 1
 
 enum LIFE
 {
@@ -19,24 +19,10 @@ enum CHARACTER_MOVE
 };
 
 
-enum CHARACTER_JUMP
+
+
+enum WIN_PERFORMANCE //클리어 퍼모먼스의 XY좌표
 {
-	CHARACTER_JUMP_NONE,
-	CHARACTER_JUMP_UP,
-	CHARACTER_JUMP_DOWN,
-
-	///CHARACTER_JUMP_GAP = 10,
-	CHARACTER_JUMP_GAP = 300,
-
-	CHARACTER_JUMP_MAX_Y = IMG_CHARACTER_Y - 100, //가장 높은 위치
-	CHARACTER_JUMP_MIN_Y = IMG_CHARACTER_Y, //가장 낮은 위치 == 처음의 Y
-};
-
-enum WIN_PERFORMANCE
-{
-	//WIN_PERFORMANCE_X = 0,
-	//WIN_PERFORMANCE_Y = 0,
-	
 	WIN_PERFORMANCE_X = GOAL_IMG_ARRIVE_X,// + GOAL_IMG_W / 2,
 	WIN_PERFORMANCE_Y = GOAL_IMG_Y - IMG_CHARACTER_H + 7,
 };
@@ -61,7 +47,6 @@ private:
 	BUMP_CHECK m_Bump_Check;
 
 
-
 	void Update_Input();
 	float Update_Move(float deltaTime);
 	void Update_Jump(float deltaTime);
@@ -71,24 +56,24 @@ public:
 	~Character();
 
 	//초기 세팅
-	void InitialSet();
+	void InitialSet(SET setType);
 
 	float Update(float deltaTime);
 	void Update_Animation(float deltaTime); //GameClear하고 Animation 보여줄때 조작 되면 안되므로 이것만 따로 호출
 	void Draw(HDC hdc);
 
-	//게임 승리 후 퍼포먼스
-	//void UpdatePerformance_Animation(float deltaTime);
 	//캐릭터를 goal 중앙으로 이동시킨다.
 	void Set_XY_GoalMid();
 
 	//목숨 감소 : 목숨이 0이 될 경우 목숨 감소가 불가하므로 false를 리턴하고 GameOver가 된다.
 	bool ReductionLife_End();
 
+	RECT* Get_CharacterRect() { return &m_CharcterRect; }
+
 
 	float Get_TravelDistance() { return m_TravelDistance; }
-	RECT* Get_CharacterRect() { return &m_CharcterRect; }
 	int Get_CharacterLife() { return m_Life; }
+	BUMP_CHECK Get_Bump_Check() { return m_Bump_Check; }
 
 	void Set_PerformanceMotion() { m_IMG_NowMotion = IMG_CHARACTER_GOAL_1; }
 	void Set_Bump_Check(BUMP_CHECK _Bump_Check) { m_Bump_Check = _Bump_Check; };

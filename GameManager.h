@@ -25,7 +25,8 @@ private:
 	HDC m_backDC;
 
 	POINT m_Widht_Height;
-	SCENE m_scene;
+	SCENE m_Scene;
+	//이전 씬 기록 : Score 한번만 증가시키기 위해 사용
 	std::vector<POINT> m_StarXY_List;
 	HFONT m_Font[FONT_COUNT];
 
@@ -50,23 +51,20 @@ public:
 	}
 
 	void init(HWND hWnd);
-	void Update(float deltaTime);
+	void Update(float deltaTime); //좌표이동이 금지될 경우 return으로 함수를 끝낸다.
 	void Draw();
-	//승패체크 : 캐릭터와 object들이 부딪혔는지 체크한다.
-	//bool GameVictoryCheck();
-	//사용 가능한 키입력이 있었는지 확인
-	//bool KeyInputCheck();
 
 	bool GameClearCheck();
+	//점수 증가
+	//void ScoreUp() { m_UI.ScoreUp(); }
 
-	//질문 
 	//GM의 배경 이동 확인 + 캐릭터의 update 이동 확인에서 
 	bool Get_GoalEndPositionCheck() { return m_ObjectMgr.Get_GoalEndPositionCheck(); } //골이 특정 x 좌표에 닿는것 체크 : 배경 > 캐릭터 이동을 담당
 	//Character에서 사용
 	void Set_GoalEndPositionCheck(bool _EndPositionCheck) { m_ObjectMgr.Set_GoalEndPositionCheck(_EndPositionCheck); }
 
+
 	HBITMAP MyCreateDIBSection(HDC hdc, int width, int height);
 	HFONT Get_Font(FONT fontType) { return m_Font[fontType]; };
 	int Get_CharacterLife() { return m_Character.Get_CharacterLife(); }
 };
-

@@ -3,9 +3,9 @@
 #include "BitMapManager.h"
 
 enum RECT_USE
-{//FirRing의 출력 rect와 collider체크의 rect가 다른 점 고려
-	RECT_BITMAP,
-	RECT_COLLIDER,
+{//충돌, 점수 체크 RECT 구분
+	RECT_BUMP,
+	RECT_SCORE,
 	RECT_COUNT,
 };
 
@@ -15,7 +15,7 @@ protected:
 	float m_Draw_X;
 	float m_Draw_Y;
 	float m_Time;
-	RECT m_Collider_Rect; //FirRing의 출력 rect와 collider체크의 rect가 다른 점 고려
+	RECT m_Collider_Rect[RECT_COUNT]; //FirRing의 출력 rect와 collider체크의 rect가 다른 점 고려
 	IMG m_IMG_NowMotion; //화면에 현재 띄울 이미지
 public:
 	//초기 세팅
@@ -25,6 +25,5 @@ public:
 	//Rect 세팅
 	virtual void SetRect() abstract;
 
-	RECT* Get_Rect();
-
+	RECT* Get_Rect(RECT_USE useType);
 };

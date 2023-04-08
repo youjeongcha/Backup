@@ -1,5 +1,5 @@
 #include "ObjectManager.h"
-
+#include "GameManager.h"
 
 void ObjectManager::InitialSet()
 {
@@ -37,20 +37,38 @@ BUMP_CHECK ObjectManager::ColliderCheck(RECT* characterRect)
 	if (m_Goal.Get_ActiveCheck() == true)
 	{
 		//ObjectMgr에서 rect 체크 후에 해당 object의 범위와 캐릭터의 범위가 겹치면 true를 리턴한다.
-		if (IntersectRect(&lprcDst, m_Goal.Get_Rect(), characterRect))
+		if (IntersectRect(&lprcDst, m_Goal.Get_Rect(RECT_BUMP), characterRect))
 			return BUMP_GOAL;
 	}
 
 	for (int i = 0; i < OBSTACLE_COUNT; i++)
 	{//장애물 두개씩 존재한다.(화면상에서 돌려쓰기)
 
-		//불항아리
-		if (IntersectRect(&lprcDst, m_FirJar[i].Get_Rect(), characterRect))
+		//불항아리 Bump
+		if (IntersectRect(&lprcDst, m_FirJar[i].Get_Rect(RECT_BUMP), characterRect))
+    		return BUMP_OBSTACLE;
+
+		//불링B Bump
+		if (IntersectRect(&lprcDst, m_FirRing_B[i].Get_Rect(RECT_BUMP), characterRect))
 			return BUMP_OBSTACLE;
 
-		//불링B
-		if (IntersectRect(&lprcDst, m_FirRing_B[i].Get_Rect(), characterRect))
-			return BUMP_OBSTACLE;
+
+		//불항아리 Score
+		if (IntersectRect(&lprcDst, m_FirJar[i].Get_Rect(RECT_SCORE), characterRect))
+		{
+			//TODO:: 점수 올려주기
+			//GMMgr->ScoreUp();
+			return BUMP_SCORE;
+		}
+
+		//불링B Score
+		if (IntersectRect(&lprcDst, m_FirRing_B[i].Get_Rect(RECT_SCORE), characterRect))
+		{
+			//TODO:: 점수 올려주기
+
+			//GMMgr->ScoreUp();
+			return BUMP_SCORE;
+		}
 	}
 
 	//불링S는 하나?

@@ -3,40 +3,45 @@
 
 MapDraw::MapDraw()
 {
-	InitialSet();
+	InitialSet(SET_INIT);
 }
 
 MapDraw::~MapDraw()
 {
 }
 
-void MapDraw::InitialSet()
+void MapDraw::InitialSet(SET setType)
 {
-	m_BackIMG_X = 0;
 
-	//m_Meter[SHOW_FISRT].InitialSet();
-	//m_Meter[SHOW_SECOND].InitialSet();
-
-	//초기 세팅
-	m_Meter[SHOW_FISRT].SetMeter(METER_RATIO_100, METER_VALUE_START);
-	m_Meter[SHOW_SECOND].SetMeter(METER_RATIO_90, METER_VALUE_START - METER_VALUE_GAP);
-
-	m_BackIMG_List.clear();
-
-	//7회 관중 -> 1회 코끼리 *2
-	for (int count = 0; count < IMG_BACK_COUNT; count++)
+	switch (setType)
 	{
-		switch (count)
+	case SET_INIT:
+		//초기 세팅
+		m_Meter[SHOW_FISRT].SetMeter(METER_RATIO_100, METER_VALUE_START);
+		m_Meter[SHOW_SECOND].SetMeter(METER_RATIO_90, METER_VALUE_START - METER_VALUE_GAP);
+
+	case SET_RESPAWN:
+		//맵은 시작시 + 목숨 감소시 초기화
+		m_BackIMG_X = 0;
+		m_BackIMG_List.clear();
+
+		//7회 관중 -> 1회 코끼리 *2
+		for (int count = 0; count < IMG_BACK_COUNT; count++)
 		{
-		case IMG_ELEPHANT_FIRST:
-		case IMG_ELEPHANT_SECOND:
-			m_BackIMG_List.push_back(IMG_BG_ELEPHANT);
-			break;
-		default:
-			m_BackIMG_List.push_back(IMG_BG_SPECTATOR_1);
-			break;
+			switch (count)
+			{
+			case IMG_ELEPHANT_FIRST:
+			case IMG_ELEPHANT_SECOND:
+				m_BackIMG_List.push_back(IMG_BG_ELEPHANT);
+				break;
+			default:
+				m_BackIMG_List.push_back(IMG_BG_SPECTATOR_1);
+				break;
+			}
 		}
+		break;
 	}
+
 }
 
 void MapDraw::DrawMap(HDC hdc)

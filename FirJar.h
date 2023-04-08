@@ -3,11 +3,6 @@
 
 #define ANI_FIREJAR 0.2
 
-enum FIREJAR_RECT
-{
-	FIREJAR_RECT_GAP = 5,
-};
-
 
 class FirJar : public FireObstacle
 {

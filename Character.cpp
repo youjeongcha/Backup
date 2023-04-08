@@ -3,7 +3,7 @@
 
 Character::Character()
 {
-	InitialSet();
+	InitialSet(SET_INIT);
 }
 
 Character::~Character()
@@ -11,19 +11,29 @@ Character::~Character()
 }
 
 
-void Character::InitialSet()
+void Character::InitialSet(SET setType)
 {
-	m_IMG_NowMotion = IMG_CHARACTER_FRONT_1;
-	m_JumpState = CHARACTER_JUMP_NONE;
-	m_Life = LIFE_MAX; //목숨
-	m_Bump_Check = BUMP_NONE;
+	switch (setType)
+	{
+	case SET_INIT: //목숨 + 하단 처리
+		m_Life = LIFE_MAX; //목숨
 
-	m_CharcterRect.left = m_X = IMG_CHARACTER_X;
-	m_CharcterRect.top = m_Y = IMG_CHARACTER_Y;
-	m_CharcterRect.right = m_CharcterRect.left + IMG_CHARACTER_W;
-	m_CharcterRect.bottom = m_CharcterRect.top + IMG_CHARACTER_H;
+	case SET_RESPAWN:
+		m_IMG_NowMotion = IMG_CHARACTER_FRONT_1;
+		m_JumpState = CHARACTER_JUMP_NONE;
+		m_Bump_Check = BUMP_NONE;
 
-	m_TravelDistance = TRAVELDISTANCE_START;
+		m_X = IMG_CHARACTER_X;
+		m_Y = IMG_CHARACTER_Y;
+		
+		m_CharcterRect.left = m_X + BUMP_RECT_GAP;
+		m_CharcterRect.top = m_Y + BUMP_RECT_GAP;
+		m_CharcterRect.right = m_CharcterRect.left + IMG_CHARACTER_COLLIDER_W;
+		m_CharcterRect.bottom = m_CharcterRect.top + IMG_CHARACTER_COLLIDER_H;
+
+		m_TravelDistance = TRAVELDISTANCE_START;
+		break;
+	}
 }
 
 
@@ -31,10 +41,11 @@ float Character::Update(float deltaTime)
 {//질문 ::Update_XY먼저 호출한 다음 Jump를 해줘야하나. 어차피 조건안이면 다음번 함수 접근에 Jump를 참조하므로 상관 없나? 
 	float totalDistance;
 
-	Update_Animation(deltaTime); //캐릭터 IMG
 	Update_Input();
 
 	totalDistance = Update_Move(deltaTime); //키 입력 받기 + 이동
+
+	Update_Animation(deltaTime); //캐릭터 IMG
 
 	Update_Jump(deltaTime);
 	return totalDistance;
@@ -79,7 +90,13 @@ void Character::Update_Animation(float deltaTime)
 		break;
 	}
 	case BUMP_OBSTACLE: //장애물 부딪힘
-		m_IMG_NowMotion = IMG_CHARACTER_BUMP;
+		if (m_AnimationTime >= BUMP_TIME) //부딪힘 애니메이션 대기 시간
+			m_Bump_Check = BUMP_NONE; //m_Bump_Check을 바꾸고(부딪ㅎ미 상태 판별 기준) 함수 GM에서 게임 상태를 리세팅한다.
+		else
+			m_IMG_NowMotion = IMG_CHARACTER_BUMP;
+		break;
+	//case BUMP_SCORE:
+	//	m_Bump_Check = BUMP_SCORE;
 		break;
 	case BUMP_GOAL: //승리
 		if (m_AnimationTime >= PERFORMANCE_SPEED)
@@ -93,7 +110,6 @@ void Character::Update_Animation(float deltaTime)
 		}
 		break;
 	}
-	
 
 	m_AnimationTime += deltaTime;
 }
@@ -116,7 +132,6 @@ void Character::Update_Input()
 			//점프는 방향고 별도로 체크가 이루어져야 한다. 키 하나만 입력 체크되기 때문에
 			if ((GetAsyncKeyState(VK_SPACE) & 0x8000)) //캐릭터가 원 상태일때만 점프 가능
 				m_JumpState = CHARACTER_JUMP_UP;
-
 			break;
 		default:
 			break;
@@ -155,7 +170,8 @@ float Character::Update_Move(float deltaTime)
 			GMMgr->Set_GoalEndPositionCheck(false);
 		}
 
-		m_CharcterRect.left = m_X;
+		m_CharcterRect.left = m_X + BUMP_RECT_GAP;
+		m_CharcterRect.right = m_CharcterRect.left + IMG_CHARACTER_COLLIDER_W; //m_CharcterRect.right는 left가 변할때마다 갱신시켜주어야 한다.
 	}
 	else
 	{ //배경 이동 상태
@@ -171,7 +187,6 @@ float Character::Update_Move(float deltaTime)
 		}
 	}
 
-	m_CharcterRect.right = m_CharcterRect.left + IMG_CHARACTER_W; //m_CharcterRect.right는 left가 변할때마다 갱신시켜주어야 한다.
 	return m_TravelDistance;
 }
 
@@ -187,8 +202,6 @@ void Character::Update_Jump(float deltaTime)
 			m_Y = CHARACTER_JUMP_MAX_Y;
 			m_JumpState = CHARACTER_JUMP_DOWN;
 		}
-
-		m_CharcterRect.top = m_Y;
 		break;
 	case CHARACTER_JUMP_DOWN:
 		m_Y += CHARACTER_JUMP_GAP * deltaTime;
@@ -197,16 +210,17 @@ void Character::Update_Jump(float deltaTime)
 			m_Y = CHARACTER_JUMP_MIN_Y;
 			m_JumpState = CHARACTER_JUMP_NONE;
 		}
-
-		m_CharcterRect.top = m_Y;
 		break;
 	}
+
+	m_CharcterRect.top = m_Y + BUMP_RECT_GAP;
+	m_CharcterRect.bottom = m_CharcterRect.top + IMG_CHARACTER_COLLIDER_H;
 }
 
 
 void Character::Draw(HDC hdc)
 {
-	BitMapMgr->GetImage(m_IMG_NowMotion)->DrawTransparent(hdc, m_CharcterRect.left, m_CharcterRect.top, IMG_CHARACTER_W, IMG_CHARACTER_H);
+	BitMapMgr->GetImage(m_IMG_NowMotion)->DrawTransparent(hdc, m_X, m_Y, IMG_CHARACTER_W, IMG_CHARACTER_H);
 }
 
 bool Character::ReductionLife_End()
@@ -219,25 +233,9 @@ bool Character::ReductionLife_End()
 	return false;
 }
 
-//-----------------------승리----------------------------------
-
-//void Character::UpdatePerformance_Animation(float deltaTime)
-//{
-//	if (m_AnimationTime >= PERFORMANCE_SPEED)
-//	{
-//		m_AnimationTime = 0;
-//
-//		if (m_IMG_NowMotion == IMG_CHARACTER_GOAL_1)
-//			m_IMG_NowMotion = IMG_CHARACTER_GOAL_2;
-//		else if (m_IMG_NowMotion == IMG_CHARACTER_GOAL_2)
-//			m_IMG_NowMotion = IMG_CHARACTER_GOAL_1;
-//	}
-//
-//	m_AnimationTime += deltaTime;
-//}
 
 void Character::Set_XY_GoalMid()
 {
-	m_CharcterRect.left = WIN_PERFORMANCE_X;
-	m_CharcterRect.top = WIN_PERFORMANCE_Y;
+	m_X = WIN_PERFORMANCE_X;
+	m_Y = WIN_PERFORMANCE_Y;
 }

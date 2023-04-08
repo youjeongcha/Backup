@@ -10,7 +10,7 @@ private:
 	bool m_ActiveCheck; //화면상에서 작동 가능 여부 확인 위해
 
 	//Rect 세팅
-	virtual void SetRect() override;
+	virtual void SetRect() override; //변동성 있는 left와 right만 지속적으로 Set해주기 위해
 public:
 	Goal();
 	~Goal();

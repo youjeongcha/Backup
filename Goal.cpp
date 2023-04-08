@@ -19,7 +19,12 @@ void Goal::InitialSet(IMG _IMG_X, int _X, int _Y)
 	m_Draw_X = _X; //이건 Goal이 나타날때 세팅을 해준다.
 	m_Draw_Y = _Y;
 
+
 	//Rect 세팅
+	//top과 bottom은 변하지 않는다.
+	m_Collider_Rect[RECT_BUMP].top = m_Draw_Y;
+	m_Collider_Rect[RECT_BUMP].bottom = m_Collider_Rect[RECT_BUMP].top + GOAL_IMG_H;
+
 	SetRect();
 }
 
@@ -32,7 +37,7 @@ void Goal::Update(float deltaTime, float total_MoveDistance, float _Prev_MoveDis
 {	
 	//캐릭터가 뒤로 가자마자 goal이 없어지고. 다시 앞으로 가서 goal이 갑자기 나타나는 거 해결
 	if (m_EndPositionCheck == false)// || (thisTurn_MoveDistance < 0 && m_ActiveCheck == true))
-		m_Draw_X += (_Prev_MoveDistance - total_MoveDistance) *10;
+		m_Draw_X += (_Prev_MoveDistance - total_MoveDistance);// *10;
 
 	//앞으로 간다. (IMG 왼쪽으로 순환)
 	//배경 이동이 끝이 난다. 특정 x좌표에 도착한 경우
@@ -51,8 +56,6 @@ void Goal::Update(float deltaTime, float total_MoveDistance, float _Prev_MoveDis
 void Goal::SetRect()
 {
 	//Draw Rect의 right 갱신
-	m_Collider_Rect.left = m_Draw_X;
-	m_Collider_Rect.top = m_Draw_Y;
-	m_Collider_Rect.right = m_Collider_Rect.left + GOAL_IMG_W;
-	m_Collider_Rect.bottom = m_Collider_Rect.top + GOAL_IMG_H;
+	m_Collider_Rect[RECT_BUMP].left = m_Draw_X;
+	m_Collider_Rect[RECT_BUMP].right = m_Collider_Rect[RECT_BUMP].left + GOAL_IMG_W;
 }

@@ -128,9 +128,6 @@ enum MENU_KEY
 
 
 
-
-
-
 class UI
 {
 private:
@@ -177,7 +174,7 @@ public:
 	~UI();
 
 	//초기 세팅
-	void InitialSet();
+	void InitialSet(SET setType);
 
 	//메뉴------------------------------
 	void DrawMenu(HDC hdc);
@@ -188,6 +185,7 @@ public:
 	void DrawGame(HDC hdc);
 	void UpdateGame(float deltaTime);
 
-
+	//점수 증가
+	void ScoreUp() { m_Score += 100; }
 };
 

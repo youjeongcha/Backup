@@ -50,7 +50,7 @@ public:
 	~MapDraw();
 
 	//초기 세팅
-	void InitialSet();
+	void InitialSet(SET setType);
 	
 	void DrawMap(HDC hdc);
 	void UpdateMap(float total_MoveDistance, float _Prev_MoveDistance);

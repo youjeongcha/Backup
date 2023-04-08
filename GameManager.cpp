@@ -4,14 +4,11 @@ GameManager* GameManager::m_pInstance = NULL;
 
 GameManager::GameManager()
 {
-	m_scene = SCENE_MENU;
+	m_Scene = SCENE_MENU;
 
 	//글자 크기 변경
 	m_Font[FONT_STAGE] = CreateFont(FONT_STAGE_SIZE, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, 0, L"궁서");
 	m_Font[FONT_SCORE] = CreateFont(FONT_SCORE_SIZE, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, 0, L"궁서");
-	
-	//m_Font[FONT_STAGE] = CreateFont(FONT_STAGE_SIZE, 0, 0, 0, FW_BOLD, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"Times New Roman");
-	//m_Font[FONT_SCORE] = CreateFont(FONT_SCORE_SIZE, 0, 0, 0, FW_BOLD, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"Times New Roman");
 }
 
 
@@ -39,86 +36,107 @@ void GameManager::init(HWND hWnd)
 
 	//초기화
 	m_Prev_MoveDistance = 0;
-	m_Character.InitialSet(); //캐릭터
-	m_UI.InitialSet(); //UI
-	m_Map.InitialSet(); //배경 + M
+	m_Character.InitialSet(SET_INIT); //캐릭터
+	m_UI.InitialSet(SET_INIT); //UI
+	m_Map.InitialSet(SET_INIT); //배경 + M
 	m_ObjectMgr.InitialSet(); //Goal + 장애물
 }
 
 void GameManager::Update(float deltaTime)
-{
+{ //좌표이동이 금지될 경우 return으로 함수를 끝낸다.
 	float total_MoveDistance;
 
-	switch (m_scene)
+	switch (m_Scene)
 	{
 	case SCENE_MENU:
 		if (m_UI.UpdateMenu(deltaTime)) //엔터 누르면 씬 전환 //함수를 bool형으로 UI안에서 해결한다.
-			m_scene = SCENE_GAME;
+			m_Scene = SCENE_GAME;
 
-		break;
+		return;
 	case SCENE_GAME:
-		//-------------------좌표 이동---------------------
-		total_MoveDistance = m_Character.Update(deltaTime);
-		m_UI.UpdateGame(deltaTime);
-
-		m_Map.UpdateMap(total_MoveDistance, m_Prev_MoveDistance); //back 관중+코끼리 왼쪽 순회
-
-
-		if (m_Map.MeterEnd_GoalActiveCheck() == true)
-		{
-			//active체크만 하고 초기 goal의 x 값은 meter의 오른쪽 화면에 숨어있을때의 세팅 값으로 해둔다.
-			//+ 세팅은 생성자에서 처리를 하기로 한다.
-			m_ObjectMgr.Set_Goal_ActiveCheck(true); //Goal이 그려짐+이동+충돌체크가 가능한 상태
-			
-		}
-		else
-			m_ObjectMgr.Set_Goal_ActiveCheck(false);
-
-		m_ObjectMgr.Update(deltaTime, total_MoveDistance, m_Prev_MoveDistance);
-
-		m_Prev_MoveDistance = total_MoveDistance;
-
-
 		//--------------------Collider 체크---------------------
-
 		switch (m_ObjectMgr.ColliderCheck(m_Character.Get_CharacterRect()))
 		{
 		case BUMP_GOAL: //Goal 통과
-			m_scene = SCENE_GAMECLEAR;
+			m_Scene = SCENE_GAMECLEAR;
 
 			m_Character.Set_Bump_Check(BUMP_GOAL); //캐릭터의 부딪힘 판별 상태 변경
 			m_Character.Set_PerformanceMotion(); //캐릭터 IMG 변경
 			m_Character.Set_XY_GoalMid();//캐릭터를 goal 중앙으로 이동시킨다.
-			break;
+			return;
 
 		case BUMP_OBSTACLE: //장애물 부딪힘
 			m_Character.Set_Bump_Check(BUMP_OBSTACLE); //캐릭터의 부딪힘 판별 상태 변경
+			m_Character.Update_Animation(deltaTime); //캐릭터 애니메이션만 작동
 
-			//TODO:: 테스트 위해 주석처리
-			/*
-			if (m_Character.ReductionLife_End()) //함수 내부 목숨 감소 > true면 GameOver
-			{ //게임 세팅 초기화
-				m_scene = SCENE_MENU; //씬 메인메뉴로
+			//캐릭터가 일정 시간 이상 부딪힘 Animation을 출력한 후의 처리
+			if (m_Character.Get_Bump_Check() == BUMP_NONE)
+			{
+				//TODO:: 테스트 위해 주석처리
+				
+				if (m_Character.ReductionLife_End()) //함수 내부 목숨 감소 > true면 GameOver
+				{ //게임 세팅 초기화
+					m_Scene = SCENE_MENU; //씬 메인메뉴로
 
-				//초기화
+					//초기화
+					//m_Prev_MoveDistance = 0;
+					m_Character.InitialSet(SET_INIT); //캐릭터
+					m_UI.InitialSet(SET_INIT); //UI
+					m_Map.InitialSet(SET_INIT); //배경 + M
+					//m_ObjectMgr.InitialSet(); //Goal + 장애물
+				}
+				else
+				{
+					//앞전 M 기준 리세팅
+					//m_Prev_MoveDistance = 0;
+					m_Character.InitialSet(SET_RESPAWN); //캐릭터
+					m_UI.InitialSet(SET_RESPAWN); //UI						
+					m_Map.InitialSet(SET_RESPAWN); //배경 + M				//TODO::M는 유지
+					//m_ObjectMgr.InitialSet(); //Goal + 장애물
+				}
 				m_Prev_MoveDistance = 0;
-				m_Character.InitialSet(); //캐릭터
-				m_UI.InitialSet(); //UI
-				m_Map.InitialSet(); //배경 + M
 				m_ObjectMgr.InitialSet(); //Goal + 장애물
-			}*/
+			}
+			return;
+		case BUMP_SCORE: //Score Rect에 충돌
+			if (BUMP_NONE == m_Character.Get_Bump_Check()) //캐릭터 부딪힘 상태가 바뀌는 시점에만 score 100
+				m_UI.ScoreUp();
+
+			m_Character.Set_Bump_Check(BUMP_SCORE);
 			break;
 		case BUMP_NONE:
 			m_Character.Set_Bump_Check(BUMP_NONE); //캐릭터의 부딪힘 판별 상태 변경
+
 			break;
 		}
-		
 		break;
 	case SCENE_GAMECLEAR:
 		m_Map.UpdateClapBack(deltaTime);
 		m_Character.Update_Animation(deltaTime);
-		break;
+		return;
 	}
+
+	//-------------------좌표 이동---------------------
+	total_MoveDistance = m_Character.Update(deltaTime);
+	m_UI.UpdateGame(deltaTime);
+
+	m_Map.UpdateMap(total_MoveDistance, m_Prev_MoveDistance); //back 관중+코끼리 왼쪽 순회
+
+
+	if (m_Map.MeterEnd_GoalActiveCheck() == true)
+	{
+		//active체크만 하고 초기 goal의 x 값은 meter의 오른쪽 화면에 숨어있을때의 세팅 값으로 해둔다.
+		//+ 세팅은 생성자에서 처리를 하기로 한다.
+		m_ObjectMgr.Set_Goal_ActiveCheck(true); //Goal이 그려짐+이동+충돌체크가 가능한 상태
+
+	}
+	else
+		m_ObjectMgr.Set_Goal_ActiveCheck(false);
+
+	m_ObjectMgr.Update(deltaTime, total_MoveDistance, m_Prev_MoveDistance);
+
+	m_Prev_MoveDistance = total_MoveDistance;
+
 }
 
 
@@ -132,7 +150,7 @@ void GameManager::Draw()
 
 	SelectObject(m_backDC, backBitmap);
 
-	switch (m_scene)
+	switch (m_Scene)
 	{
 	case SCENE_MENU:
 		m_UI.DrawMenu(m_backDC);
@@ -160,7 +178,7 @@ void GameManager::Draw()
 
 bool GameManager::GameClearCheck()
 {
-	switch (m_scene)
+	switch (m_Scene)
 	{
 	case SCENE_MENU:
 	case SCENE_GAME:
@@ -169,9 +187,6 @@ bool GameManager::GameClearCheck()
 		return true;
 	}
 }
-
-
-
 
 
 //더블 버퍼링

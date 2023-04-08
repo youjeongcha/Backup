@@ -22,17 +22,31 @@ enum WindowXY
 	MAIN_H = 450,
 };
 
+enum BUMP_RECT
+{
+	//BUMP_RECT_GAP = 5, 지정
+	BUMP_RECT_GAP = 10,
+};
+
 enum BUMP_CHECK
 {//현재 겹친 object의 속성에 따라 처리를 다르게 한다.(ex.골-게임 클리어, 장애물-목숨감소+게임오버)
 	BUMP_GOAL,
 	BUMP_OBSTACLE,
+	BUMP_SCORE,
 	BUMP_NONE,
+};
+
+enum SET //Init 함수의 switch문에 사용한다.
+{
+	SET_INIT,		//초기화
+	SET_RESPAWN,	//리스폰 세팅
 };
 
 //enum SPEEDMETER
 //{
 //	SPEED_METER = 20,
 //};
+
 
 
 //-------------------------------IMG-----------------------------------
@@ -63,6 +77,9 @@ enum IMG_CHARACTER
 	IMG_CHARACTER_Y = MAIN_H - 150,
 	IMG_CHARACTER_W = 60,
 	IMG_CHARACTER_H = IMG_CHARACTER_W + 10,
+
+	IMG_CHARACTER_COLLIDER_W = IMG_CHARACTER_W - BUMP_RECT_GAP * 2,
+	IMG_CHARACTER_COLLIDER_H = IMG_CHARACTER_H - BUMP_RECT_GAP * 2,
 };
 
 //M 이미지의 XYWH
@@ -141,10 +158,27 @@ enum FIRJAR_IMG
 
 	FIRJAR_W = 40,
 	FIRJAR_H = 50,
+
+	FIRJAR_COLLIDER_W = FIRJAR_W - BUMP_RECT_GAP * 2,
+	FIRJAR_COLLIDER_H = FIRJAR_H - BUMP_RECT_GAP * 2,
 };
 
 
 
+//---------------------캐릭터-----------------------
+
+enum CHARACTER_JUMP
+{
+	CHARACTER_JUMP_NONE,
+	CHARACTER_JUMP_UP,
+	CHARACTER_JUMP_DOWN,
+
+	///CHARACTER_JUMP_GAP = 10,
+	CHARACTER_JUMP_GAP = 300,
+
+	CHARACTER_JUMP_MAX_Y = IMG_CHARACTER_Y - 100, //가장 높은 위치
+	CHARACTER_JUMP_MIN_Y = IMG_CHARACTER_Y, //가장 낮은 위치 == 처음의 Y
+};
 
 
 

@@ -57,7 +57,7 @@ UI::UI()
 		m_StarXY_List.push_back(star_XY);
 	}
 
-	InitialSet();
+	InitialSet(SET_INIT);
 
 	//m_Point_Y = SELECT_PLAYER_1A;
 	//m_NotDrawCheck = false;
@@ -75,16 +75,28 @@ UI::~UI()
 {
 }
 
-void UI::InitialSet()
+void UI::InitialSet(SET setType)
 {
-	m_Point_Y = SELECT_PLAYER_1A;
-	m_NotDrawCheck = false;
-	m_StarTime = 0;
-	m_FlickeringTime = 0;
-	m_ScoreTime = 0;
-	//m_UserLife = LIFE_MAX;
-	m_Score = SCORE_START;
-	m_Bonus = SCORE_BONUS;
+	switch (setType)
+	{
+	case SET_INIT: //+하단 처리
+		m_Point_Y = SELECT_PLAYER_1A;
+
+		m_ScoreTime = 0;
+		m_Score = SCORE_START;
+		m_Bonus = SCORE_BONUS;
+
+	case SET_RESPAWN:
+		//TODO::리스폰할때 세개 별도로 저장해두고 있어야 함
+		//m_ScoreTime = 0;
+		//m_Score = SCORE_START;
+		//m_Bonus = SCORE_BONUS;
+
+		m_NotDrawCheck = false;
+		m_StarTime = 0;
+		m_FlickeringTime = 0;
+		break;
+	}
 }
 
 void UI::DrawMenu(HDC hdc)
