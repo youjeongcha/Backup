@@ -38,8 +38,9 @@ void Meter::UpdateMeter(float total_MoveDistance, float _Prev_MoveDistance)
 {
 	m_MeterIMG_X += (_Prev_MoveDistance - total_MoveDistance);// *10;
 	
+	//M표시가 화면 어느쪽으로 나갔는지에 따라서
 	if (m_MeterIMG_X <= START_SHOW_X) //가장 처음 이미지가 -x라서 절댓값을 체크한다.
-	{ //앞으로 간다. (IMG 왼쪽으로 순환)
+	{ //앞으로 간다. (IMG 왼쪽으로 순환) 
 		m_MeterIMG_X += METER_ACROSS_ONE; //이미지 하나 건너서 출력
 		m_Meter_Value -= METER_VALUE_ACROSS_ONE; //이미지 하나 건너서 -20
 	}

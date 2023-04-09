@@ -55,8 +55,6 @@ public:
 	void Draw();
 
 	bool GameClearCheck();
-	//점수 증가
-	//void ScoreUp() { m_UI.ScoreUp(); }
 
 	//GM의 배경 이동 확인 + 캐릭터의 update 이동 확인에서 
 	bool Get_GoalEndPositionCheck() { return m_ObjectMgr.Get_GoalEndPositionCheck(); } //골이 특정 x 좌표에 닿는것 체크 : 배경 > 캐릭터 이동을 담당
@@ -67,4 +65,7 @@ public:
 	HBITMAP MyCreateDIBSection(HDC hdc, int width, int height);
 	HFONT Get_Font(FONT fontType) { return m_Font[fontType]; };
 	int Get_CharacterLife() { return m_Character.Get_CharacterLife(); }
+
+	float Judgment_First_M_Value() { 
+		return METER_VALUE_START - (m_Character.Get_Prev_TravelDistance() - METER_RATIO_100) / METER_GAP * METER_VALUE_GAP; }
 };

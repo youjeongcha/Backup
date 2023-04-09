@@ -41,6 +41,8 @@ private:
 	CHARACTER_JUMP m_JumpState; //캐릭터의 점프 상태를 판별(일반, 점프 상승, 점프 하강)
 	//이동거리
 	float m_TravelDistance;
+	//장애물 부딪히기 전의 이동거리(기준은 캐릭터의 배경이동 고정 X좌표는 기준 
+	float m_Prev_TravelDiatance;
 	//이동 키를 눌렀는지
 	CHARACTER_MOVE m_MoveKey;
 	//현재 object와 접촉 상태인지
@@ -67,11 +69,16 @@ public:
 
 	//목숨 감소 : 목숨이 0이 될 경우 목숨 감소가 불가하므로 false를 리턴하고 GameOver가 된다.
 	bool ReductionLife_End();
+	//캐릭터가 장애물을 지나갈때 앞으로 가는 상태일 경우만 점수 증가를 위해.(뒤로 갈때는 증가X)
+	bool MoveRightCheck();
 
 	RECT* Get_CharacterRect() { return &m_CharcterRect; }
 
 
 	float Get_TravelDistance() { return m_TravelDistance; }
+	//장애물 부딪히고 먼저 출력될 M value값이 뭔지 파악하기 위해
+	//캐릭터 이동 거리량에 따라 저장되는 Value의 값을 다르게
+	float Get_Prev_TravelDistance() { return m_Prev_TravelDiatance; }
 	int Get_CharacterLife() { return m_Life; }
 	BUMP_CHECK Get_Bump_Check() { return m_Bump_Check; }
 

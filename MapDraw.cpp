@@ -12,6 +12,7 @@ MapDraw::~MapDraw()
 
 void MapDraw::InitialSet(SET setType)
 {
+	int biggerValue;
 
 	switch (setType)
 	{
@@ -19,29 +20,35 @@ void MapDraw::InitialSet(SET setType)
 		//초기 세팅
 		m_Meter[SHOW_FISRT].SetMeter(METER_RATIO_100, METER_VALUE_START);
 		m_Meter[SHOW_SECOND].SetMeter(METER_RATIO_90, METER_VALUE_START - METER_VALUE_GAP);
-
+		break;
 	case SET_RESPAWN:
-		//맵은 시작시 + 목숨 감소시 초기화
-		m_BackIMG_X = 0;
-		m_BackIMG_List.clear();
+		//이전 M 세팅
+		//SHOW_FIRST 함수가 반드시 먼저 출력되는 M이고 20단위로 변경되는 것이 아니므로 큰 수를 계산
+		//biggerValue = max(m_Meter[SHOW_FISRT].Get_Prev_Meter_Value(), m_Meter[SHOW_SECOND].Get_Prev_Meter_Value());
 
-		//7회 관중 -> 1회 코끼리 *2
-		for (int count = 0; count < IMG_BACK_COUNT; count++)
-		{
-			switch (count)
-			{
-			case IMG_ELEPHANT_FIRST:
-			case IMG_ELEPHANT_SECOND:
-				m_BackIMG_List.push_back(IMG_BG_ELEPHANT);
-				break;
-			default:
-				m_BackIMG_List.push_back(IMG_BG_SPECTATOR_1);
-				break;
-			}
-		}
+		m_Meter[SHOW_FISRT].SetMeter(METER_RATIO_100, GMMgr->Judgment_First_M_Value());
+		m_Meter[SHOW_SECOND].SetMeter(METER_RATIO_90, GMMgr->Judgment_First_M_Value() - METER_VALUE_GAP);
 		break;
 	}
 
+	//맵은 시작시 + 목숨 감소시 초기화
+	m_BackIMG_X = 0;
+	m_BackIMG_List.clear();
+
+	//7회 관중 -> 1회 코끼리 *2
+	for (int count = 0; count < IMG_BACK_COUNT; count++)
+	{
+		switch (count)
+		{
+		case IMG_ELEPHANT_FIRST:
+		case IMG_ELEPHANT_SECOND:
+			m_BackIMG_List.push_back(IMG_BG_ELEPHANT);
+			break;
+		default:
+			m_BackIMG_List.push_back(IMG_BG_SPECTATOR_1);
+			break;
+		}
+	}
 }
 
 void MapDraw::DrawMap(HDC hdc)

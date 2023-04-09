@@ -2,13 +2,13 @@
 #include "BitMapManager.h"
 //#include <list>
 
-
+//SHOW_FIRST 함수가 반드시 먼저 출력되는 M이고 20단위로 변경되는 것이 아니므로 큰 수를 계산
 class Meter
 {
 private:
 	float m_MeterIMG_X; //meter 표시 출력 
 	int m_Meter_Value;
-	//float m_Prev_MoveDistance;
+	int m_Prev_Meter_Value; //지나온 직전의 M의 value 값
 
 public:
 	Meter();
@@ -30,5 +30,7 @@ public:
 	void Set_MeterIMG_X(float _IMG_X) { m_MeterIMG_X = _IMG_X; }
 	void Set_MeterValue(int _Meter_Value) { m_Meter_Value = _Meter_Value; }
 	int Get_Meter_Value() { return m_Meter_Value; }
+	//이전 value를 장애물 부딪히고 M에 적용시켜주기 위해
+	int Get_Prev_Meter_Value() { return m_Prev_Meter_Value; }
 };
 

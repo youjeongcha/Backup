@@ -4,6 +4,7 @@
 Character::Character()
 {
 	InitialSet(SET_INIT);
+	m_Prev_TravelDiatance = METER_RATIO_100;
 }
 
 Character::~Character()
@@ -17,23 +18,24 @@ void Character::InitialSet(SET setType)
 	{
 	case SET_INIT: //목숨 + 하단 처리
 		m_Life = LIFE_MAX; //목숨
-
+		m_TravelDistance = TRAVELDISTANCE_START; //이동 거리량
+		break;
 	case SET_RESPAWN:
-		m_IMG_NowMotion = IMG_CHARACTER_FRONT_1;
-		m_JumpState = CHARACTER_JUMP_NONE;
-		m_Bump_Check = BUMP_NONE;
-
-		m_X = IMG_CHARACTER_X;
-		m_Y = IMG_CHARACTER_Y;
-		
-		m_CharcterRect.left = m_X + BUMP_RECT_GAP;
-		m_CharcterRect.top = m_Y + BUMP_RECT_GAP;
-		m_CharcterRect.right = m_CharcterRect.left + IMG_CHARACTER_COLLIDER_W;
-		m_CharcterRect.bottom = m_CharcterRect.top + IMG_CHARACTER_COLLIDER_H;
-
-		m_TravelDistance = TRAVELDISTANCE_START;
+		m_TravelDistance = m_Prev_TravelDiatance;
 		break;
 	}
+
+	m_IMG_NowMotion = IMG_CHARACTER_FRONT_1;
+	m_JumpState = CHARACTER_JUMP_NONE;
+	m_Bump_Check = BUMP_NONE;
+
+	m_X = IMG_CHARACTER_X;
+	m_Y = IMG_CHARACTER_Y;
+
+	m_CharcterRect.left = m_X + BUMP_RECT_GAP;
+	m_CharcterRect.top = m_Y + BUMP_RECT_GAP;
+	m_CharcterRect.right = m_CharcterRect.left + IMG_CHARACTER_COLLIDER_W;
+	m_CharcterRect.bottom = m_CharcterRect.top + IMG_CHARACTER_COLLIDER_H;
 }
 
 
@@ -44,6 +46,15 @@ float Character::Update(float deltaTime)
 	Update_Input();
 
 	totalDistance = Update_Move(deltaTime); //키 입력 받기 + 이동
+
+	//이동 거리 백업
+
+	if (totalDistance >= m_Prev_TravelDiatance + METER_GAP) //M 하나 사이의 거리만큼 >>앞으로<< 이동했을 경우 백업한다.
+	{
+		m_Prev_TravelDiatance += METER_GAP;
+	}
+	else if (totalDistance <= m_Prev_TravelDiatance) //M 하나 사이의 거리만큼 >>뒤로<< 이동했을 경우 백업한다.
+		m_Prev_TravelDiatance -= METER_GAP;
 
 	Update_Animation(deltaTime); //캐릭터 IMG
 
@@ -230,6 +241,13 @@ bool Character::ReductionLife_End()
 	if (m_Life == 0)
 		return true;
 
+	return false;
+}
+
+bool Character::MoveRightCheck()
+{
+	if (m_MoveKey == CHARACTER_MOVE_RIGHT)
+		return true;
 	return false;
 }
 

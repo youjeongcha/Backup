@@ -79,7 +79,7 @@ void GameManager::Update(float deltaTime)
 					m_Scene = SCENE_MENU; //씬 메인메뉴로
 
 					//초기화
-					//m_Prev_MoveDistance = 0;
+					m_Prev_MoveDistance = 0;
 					m_Character.InitialSet(SET_INIT); //캐릭터
 					m_UI.InitialSet(SET_INIT); //UI
 					m_Map.InitialSet(SET_INIT); //배경 + M
@@ -88,18 +88,21 @@ void GameManager::Update(float deltaTime)
 				else
 				{
 					//앞전 M 기준 리세팅
-					//m_Prev_MoveDistance = 0;
+					m_Prev_MoveDistance = m_Character.Get_Prev_TravelDistance();
 					m_Character.InitialSet(SET_RESPAWN); //캐릭터
 					m_UI.InitialSet(SET_RESPAWN); //UI						
 					m_Map.InitialSet(SET_RESPAWN); //배경 + M				//TODO::M는 유지
 					//m_ObjectMgr.InitialSet(); //Goal + 장애물
 				}
-				m_Prev_MoveDistance = 0;
+				//m_Prev_MoveDistance = 0;
 				m_ObjectMgr.InitialSet(); //Goal + 장애물
 			}
 			return;
 		case BUMP_SCORE: //Score Rect에 충돌
-			if (BUMP_NONE == m_Character.Get_Bump_Check()) //캐릭터 부딪힘 상태가 바뀌는 시점에만 score 100
+			//캐릭터 부딪힘 상태가 바뀌는 시점에만 score 100
+			//&&
+			//캐릭터가 앞으로 향하고 있을때만
+			if (BUMP_NONE == m_Character.Get_Bump_Check() && m_Character.MoveRightCheck() == true)
 				m_UI.ScoreUp();
 
 			m_Character.Set_Bump_Check(BUMP_SCORE);
