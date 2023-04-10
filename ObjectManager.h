@@ -25,7 +25,9 @@ public:
 	void InitialSet();
 
 	//ObjectMgr에서 rect 체크 후에 해당 object의 범위와 캐릭터의 범위가 겹치면 ture를 리턴한다.
+	//왼쪽 링 + 불 항아리 + 골 등의 장애물
 	void Draw(HDC hdc);
+	void Draw_OnCharacter(HDC hdc);
 	void Update(float deltaTime, float thisTurn_MoveDistance, float _Prev_MoveDistance);
 	//현재 겹친 object의 속성에 따라 처리를 다르게 한다.(ex.골-게임 클리어, 장애물-목숨감소+게임오버)
 	BUMP_CHECK ColliderCheck(RECT* characterRect);

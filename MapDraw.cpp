@@ -24,10 +24,10 @@ void MapDraw::InitialSet(SET setType)
 	case SET_RESPAWN:
 		//이전 M 세팅
 		//SHOW_FIRST 함수가 반드시 먼저 출력되는 M이고 20단위로 변경되는 것이 아니므로 큰 수를 계산
-		//biggerValue = max(m_Meter[SHOW_FISRT].Get_Prev_Meter_Value(), m_Meter[SHOW_SECOND].Get_Prev_Meter_Value());
+		int value = GMMgr->Judgment_First_M_Value();
 
-		m_Meter[SHOW_FISRT].SetMeter(METER_RATIO_100, GMMgr->Judgment_First_M_Value());
-		m_Meter[SHOW_SECOND].SetMeter(METER_RATIO_90, GMMgr->Judgment_First_M_Value() - METER_VALUE_GAP);
+		m_Meter[SHOW_FISRT].SetMeter(METER_RATIO_100, value );
+		m_Meter[SHOW_SECOND].SetMeter(METER_RATIO_90, value - METER_VALUE_GAP);
 		break;
 	}
 

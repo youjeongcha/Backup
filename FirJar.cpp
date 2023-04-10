@@ -4,28 +4,20 @@
 FirJar::FirJar()
 {
 	m_IMG_NowMotion = IMG_OBJECT_POT_1;
+
+
 }
 
 FirJar::~FirJar()
 {
 }
 
-void FirJar::InitialSet(IMG _IMG_X, int _X, int _Y)
+void FirJar::InitialSet(int _X, int _Y)
 {
-	m_IMG_NowMotion = _IMG_X;
+	m_IMG_NowMotion = IMG_OBJECT_POT_1;
 
 	m_Draw_X = _X;
 	m_Draw_Y = _Y;
-
-	//top과 bottom은 고정되어있다.
-	//부딪힘
-	m_Collider_Rect[RECT_BUMP].top = m_Draw_Y + BUMP_RECT_GAP;
-	m_Collider_Rect[RECT_BUMP].bottom = m_Collider_Rect[RECT_BUMP].top + FIRJAR_COLLIDER_H;
-
-	//점수
-	m_Collider_Rect[RECT_SCORE].top = CHARACTER_JUMP_MAX_Y; //캐릭터 최대 점프 높이까지
-	m_Collider_Rect[RECT_SCORE].bottom = m_Collider_Rect[RECT_BUMP].top - 1;
-
 
 	//Rect 세팅
 	SetRect();
@@ -61,9 +53,9 @@ void FirJar::Update(float deltaTime, float total_MoveDistance, float _Prev_MoveD
 void FirJar::Animation(float deltaTime)
 { //이글거리는 애니메이션
 
-	if (m_Time >= ANI_FIREJAR)
+	if (m_AnimationTime >= ANI_SPEED_FIRE)
 	{
-		m_Time = 0;
+		m_AnimationTime = 0;
 		
 		if (m_IMG_NowMotion == IMG_OBJECT_POT_1)
 			m_IMG_NowMotion = IMG_OBJECT_POT_2;
@@ -71,7 +63,7 @@ void FirJar::Animation(float deltaTime)
 			m_IMG_NowMotion = IMG_OBJECT_POT_1;
 	}
 
-	m_Time += deltaTime;
+	m_AnimationTime += deltaTime;
 }
 
 void FirJar::SetRect()
@@ -80,8 +72,14 @@ void FirJar::SetRect()
 	//부딪힘
 	m_Collider_Rect[RECT_BUMP].left = m_Draw_X + BUMP_RECT_GAP;
 	m_Collider_Rect[RECT_BUMP].right = m_Collider_Rect[RECT_BUMP].left + FIRJAR_COLLIDER_W;
+	//top과 bottom은 고정되어있다.
+	m_Collider_Rect[RECT_BUMP].top = m_Draw_Y + BUMP_RECT_GAP;
+	m_Collider_Rect[RECT_BUMP].bottom = m_Collider_Rect[RECT_BUMP].top + FIRJAR_COLLIDER_H;
 
 	//점수
 	m_Collider_Rect[RECT_SCORE].left = m_Collider_Rect[RECT_BUMP].left;
 	m_Collider_Rect[RECT_SCORE].right = m_Collider_Rect[RECT_BUMP].right;
+	//top과 bottom은 고정되어있다.
+	m_Collider_Rect[RECT_SCORE].top = CHARACTER_JUMP_MAX_Y; //캐릭터 최대 점프 높이까지
+	m_Collider_Rect[RECT_SCORE].bottom = m_Collider_Rect[RECT_BUMP].top - 1;
 }

@@ -161,16 +161,16 @@ void GameManager::Draw()
 	case SCENE_GAME:
 		m_Map.DrawMap(m_backDC);	//배경
 		m_UI.DrawGame(m_backDC);	//UI
+		m_ObjectMgr.Draw(m_backDC);	//오브젝트 L
 		m_Character.Draw(m_backDC);	//캐릭터
-
-		//TODO::왼쪽 링 > 캐릭터 > 오른쪽 링????
-		m_ObjectMgr.Draw(m_backDC);	//오브젝트
+		m_ObjectMgr.Draw_OnCharacter(m_backDC);	//오브젝트 R
 		break;
 	case SCENE_GAMECLEAR:
 		m_Map.DrawMap(m_backDC);
 		m_UI.DrawGame(m_backDC);	//UI
-		m_ObjectMgr.Draw(m_backDC);	//오브젝트
+		m_ObjectMgr.Draw(m_backDC);	//오브젝트 L
 		m_Character.Draw(m_backDC);	//캐릭터
+		m_ObjectMgr.Draw_OnCharacter(m_backDC);	//오브젝트 R
 		break;
 	}
 

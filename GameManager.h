@@ -66,6 +66,8 @@ public:
 	HFONT Get_Font(FONT fontType) { return m_Font[fontType]; };
 	int Get_CharacterLife() { return m_Character.Get_CharacterLife(); }
 
-	float Judgment_First_M_Value() { 
-		return METER_VALUE_START - (m_Character.Get_Prev_TravelDistance() - METER_RATIO_100) / METER_GAP * METER_VALUE_GAP; }
+	float Judgment_First_M_Value() //TravleDistance 값으로 M간의 거리를 나누어 비율을 구해 value 값을 알아낸다.
+	{
+		return METER_VALUE_START - (m_Character.Get_Prev_TravelDistance() / METER_GAP * METER_VALUE_GAP); 
+	}
 };

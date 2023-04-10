@@ -4,7 +4,7 @@
 Character::Character()
 {
 	InitialSet(SET_INIT);
-	m_Prev_TravelDiatance = METER_RATIO_100;
+	m_Prev_TravelDiatance = 0;
 }
 
 Character::~Character()

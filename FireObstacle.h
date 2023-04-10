@@ -2,16 +2,19 @@
 #include "Object.h"
 #include "BitMapManager.h"
 
+#define ANI_SPEED_FIRE 0.1f
+#define MOVE_SPEED_FRIE 0.05f
+
 //상속용
 //FirJar과 FirRing_B의 부모. 
 
 class FireObstacle : public Object
 {
 protected:
-
+	float m_MoveTime; //이동 시간
 public:
 	//초기 세팅
-	virtual void InitialSet(IMG _IMG_X, int _X, int _Y) abstract;
+	virtual void InitialSet(int _X, int _Y) abstract;
 	virtual void Draw(HDC hdc) abstract;
 	virtual void Update(float deltaTime, float thisTurn_MoveDistance, float _Prev_MoveDistance) abstract;
 	//Rect 세팅

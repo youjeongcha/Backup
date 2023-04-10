@@ -10,10 +10,10 @@ Goal::~Goal()
 {
 }
 
-void Goal::InitialSet(IMG _IMG_X, int _X, int _Y)
+void Goal::InitialSet(int _X, int _Y)
 {//초기 세팅 Goal에서는 인자를 사용하지 않는다.
 
-	m_IMG_NowMotion = _IMG_X;
+	m_IMG_NowMotion = IMG_OBJECT_GOAL;
 	m_EndPositionCheck = false;
 
 	m_Draw_X = _X; //이건 Goal이 나타날때 세팅을 해준다.

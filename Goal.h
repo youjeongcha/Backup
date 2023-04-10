@@ -16,7 +16,7 @@ public:
 	~Goal();
 
 	//초기 세팅 Goal에서는 인자를 사용하지 않는다.
-	virtual void InitialSet(IMG _IMG_X, int _X, int _Y) override;
+	virtual void InitialSet(int _X, int _Y) override;
 	virtual void Draw(HDC hdc) override;
 	virtual void Update(float deltaTime, float total_MoveDistance, float _Prev_MoveDistance) override;
 

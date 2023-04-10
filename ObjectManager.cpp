@@ -4,11 +4,15 @@
 void ObjectManager::InitialSet()
 {
 	//Goal 골
-	m_Goal.InitialSet(IMG_OBJECT_GOAL, GOAL_IMG_X, GOAL_IMG_Y); //인자 사용 안함
+	m_Goal.InitialSet(GOAL_IMG_X, GOAL_IMG_Y); //인자 사용 안함
+
 	//FIrJar 불항아리
-	//m_FirJar[OBSTACLE_ONE].SetObstacle(IMG_OBJECT_POT_1, FIRJAR_X, FIRJAR_Y);
-	m_FirJar[OBSTACLE_ONE].InitialSet(IMG_OBJECT_POT_1, FIRJAR_X, FIRJAR_Y);
-	m_FirJar[OBSTACLE_TWO].InitialSet(IMG_OBJECT_POT_1, FIRJAR_X + METER_GAP, FIRJAR_Y);
+	m_FirJar[OBSTACLE_ONE].InitialSet(FIRJAR_X, FIRJAR_Y);
+	m_FirJar[OBSTACLE_TWO].InitialSet(FIRJAR_X + METER_GAP, FIRJAR_Y);
+
+	//FireRing 불링
+	m_FirRing_B[OBSTACLE_ONE].InitialSet(FIRRING_X, FIRRING_Y); //TODO::수정
+	m_FirRing_B[OBSTACLE_TWO].InitialSet(FIRRING_X + METER_GAP, FIRRING_Y);
 }
 
 void ObjectManager::Draw(HDC hdc)
@@ -16,9 +20,20 @@ void ObjectManager::Draw(HDC hdc)
 	if (m_Goal.Get_ActiveCheck() == true)
 		m_Goal.Draw(hdc);
 	
-	//m_FirJar->Draw(hdc);
+	//불항아리 그리기
 	m_FirJar[OBSTACLE_ONE].Draw(hdc);
 	m_FirJar[OBSTACLE_TWO].Draw(hdc);
+
+	//불링 Big L
+	m_FirRing_B[OBSTACLE_ONE].Draw(hdc);
+	m_FirRing_B[OBSTACLE_TWO].Draw(hdc);
+}
+
+void ObjectManager::Draw_OnCharacter(HDC hdc)
+{
+	//불링 Big R
+	m_FirRing_B[OBSTACLE_ONE].Draw_OnCharacter(hdc);
+	m_FirRing_B[OBSTACLE_TWO].Draw_OnCharacter(hdc);
 }
 
 void ObjectManager::Update(float deltaTime, float thisTurn_MoveDistance, float _Prev_MoveDistance)
@@ -28,6 +43,9 @@ void ObjectManager::Update(float deltaTime, float thisTurn_MoveDistance, float _
 	
 	m_FirJar[OBSTACLE_ONE].Update(deltaTime, thisTurn_MoveDistance, _Prev_MoveDistance);
 	m_FirJar[OBSTACLE_TWO].Update(deltaTime, thisTurn_MoveDistance, _Prev_MoveDistance);
+
+	m_FirRing_B[OBSTACLE_ONE].Update(deltaTime, thisTurn_MoveDistance, _Prev_MoveDistance);
+	m_FirRing_B[OBSTACLE_TWO].Update(deltaTime, thisTurn_MoveDistance, _Prev_MoveDistance);
 }
 
 BUMP_CHECK ObjectManager::ColliderCheck(RECT* characterRect)
@@ -55,20 +73,11 @@ BUMP_CHECK ObjectManager::ColliderCheck(RECT* characterRect)
 
 		//불항아리 Score
 		if (IntersectRect(&lprcDst, m_FirJar[i].Get_Rect(RECT_SCORE), characterRect))
-		{
-			//TODO:: 점수 올려주기
-			//GMMgr->ScoreUp();
 			return BUMP_SCORE;
-		}
 
 		//불링B Score
 		if (IntersectRect(&lprcDst, m_FirRing_B[i].Get_Rect(RECT_SCORE), characterRect))
-		{
-			//TODO:: 점수 올려주기
-
-			//GMMgr->ScoreUp();
 			return BUMP_SCORE;
-		}
 	}
 
 	//불링S는 하나?
