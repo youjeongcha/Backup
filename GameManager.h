@@ -9,12 +9,16 @@
 #define GMMgr GameManager::Get_Instance()
 #define BitMapMgr BitMapManager::Get_Instance()
 
+//복주머니 먹었을 때 드는 텍스트 초
+#define TEXT_SEC_1  1
+
 enum SCENE
 {
 	SCENE_MENU,
 	SCENE_GAME,
 	SCENE_GAMECLEAR,
 };
+
 
 class GameManager
 {
@@ -37,6 +41,9 @@ private:
 	ObjectManager m_ObjectMgr;
 	float m_Prev_MoveDistance;
 
+	//복주머니 점수 출력 체크
+	bool m_Draw_CashTextCheck;
+	float m_DrawCashText_Time;
 
 	GameManager();
 
@@ -65,6 +72,8 @@ public:
 	HBITMAP MyCreateDIBSection(HDC hdc, int width, int height);
 	HFONT Get_Font(FONT fontType) { return m_Font[fontType]; };
 	int Get_CharacterLife() { return m_Character.Get_CharacterLife(); }
+
+	//BUMP_CHECK Get_CharacterBumpCheck() { m_Character.Get_Bump_Check(); }
 
 	float Judgment_First_M_Value() //TravleDistance 값으로 M간의 거리를 나누어 비율을 구해 value 값을 알아낸다.
 	{

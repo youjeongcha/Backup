@@ -215,7 +215,6 @@ void UI::DrawGame(HDC hdc)
 	DrawScore(hdc);
 	//목숨
 	DrawLife(hdc);
-
 }
 
 void UI::UpdateGame(float deltaTime)
@@ -223,6 +222,8 @@ void UI::UpdateGame(float deltaTime)
 	//보너스 점수
 	UpdateBonus(deltaTime);
 }
+
+
 
 
 //-----------점수 + 목숨 창------------
@@ -265,8 +266,6 @@ void UI::DrawLife(HDC hdc)
 
 
 
-
-
 void UI::UpdateBonus(float deltaTime)
 {
 	if (m_ScoreTime >= BONUS_SPEED)
@@ -280,4 +279,3 @@ void UI::UpdateBonus(float deltaTime)
 
 	m_ScoreTime += deltaTime;
 }
-

@@ -44,7 +44,7 @@ void FirRing_B::Update(float deltaTime, float total_MoveDistance, float _Prev_Mo
 	//불링 이동
 	//★ 시간에 따라 움직여야 하는 게 있다면 deltaTime을 곱해준다.★ 
 	//시간당 좌표를 이동하는 건 //m_Draw_X -= 5; 하면 된다.
-	m_Draw_X += (_Prev_MoveDistance - total_MoveDistance) + -5 * deltaTime;
+	m_Draw_X += (_Prev_MoveDistance - total_MoveDistance) + -MOVE_SPEED_FRIE * deltaTime;
 
 	//Goal이 특정 좌표에 오면 순환을 멈춘다.
 		//if (GMMgr->Get_GoalEndPositionCheck() == true)

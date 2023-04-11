@@ -18,7 +18,7 @@ private:
 	Goal m_Goal;
 	FirJar m_FirJar[OBSTACLE_COUNT]; //불항아리
 	FirRing_B m_FirRing_B[OBSTACLE_COUNT]; //불링Big
-	FirRing_S m_FirRing_S[OBSTACLE_COUNT]; //불링Small
+	FirRing_S m_FirRing_S; //불링Small
 public:
 
 	//초기 세팅
@@ -33,10 +33,14 @@ public:
 	BUMP_CHECK ColliderCheck(RECT* characterRect);
 	
 
-	bool Get_GoalEndPositionCheck() { return m_Goal.Get_EndPositionCheck(); };
+	void DrawCashScoreText(HDC hdc) { m_FirRing_S.DrawCashScoreText(hdc); }
+
+	bool Get_GoalEndPositionCheck() { return m_Goal.Get_EndPositionCheck(); }
 	//Goal이 그려짐+이동+충돌체크가 가능한 상태
 	void Set_Goal_ActiveCheck(bool _ActiveCheck) { m_Goal.Set_ActiveCheck(_ActiveCheck); }
 	void Set_GoalEndPositionCheck(bool _EndPositionCheck) { m_Goal.Set_EndPositionCheck(_EndPositionCheck); }
+	//복주머니 해당 ring읜 현재 xy 기준으로 text 출력 좌표 설정
+	void Set_Text_XY() { m_FirRing_S.Set_Text_XY(); }
 	//void Set_Goal_X(float _X) { m_Goal.Set_Goal_X(_X); } //M가 0이 출력될 차례가 오면 goal의 x 좌표 세팅
 };
 

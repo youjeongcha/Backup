@@ -22,6 +22,7 @@ enum WindowXY
 	MAIN_H = 450,
 };
 
+
 enum BUMP_RECT
 {
 	//BUMP_RECT_GAP = 5, 지정
@@ -32,7 +33,8 @@ enum BUMP_CHECK
 {//현재 겹친 object의 속성에 따라 처리를 다르게 한다.(ex.골-게임 클리어, 장애물-목숨감소+게임오버)
 	BUMP_GOAL,
 	BUMP_OBSTACLE,
-	BUMP_SCORE,
+	BUMP_SCORE, //TODO::score는 변수로 별도로 관리를 한다.
+	BUMP_CASH,
 	BUMP_NONE,
 };
 
@@ -177,7 +179,19 @@ enum FIRRING_IMG
 	FIRRING_COLLIDER_H = 5,
 
 	//작은 링 H
+	//FIRRING_S_H = IMG_CHARACTER_H * 2 - 30,
 	FIRRING_S_H = IMG_CHARACTER_H * 2 - 30,
+
+	//Collider rect 세팅용
+	FIRRING_COLLIDER_SAMLL_GAP = 1,
+
+	//---------------복주머니---------------
+	FIRRING_CASH_X_GAP = 13,
+	FIRRING_CASH_Y_GAP = 20,
+
+	//복주머니 크기
+	FIRRING_CASH_W = 22,
+	FIRRING_CASH_H = FIRRING_CASH_W + 5,
 };
 
 //---------------------캐릭터-----------------------

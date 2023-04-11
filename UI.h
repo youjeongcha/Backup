@@ -68,20 +68,27 @@ enum FONT //폰트 관련
 {
 	FONT_STAGE = 0,
 	FONT_SCORE,
+	FONT_CASH_SCORE,
 	FONT_COUNT,
 
+	//스테이지
 	FONT_STAGE_SIZE = 16,
 	FONT_STAGE_X = IMG_SCORE_OUTLINE_X + 15,
 	FONT_STAGE_Y = IMG_SCORE_OUTLINE_Y + 11,
 
+	//점수쪽 UI
 	FONT_SCORE_SIZE = 18,
 	FONT_SCORE_X = IMG_SCORE_OUTLINE_X + 180,
 	FONT_SCORE_Y = IMG_SCORE_OUTLINE_Y + 15,
-
+	
+	//BONUS 표시 UI
 	FONT_BONUS_X = FONT_SCORE_X + 150,
 	FONT_BONUS_Y = FONT_SCORE_Y,
 
 	FONT_BONUS_COUNTING_X = FONT_BONUS_X + FONT_SCORE_SIZE * 3 + 10,
+
+	//복주머니 CASH text 크기
+	FONT_CASH_SCORE_SIZE = 16,
 
 };
 
@@ -89,6 +96,9 @@ enum SCORE
 {
 	SCORE_START = 0,
 	SCORE_BONUS = 10000,
+
+	SCORE_100 = 100, //장애물 뛰어넘기
+	SCORE_500 = 500, //복주머니
 
 	SCORE_BONUS_REDUTION = 10,
 };
@@ -125,6 +135,8 @@ enum MENU_KEY
 	MENU_KEY_UP = -1,
 	MENU_KEY_DOWN = 1,
 };
+
+
 
 
 
@@ -186,6 +198,6 @@ public:
 	void UpdateGame(float deltaTime);
 
 	//점수 증가
-	void ScoreUp() { m_Score += 100; }
+	void ScoreUp(SCORE score) { m_Score += (int)score; }
 };
 

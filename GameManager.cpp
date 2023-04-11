@@ -5,10 +5,13 @@ GameManager* GameManager::m_pInstance = NULL;
 GameManager::GameManager()
 {
 	m_Scene = SCENE_MENU;
+	m_Draw_CashTextCheck = false;
+	m_DrawCashText_Time = 0;
 
 	//글자 크기 변경
 	m_Font[FONT_STAGE] = CreateFont(FONT_STAGE_SIZE, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, 0, L"궁서");
 	m_Font[FONT_SCORE] = CreateFont(FONT_SCORE_SIZE, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, 0, L"궁서");
+	m_Font[FONT_CASH_SCORE] = CreateFont(FONT_CASH_SCORE_SIZE, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, 0, L"궁서");
 }
 
 
@@ -103,9 +106,25 @@ void GameManager::Update(float deltaTime)
 			//&&
 			//캐릭터가 앞으로 향하고 있을때만
 			if (BUMP_NONE == m_Character.Get_Bump_Check() && m_Character.MoveRightCheck() == true)
-				m_UI.ScoreUp();
+				m_UI.ScoreUp(SCORE_100);
 
 			m_Character.Set_Bump_Check(BUMP_SCORE);
+			break;
+		case BUMP_CASH:
+			//캐릭터 부딪힘 상태가 바뀌는 시점에만 score 100
+			//&&
+			//캐릭터가 앞으로 향하고 있을때만
+			if (BUMP_NONE == m_Character.Get_Bump_Check() && m_Character.MoveRightCheck() == true)
+			{
+				m_UI.ScoreUp(SCORE_500); //점수 증가
+				m_Draw_CashTextCheck = true;
+				m_DrawCashText_Time = 0;
+				//복주머니 해당 ring의 현재 xy 기준으로 text 출력 좌표 설정
+				m_ObjectMgr.Set_Text_XY();
+				
+			}
+
+			m_Character.Set_Bump_Check(BUMP_CASH);
 			break;
 		case BUMP_NONE:
 			m_Character.Set_Bump_Check(BUMP_NONE); //캐릭터의 부딪힘 판별 상태 변경
@@ -140,6 +159,15 @@ void GameManager::Update(float deltaTime)
 
 	m_Prev_MoveDistance = total_MoveDistance;
 
+
+	//----------복주머니 점수 출력 카운트 다운--------------
+	if (m_Draw_CashTextCheck == true)
+	{
+		m_DrawCashText_Time += deltaTime;
+
+		if (m_DrawCashText_Time >= TEXT_SEC_1)
+			m_Draw_CashTextCheck = false;
+	}
 }
 
 
@@ -161,13 +189,18 @@ void GameManager::Draw()
 	case SCENE_GAME:
 		m_Map.DrawMap(m_backDC);	//배경
 		m_UI.DrawGame(m_backDC);	//UI
+		if (m_Draw_CashTextCheck == true)
+		{
+			//복주머니는 점수 출력
+			m_ObjectMgr.DrawCashScoreText(m_backDC);
+		}
 		m_ObjectMgr.Draw(m_backDC);	//오브젝트 L
 		m_Character.Draw(m_backDC);	//캐릭터
 		m_ObjectMgr.Draw_OnCharacter(m_backDC);	//오브젝트 R
 		break;
 	case SCENE_GAMECLEAR:
 		m_Map.DrawMap(m_backDC);
-		m_UI.DrawGame(m_backDC);	//UI
+		m_UI.DrawGame(m_backDC);	//UI		
 		m_ObjectMgr.Draw(m_backDC);	//오브젝트 L
 		m_Character.Draw(m_backDC);	//캐릭터
 		m_ObjectMgr.Draw_OnCharacter(m_backDC);	//오브젝트 R

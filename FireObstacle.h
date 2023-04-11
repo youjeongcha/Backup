@@ -3,7 +3,7 @@
 #include "BitMapManager.h"
 
 #define ANI_SPEED_FIRE 0.1f
-#define MOVE_SPEED_FRIE 0.05f
+#define MOVE_SPEED_FRIE 100
 
 //상속용
 //FirJar과 FirRing_B의 부모. 

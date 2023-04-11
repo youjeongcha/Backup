@@ -10,9 +10,12 @@ void ObjectManager::InitialSet()
 	m_FirJar[OBSTACLE_ONE].InitialSet(FIRJAR_X, FIRJAR_Y);
 	m_FirJar[OBSTACLE_TWO].InitialSet(FIRJAR_X + METER_GAP, FIRJAR_Y);
 
-	//FireRing 불링
+	//FireRing 불링 B
 	m_FirRing_B[OBSTACLE_ONE].InitialSet(FIRRING_X, FIRRING_Y); //TODO::수정
 	m_FirRing_B[OBSTACLE_TWO].InitialSet(FIRRING_X + METER_GAP, FIRRING_Y);
+
+	//FireRing 불링 S
+	m_FirRing_S.InitialSet(END_SHOW_X + 50, FIRRING_Y);
 }
 
 void ObjectManager::Draw(HDC hdc)
@@ -24,16 +27,30 @@ void ObjectManager::Draw(HDC hdc)
 	m_FirJar[OBSTACLE_ONE].Draw(hdc);
 	m_FirJar[OBSTACLE_TWO].Draw(hdc);
 
-	//불링 Big L
+	//FireRing 불링 B
 	m_FirRing_B[OBSTACLE_ONE].Draw(hdc);
 	m_FirRing_B[OBSTACLE_TWO].Draw(hdc);
+
+	//불링 화면상에 나타날 시점에 사용
+	if (m_FirRing_S.Get_UsingCheck() == true)
+	{
+		//FireRing 불링 S
+		m_FirRing_S.Draw(hdc);
+	}
 }
 
 void ObjectManager::Draw_OnCharacter(HDC hdc)
 {
-	//불링 Big R
+	//FireRing 불링 B
 	m_FirRing_B[OBSTACLE_ONE].Draw_OnCharacter(hdc);
 	m_FirRing_B[OBSTACLE_TWO].Draw_OnCharacter(hdc);
+
+	//불링 화면상에 나타날 시점에 사용
+	if (m_FirRing_S.Get_UsingCheck() == true)
+	{
+		//FireRing 불링 S
+		m_FirRing_S.Draw_OnCharacter(hdc);
+	}
 }
 
 void ObjectManager::Update(float deltaTime, float thisTurn_MoveDistance, float _Prev_MoveDistance)
@@ -41,16 +58,28 @@ void ObjectManager::Update(float deltaTime, float thisTurn_MoveDistance, float _
 	if (m_Goal.Get_ActiveCheck() == true)
 		m_Goal.Update(deltaTime, thisTurn_MoveDistance, _Prev_MoveDistance);
 	
+	//FIrJar 불항아리
 	m_FirJar[OBSTACLE_ONE].Update(deltaTime, thisTurn_MoveDistance, _Prev_MoveDistance);
 	m_FirJar[OBSTACLE_TWO].Update(deltaTime, thisTurn_MoveDistance, _Prev_MoveDistance);
 
+
+	//FireRing 불링 B
 	m_FirRing_B[OBSTACLE_ONE].Update(deltaTime, thisTurn_MoveDistance, _Prev_MoveDistance);
 	m_FirRing_B[OBSTACLE_TWO].Update(deltaTime, thisTurn_MoveDistance, _Prev_MoveDistance);
+
+
+	//불링 화면상에 나타날 시점에 사용
+	if (m_FirRing_S.Get_UsingCheck() == true)
+	{
+		//FireRing 불링 S
+		m_FirRing_S.Update(deltaTime, thisTurn_MoveDistance, _Prev_MoveDistance);
+	}
 }
 
 BUMP_CHECK ObjectManager::ColliderCheck(RECT* characterRect)
 {
 	RECT lprcDst;
+	int score;
 
 	if (m_Goal.Get_ActiveCheck() == true)
 	{
@@ -59,6 +88,7 @@ BUMP_CHECK ObjectManager::ColliderCheck(RECT* characterRect)
 			return BUMP_GOAL;
 	}
 
+	//scroe 변수 만들긴
 	for (int i = 0; i < OBSTACLE_COUNT; i++)
 	{//장애물 두개씩 존재한다.(화면상에서 돌려쓰기)
 
@@ -80,9 +110,16 @@ BUMP_CHECK ObjectManager::ColliderCheck(RECT* characterRect)
 			return BUMP_SCORE;
 	}
 
-	//불링S는 하나?
-	//if (IntersectRect(&lprcDst, m_FirRing_S.Get_Rect(), characterRect))
-	//	return BUMP_OBSTACLE;
+	//불링 화면상에 나타날 시점에 사용
+	if (m_FirRing_S.Get_UsingCheck() == true)
+	{
+		//불링S는 하나 //70나올때 생성
+		if (IntersectRect(&lprcDst, m_FirRing_S.Get_Rect(RECT_BUMP), characterRect))
+			return BUMP_OBSTACLE;
+
+		if (IntersectRect(&lprcDst, m_FirRing_S.Get_Rect(RECT_SCORE), characterRect))
+			return BUMP_CASH;
+	}
 
 	//이외에는 겹치지 않는 경우
 	return BUMP_NONE;
