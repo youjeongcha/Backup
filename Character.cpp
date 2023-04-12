@@ -174,7 +174,7 @@ float Character::Update_Move(float deltaTime)
 	{
 		m_X += thisTurn_MoveDistance * deltaTime;
 
-		if (m_X <= IMG_CHARACTER_X) //캐릭터 이동 > 배경 이동으로 전환
+		if (m_X <= IMG_CHARACTER_X) //골대 나타나고 뒤로 가면 : 캐릭터 이동 > 배경 이동으로 전환
 		{
 			m_TravelDistance += m_X - IMG_CHARACTER_X;
 			m_X = IMG_CHARACTER_X;

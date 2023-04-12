@@ -27,6 +27,4 @@ public:
 
 	void Set_EndPositionCheck(bool _EndPositionCheck) { m_EndPositionCheck = _EndPositionCheck; }
 	bool Get_EndPositionCheck() { return m_EndPositionCheck; }
-
-
 };

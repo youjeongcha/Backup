@@ -92,16 +92,7 @@ enum FONT //폰트 관련
 
 };
 
-enum SCORE
-{
-	SCORE_START = 0,
-	SCORE_BONUS = 10000,
 
-	SCORE_100 = 100, //장애물 뛰어넘기
-	SCORE_500 = 500, //복주머니
-
-	SCORE_BONUS_REDUTION = 10,
-};
 
 enum SELECT_PLAYER
 {
@@ -198,6 +189,9 @@ public:
 	void UpdateGame(float deltaTime);
 
 	//점수 증가
-	void ScoreUp(SCORE score) { m_Score += (int)score; }
+	void ScoreUp(int score) 
+	{
+		m_Score += score; 
+	}
 };
 

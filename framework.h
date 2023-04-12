@@ -31,17 +31,29 @@ enum BUMP_RECT
 
 enum BUMP_CHECK
 {//현재 겹친 object의 속성에 따라 처리를 다르게 한다.(ex.골-게임 클리어, 장애물-목숨감소+게임오버)
+	BUMP_SCORE = -3, //TODO::score는 변수로 별도로 관리를 한다.
+	BUMP_NONE = -2,
+	BUMP_OBSTACLE = -1,
+
 	BUMP_GOAL,
-	BUMP_OBSTACLE,
-	BUMP_SCORE, //TODO::score는 변수로 별도로 관리를 한다.
-	BUMP_CASH,
-	BUMP_NONE,
+	//BUMP_CASH,
 };
 
 enum SET //Init 함수의 switch문에 사용한다.
 {
 	SET_INIT,		//초기화
 	SET_RESPAWN,	//리스폰 세팅
+};
+
+enum SCORE
+{
+	SCORE_START = 0,
+	SCORE_BONUS = 10000,
+
+	SCORE_100 = 100, //장애물 뛰어넘기
+	SCORE_500 = 500, //복주머니
+
+	SCORE_BONUS_REDUTION = 10,
 };
 
 //enum SPEEDMETER
@@ -172,15 +184,16 @@ enum FIRRING_IMG
 	FIRRING_Y = IMG_ELEPHANT_Y + IMG_ELEPHANT_H,
 
 	FIRRING_W = 25,
-	FIRRING_H = IMG_CHARACTER_H * 2,
+	FIRRING_H = IMG_CHARACTER_H * 2, //원 수치
+	//FIRRING_H = 10, //디버깅용
 
 	//Collider rect 세팅용
 	FIRRING_COLLIDER_W = 5,
 	FIRRING_COLLIDER_H = 5,
 
 	//작은 링 H
-	//FIRRING_S_H = IMG_CHARACTER_H * 2 - 30,
-	FIRRING_S_H = IMG_CHARACTER_H * 2 - 30,
+	FIRRING_S_H = IMG_CHARACTER_H * 2 - 30, //원 수치
+	//FIRRING_S_H = 10, //디버깅용
 
 	//Collider rect 세팅용
 	FIRRING_COLLIDER_SAMLL_GAP = 1,

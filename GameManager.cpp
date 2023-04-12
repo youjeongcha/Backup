@@ -48,6 +48,7 @@ void GameManager::init(HWND hWnd)
 void GameManager::Update(float deltaTime)
 { //좌표이동이 금지될 경우 return으로 함수를 끝낸다.
 	float total_MoveDistance;
+	int score_Or_Bump;
 
 	switch (m_Scene)
 	{
@@ -58,8 +59,15 @@ void GameManager::Update(float deltaTime)
 		return;
 	case SCENE_GAME:
 		//--------------------Collider 체크---------------------
-		switch (m_ObjectMgr.ColliderCheck(m_Character.Get_CharacterRect()))
+		score_Or_Bump = m_ObjectMgr.ColliderCheck(m_Character.Get_CharacterRect());
+		switch (score_Or_Bump)
 		{
+		case BUMP_SCORE: //캐릭터 부딪힘 상태가 바뀌는 시점에만 score 상승 위해
+			break;
+		case BUMP_NONE:
+			m_Character.Set_Bump_Check(BUMP_NONE); //캐릭터의 부딪힘 판별 상태 변경
+
+			break;
 		case BUMP_GOAL: //Goal 통과
 			m_Scene = SCENE_GAMECLEAR;
 
@@ -99,36 +107,24 @@ void GameManager::Update(float deltaTime)
 				}
 				//m_Prev_MoveDistance = 0;
 				m_ObjectMgr.InitialSet(); //Goal + 장애물
+				m_Draw_CashTextCheck = false; //복주머니 먹고 죽고 재시작시 500 글자 안 뜨게
 			}
-			return;
-		case BUMP_SCORE: //Score Rect에 충돌
-			//캐릭터 부딪힘 상태가 바뀌는 시점에만 score 100
-			//&&
-			//캐릭터가 앞으로 향하고 있을때만
-			if (BUMP_NONE == m_Character.Get_Bump_Check() && m_Character.MoveRightCheck() == true)
-				m_UI.ScoreUp(SCORE_100);
-
-			m_Character.Set_Bump_Check(BUMP_SCORE);
-			break;
-		case BUMP_CASH:
-			//캐릭터 부딪힘 상태가 바뀌는 시점에만 score 100
-			//&&
-			//캐릭터가 앞으로 향하고 있을때만
+			return;	
+		default: //1이상은 점수 증가 < Score Rect에 충돌
+			//캐릭터 부딪힘 상태가 바뀌는 시점에만 score 상승   &&   캐릭터가 앞으로 향하고 있을때만
 			if (BUMP_NONE == m_Character.Get_Bump_Check() && m_Character.MoveRightCheck() == true)
 			{
-				m_UI.ScoreUp(SCORE_500); //점수 증가
-				m_Draw_CashTextCheck = true;
+				m_UI.ScoreUp(score_Or_Bump); //점수 증가			
 				m_DrawCashText_Time = 0;
 				//복주머니 해당 ring의 현재 xy 기준으로 text 출력 좌표 설정
 				m_ObjectMgr.Set_Text_XY();
-				
+
+				//점수가 500점 이상 : 복주머니 먹었을 때만 출력
+				if (score_Or_Bump >= SCORE_500)
+					m_Draw_CashTextCheck = true;
 			}
 
-			m_Character.Set_Bump_Check(BUMP_CASH);
-			break;
-		case BUMP_NONE:
-			m_Character.Set_Bump_Check(BUMP_NONE); //캐릭터의 부딪힘 판별 상태 변경
-
+			m_Character.Set_Bump_Check(BUMP_SCORE); //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<문제 생기면 얘임
 			break;
 		}
 		break;

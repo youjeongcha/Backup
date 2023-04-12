@@ -24,6 +24,9 @@ public:
 	virtual void Update(float deltaTime, float thisTurn_MoveDistance, float _Prev_MoveDistance) abstract;
 	//Rect 세팅
 	virtual void SetRect() abstract;
+	
+	//디버깅용 RECT 그리기
+	void DrawDEbugggggggggggggg(HDC hdc);
 
 	RECT* Get_Rect(RECT_USE useType);
 };

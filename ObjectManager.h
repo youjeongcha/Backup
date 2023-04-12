@@ -30,7 +30,7 @@ public:
 	void Draw_OnCharacter(HDC hdc);
 	void Update(float deltaTime, float thisTurn_MoveDistance, float _Prev_MoveDistance);
 	//현재 겹친 object의 속성에 따라 처리를 다르게 한다.(ex.골-게임 클리어, 장애물-목숨감소+게임오버)
-	BUMP_CHECK ColliderCheck(RECT* characterRect);
+	int ColliderCheck(RECT* characterRect);
 	
 
 	void DrawCashScoreText(HDC hdc) { m_FirRing_S.DrawCashScoreText(hdc); }

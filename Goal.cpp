@@ -3,6 +3,7 @@
 
 Goal::Goal()
 {
+	m_EndPositionCheck = false;
 	//InitialSet();
 }
 

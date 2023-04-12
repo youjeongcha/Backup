@@ -4,8 +4,7 @@
 FirJar::FirJar()
 {
 	m_IMG_NowMotion = IMG_OBJECT_POT_1;
-
-
+	m_AllotScore = SCORE_100;
 }
 
 FirJar::~FirJar()
