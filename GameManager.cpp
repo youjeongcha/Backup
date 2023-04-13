@@ -96,7 +96,7 @@ void GameManager::Update(float deltaTime)
 					m_Map.InitialSet(SET_INIT); //배경 + M
 					//m_ObjectMgr.InitialSet(); //Goal + 장애물
 				}
-				else
+				else //장애물 부딪힘
 				{
 					//앞전 M 기준 리세팅
 					m_Prev_MoveDistance = m_Character.Get_Prev_TravelDistance();
@@ -124,7 +124,7 @@ void GameManager::Update(float deltaTime)
 					m_Draw_CashTextCheck = true;
 			}
 
-			m_Character.Set_Bump_Check(BUMP_SCORE); //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<문제 생기면 얘임
+			//m_Character.Set_Bump_Check(BUMP_SCORE); //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<문제 생기면 얘임
 			break;
 		}
 		break;

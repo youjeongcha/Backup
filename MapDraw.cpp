@@ -23,7 +23,7 @@ void MapDraw::InitialSet(SET setType)
 		break;
 	case SET_RESPAWN:
 		//이전 M 세팅
-		//SHOW_FIRST 함수가 반드시 먼저 출력되는 M이고 20단위로 변경되는 것이 아니므로 큰 수를 계산
+		//SHOW_FIRST 함수가 반드시 먼저 출력되는 M이어야 해서.큰 수를 계산 ( 20단위로 변경되고 있기 때문에 큰 수가 배열 안에서 섞인다.)
 		int value = GMMgr->Judgment_First_M_Value();
 
 		m_Meter[SHOW_FISRT].SetMeter(METER_RATIO_100, value );

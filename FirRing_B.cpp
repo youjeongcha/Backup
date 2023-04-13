@@ -16,6 +16,7 @@ FirRing_B::~FirRing_B()
 
 void FirRing_B::InitialSet(int _X, int _Y)
 {
+	m_bActiveCheck = true;
 	m_IMG_NowMotion = IMG_OBJECT_RING_LEFT_1;
 	m_IMG_NowMotion_R = IMG_OBJECT_RING_RIGHT_1;
 
@@ -66,6 +67,7 @@ void FirRing_B::Update(float deltaTime, float total_MoveDistance, float _Prev_Mo
 
 			if (m_Draw_X <= START_SHOW_X) //가장 처음 이미지가 -x라서 절댓값을 체크한다.
 			{ //앞으로 간다. (IMG 왼쪽으로 순환)
+				m_bActiveCheck = true;
 				m_Draw_X += METER_ACROSS_ONE; //이미지 하나 건너서 출력
 			}
 			else if (m_Draw_X >= END_SHOW_X)
@@ -113,6 +115,7 @@ void FirRing_B::Animation(float deltaTime)
 
 void FirRing_B::SetRect()
 { //Rect 세팅
+
 
 	//부딪힘
 	m_Collider_Rect[RECT_BUMP].left = m_Draw_X + FIRRING_W;

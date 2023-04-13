@@ -17,6 +17,7 @@ FirRing_S::~FirRing_S()
 
 void FirRing_S::InitialSet(int _X, int _Y)
 {
+	m_bActiveCheck = true;
 	m_bCashDraw = true;
 
 	m_IMG_NowMotion = IMG_OBJECT_RING_LEFT_1;
@@ -52,10 +53,10 @@ void FirRing_S::Update(float deltaTime, float total_MoveDistance, float _Prev_Mo
 
 			if (m_Draw_X <= START_SHOW_X) //가장 처음 이미지가 -x라서 절댓값을 체크한다.
 			{ //앞으로 간다. (IMG 왼쪽으로 순환)
-
+				m_bActiveCheck = true;
+				m_bCashDraw = true;
 				m_Draw_X += METER_ACROSS_ONE; //이미지 하나 건너서 출력
 				//복주머니 다시 리스폰 (처럼 다시 그려주기 위해)
-				m_bCashDraw = true;
 			}
 		}
 		//else //Goal이 특정 좌표에 오면 순환을 멈춘다.

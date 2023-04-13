@@ -12,6 +12,7 @@ enum RECT_USE
 class Object
 {
 protected:
+	bool m_bActiveCheck; //화면상에서 작동 가능 여부 확인 위해
 	float m_Draw_X;
 	float m_Draw_Y;
 	float m_AnimationTime;
@@ -24,9 +25,14 @@ public:
 	virtual void Update(float deltaTime, float thisTurn_MoveDistance, float _Prev_MoveDistance) abstract;
 	//Rect 세팅
 	virtual void SetRect() abstract;
+	bool ColliderCheck(RECT* characterRect, RECT_USE useType);
+
+	//Goal이 그려짐+이동+충돌체크가 가능한 상태
+	void Set_ActiveCheck(bool _ActiveCheck) { m_bActiveCheck = _ActiveCheck; }
+	bool Get_ActiveCheck() { return m_bActiveCheck; }
 	
 	//디버깅용 RECT 그리기
-	void DrawDEbugggggggggggggg(HDC hdc);
+	//void DrawDEbugggggggggggggg(HDC hdc);
 
-	RECT* Get_Rect(RECT_USE useType);
+	//RECT* Get_Rect(RECT_USE useType);
 };

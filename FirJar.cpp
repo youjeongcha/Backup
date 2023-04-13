@@ -13,6 +13,7 @@ FirJar::~FirJar()
 
 void FirJar::InitialSet(int _X, int _Y)
 {
+	m_bActiveCheck = true;
 	m_IMG_NowMotion = IMG_OBJECT_POT_1;
 
 	m_Draw_X = _X;
@@ -39,10 +40,12 @@ void FirJar::Update(float deltaTime, float total_MoveDistance, float _Prev_MoveD
 
 	if (m_Draw_X <= START_SHOW_X) //가장 처음 이미지가 -x라서 절댓값을 체크한다.
 	{ //앞으로 간다. (IMG 왼쪽으로 순환)
+		m_bActiveCheck = true;
 		m_Draw_X += METER_ACROSS_ONE; //이미지 하나 건너서 출력
 	}
 	else if (m_Draw_X >= END_SHOW_X)
 	{ //뒤로 간다. (IMG 오른쪽으로 순환)
+		m_bActiveCheck = true;
 		m_Draw_X -= METER_ACROSS_ONE;
 	}
 

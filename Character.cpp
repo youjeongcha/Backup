@@ -29,7 +29,12 @@ void Character::InitialSet(SET setType)
 	m_JumpState = CHARACTER_JUMP_NONE;
 	m_Bump_Check = BUMP_NONE;
 
-	m_X = IMG_CHARACTER_X;
+	//10M에서 죽으면 기존M 들과 다르게 세팅되어야 한다.
+	if ((setType == SET_RESPAWN) && (m_TravelDistance == METER_RATIO_10))
+		m_X = GOAL_IMG_ARRIVE_X - METER_GAP;
+	else
+		m_X = IMG_CHARACTER_X;
+
 	m_Y = IMG_CHARACTER_Y;
 
 	m_CharcterRect.left = m_X + BUMP_RECT_GAP;

@@ -77,6 +77,8 @@ public:
 
 	float Judgment_First_M_Value() //TravleDistance 값으로 M간의 거리를 나누어 비율을 구해 value 값을 알아낸다.
 	{
-		return METER_VALUE_START - (m_Character.Get_Prev_TravelDistance() / METER_GAP * METER_VALUE_GAP); 
+		float tmp = m_Character.Get_Prev_TravelDistance() / METER_GAP * METER_VALUE_GAP;
+
+		return METER_VALUE_START - tmp;
 	}
 };

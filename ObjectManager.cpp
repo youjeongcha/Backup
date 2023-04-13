@@ -31,12 +31,12 @@ void ObjectManager::Draw(HDC hdc)
 	//if (m_FirRing_B[OBSTACLE_ONE].Get_UsingCheck() == true)
 	{
 		m_FirRing_B[OBSTACLE_ONE].Draw(hdc);
-		m_FirRing_B[OBSTACLE_ONE].DrawDEbugggggggggggggg(hdc);
+		//m_FirRing_B[OBSTACLE_ONE].DrawDEbugggggggggggggg(hdc);
 	}
 	//if (m_FirRing_B[OBSTACLE_TWO].Get_UsingCheck() == true)
 	{
 		m_FirRing_B[OBSTACLE_TWO].Draw(hdc);
-		m_FirRing_B[OBSTACLE_TWO].DrawDEbugggggggggggggg(hdc);
+		//m_FirRing_B[OBSTACLE_TWO].DrawDEbugggggggggggggg(hdc);
 	}
 
 	//불링 화면상에 나타날 시점에 사용
@@ -44,7 +44,7 @@ void ObjectManager::Draw(HDC hdc)
 	{
 		//FireRing 불링 S
 		m_FirRing_S.Draw(hdc);
-		m_FirRing_S.DrawDEbugggggggggggggg(hdc);
+		//m_FirRing_S.DrawDEbugggggggggggggg(hdc);
 	}
 }
 
@@ -54,12 +54,12 @@ void ObjectManager::Draw_OnCharacter(HDC hdc)
 	//if (m_FirRing_B[OBSTACLE_ONE].Get_UsingCheck() == true)
 	{
 		m_FirRing_B[OBSTACLE_ONE].Draw_OnCharacter(hdc);
-		m_FirRing_B[OBSTACLE_ONE].DrawDEbugggggggggggggg(hdc);
+		//m_FirRing_B[OBSTACLE_ONE].DrawDEbugggggggggggggg(hdc);
 	}
 	//if (m_FirRing_B[OBSTACLE_TWO].Get_UsingCheck() == true)
 	{
 		m_FirRing_B[OBSTACLE_TWO].Draw_OnCharacter(hdc);
-		m_FirRing_B[OBSTACLE_TWO].DrawDEbugggggggggggggg(hdc);
+		//m_FirRing_B[OBSTACLE_TWO].DrawDEbugggggggggggggg(hdc);
 	}
 
 	//불링 화면상에 나타날 시점에 사용
@@ -101,7 +101,7 @@ void ObjectManager::Update(float deltaTime, float thisTurn_MoveDistance, float _
 
 int ObjectManager::ColliderCheck(RECT* characterRect)
 {
-	RECT lprcDst;
+	//RECT lprcDst;
 	int score = 0;
 
 	//--------------- 골에 부딪히면 리턴 0 ---------------
@@ -109,8 +109,10 @@ int ObjectManager::ColliderCheck(RECT* characterRect)
 	{
 
 		//ObjectMgr에서 rect 체크 후에 해당 object의 범위와 캐릭터의 범위가 겹치면 true를 리턴한다.
-		if (IntersectRect(&lprcDst, m_Goal.Get_Rect(RECT_BUMP), characterRect))
+		if (m_Goal.ColliderCheck(characterRect, RECT_BUMP))
 			return BUMP_GOAL;
+		//if (IntersectRect(&lprcDst, m_Goal.Get_Rect(RECT_BUMP), characterRect))
+		//	return BUMP_GOAL;
 	}
 
 	//scroe 변수 만들긴
@@ -120,13 +122,15 @@ int ObjectManager::ColliderCheck(RECT* characterRect)
 		//--------------- 장애물에 부딪히면 리턴 -1 ---------------
 		 
 		//불항아리 Bump
-		if (IntersectRect(&lprcDst, m_FirJar[i].Get_Rect(RECT_BUMP), characterRect))
+		//if (IntersectRect(&lprcDst, m_FirJar[i].Get_Rect(RECT_BUMP), characterRect))
+		if (m_FirJar[i].ColliderCheck(characterRect, RECT_BUMP))
     		return BUMP_OBSTACLE;
 
 		//--------------- 스코어 RECT 부딪히면 1~이상 상승 ---------------
 		
 		//불항아리 Score
-		if (IntersectRect(&lprcDst, m_FirJar[i].Get_Rect(RECT_SCORE), characterRect))
+		//if (IntersectRect(&lprcDst, m_FirJar[i].Get_Rect(RECT_SCORE), characterRect))
+		if (m_FirJar[i].ColliderCheck(characterRect, RECT_SCORE))
 			score += m_FirJar[i].Get_AllotScore(); //TODO::해당 오브제의 함수로 점수 상승
 
 		//
@@ -135,11 +139,13 @@ int ObjectManager::ColliderCheck(RECT* characterRect)
 		//if (m_FirRing_B[i].Get_UsingCheck() == true)
 		{
 			//불링B Bump
-			if (IntersectRect(&lprcDst, m_FirRing_B[i].Get_Rect(RECT_BUMP), characterRect))
+			//if (IntersectRect(&lprcDst, m_FirRing_B[i].Get_Rect(RECT_BUMP), characterRect))
+			if (m_FirRing_B[i].ColliderCheck(characterRect, RECT_BUMP))
   				return BUMP_OBSTACLE;
 
 			//불링B Score
-			if (IntersectRect(&lprcDst, m_FirRing_B[i].Get_Rect(RECT_SCORE), characterRect))
+			//if (IntersectRect(&lprcDst, m_FirRing_B[i].Get_Rect(RECT_SCORE), characterRect))
+			if (m_FirRing_B[i].ColliderCheck(characterRect, RECT_SCORE))
 				score += m_FirRing_B[i].Get_AllotScore(); //TODO::해당 오브제의 함수로 점수 상승
 		}
 	}
@@ -148,10 +154,12 @@ int ObjectManager::ColliderCheck(RECT* characterRect)
 	//if (m_FirRing_S.Get_UsingCheck() == true)
 	{
 		//불링S는 하나 //70나올때 생성
-		if (IntersectRect(&lprcDst, m_FirRing_S.Get_Rect(RECT_BUMP), characterRect))
+		//if (IntersectRect(&lprcDst, m_FirRing_S.Get_Rect(RECT_BUMP), characterRect))
+		if (m_FirRing_S.ColliderCheck(characterRect, RECT_BUMP))
 			return BUMP_OBSTACLE;
 
-		if (IntersectRect(&lprcDst, m_FirRing_S.Get_Rect(RECT_SCORE), characterRect))
+		//if (IntersectRect(&lprcDst, m_FirRing_S.Get_Rect(RECT_SCORE), characterRect))
+		if (m_FirRing_S.ColliderCheck(characterRect, RECT_SCORE))
 		{
 			score += m_FirRing_S.Get_AllotScore(); //TODO::해당 오브제의 함수로 점수 상승
 			m_FirRing_S.Set_bCashDraw(false); //복주머니 먹으면 사라져야 하므로
