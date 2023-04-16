@@ -30,7 +30,7 @@ void Character::InitialSet(SET setType)
 	m_Bump_Check = BUMP_NONE;
 
 	//10M에서 죽으면 기존M 들과 다르게 세팅되어야 한다.
-	if ((setType == SET_RESPAWN) && (m_TravelDistance == METER_RATIO_10))
+	if ((setType == SET_RESPAWN) && (10 == GMMgr->Judgment_First_M_Value()))
 		m_X = GOAL_IMG_ARRIVE_X - METER_GAP;
 	else
 		m_X = IMG_CHARACTER_X;
@@ -54,11 +54,11 @@ float Character::Update(float deltaTime)
 
 	//이동 거리 백업
 
-	if (totalDistance >= m_Prev_TravelDiatance + METER_GAP) //M 하나 사이의 거리만큼 >>앞으로<< 이동했을 경우 백업한다.
+	if (totalDistance > m_Prev_TravelDiatance + METER_GAP) //M 하나 사이의 거리만큼 >>앞으로<< 이동했을 경우 백업한다.
 	{
-		m_Prev_TravelDiatance += METER_GAP;
+	 	m_Prev_TravelDiatance += METER_GAP;
 	}
-	else if (totalDistance <= m_Prev_TravelDiatance) //M 하나 사이의 거리만큼 >>뒤로<< 이동했을 경우 백업한다.
+	else if (totalDistance < m_Prev_TravelDiatance) //M 하나 사이의 거리만큼 >>뒤로<< 이동했을 경우 백업한다.
 		m_Prev_TravelDiatance -= METER_GAP;
 
 	Update_Animation(deltaTime); //캐릭터 IMG
@@ -177,6 +177,7 @@ float Character::Update_Move(float deltaTime)
 	//캐릭터 이동 상태
 	if (GMMgr->Get_GoalEndPositionCheck())
 	{
+		m_TravelDistance += thisTurn_MoveDistance * deltaTime;
 		m_X += thisTurn_MoveDistance * deltaTime;
 
 		if (m_X <= IMG_CHARACTER_X) //골대 나타나고 뒤로 가면 : 캐릭터 이동 > 배경 이동으로 전환

@@ -19,6 +19,7 @@ void FirJar::InitialSet(int _X, int _Y)
 	m_Draw_X = _X;
 	m_Draw_Y = _Y;
 
+
 	//Rect 세팅
 	SetRect();
 }
@@ -35,8 +36,9 @@ void FirJar::Update(float deltaTime, float total_MoveDistance, float _Prev_MoveD
 
 	//-----------------------
 
-	//배경 이동
-	m_Draw_X += (_Prev_MoveDistance - total_MoveDistance);// *10;
+	//배경 이동 :골대가 제 위치에 도착하지 않았을 경우에만
+	if (GMMgr->Get_GoalEndPositionCheck() == false)
+		m_Draw_X += (_Prev_MoveDistance - total_MoveDistance);// *10;
 
 	if (m_Draw_X <= START_SHOW_X) //가장 처음 이미지가 -x라서 절댓값을 체크한다.
 	{ //앞으로 간다. (IMG 왼쪽으로 순환)

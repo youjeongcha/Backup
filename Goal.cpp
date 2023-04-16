@@ -3,6 +3,7 @@
 
 Goal::Goal()
 {
+	m_bActiveCheck = false;
 	m_EndPositionCheck = false;
 	//InitialSet();
 }
@@ -16,9 +17,17 @@ void Goal::InitialSet(int _X, int _Y)
 
 	m_IMG_NowMotion = IMG_OBJECT_GOAL;
 	m_EndPositionCheck = false;
+	m_bActiveCheck = false;
 
 	m_Draw_X = _X; //이건 Goal이 나타날때 세팅을 해준다.
 	m_Draw_Y = _Y;
+
+	//10M에서 죽으면 골대가 제 위치에 있는 상황에서 시작
+	if (GMMgr->Judgment_First_M_Value() == 10)
+	{
+		m_bActiveCheck = true;
+		m_EndPositionCheck = true;
+	}
 
 
 	//Rect 세팅
@@ -31,7 +40,8 @@ void Goal::InitialSet(int _X, int _Y)
 
 void Goal::Draw(HDC hdc)
 {
-	BitMapMgr->GetImage(m_IMG_NowMotion)->DrawTransparent(hdc, m_Draw_X, m_Draw_Y, GOAL_IMG_W, GOAL_IMG_H);
+	//if (m_bActiveCheck == true)
+		BitMapMgr->GetImage(m_IMG_NowMotion)->DrawTransparent(hdc, m_Draw_X, m_Draw_Y, GOAL_IMG_W, GOAL_IMG_H);
 }
 
 void Goal::Update(float deltaTime, float total_MoveDistance, float _Prev_MoveDistance)

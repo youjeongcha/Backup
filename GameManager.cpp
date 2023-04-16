@@ -42,7 +42,7 @@ void GameManager::init(HWND hWnd)
 	m_Character.InitialSet(SET_INIT); //캐릭터
 	m_UI.InitialSet(SET_INIT); //UI
 	m_Map.InitialSet(SET_INIT); //배경 + M
-	m_ObjectMgr.InitialSet(); //Goal + 장애물
+	m_ObjectMgr.InitialSet(SET_INIT); //Goal + 장애물
 }
 
 void GameManager::Update(float deltaTime)
@@ -78,7 +78,7 @@ void GameManager::Update(float deltaTime)
 
 		case BUMP_OBSTACLE: //장애물 부딪힘
 			m_Character.Set_Bump_Check(BUMP_OBSTACLE); //캐릭터의 부딪힘 판별 상태 변경
-			m_Character.Update_Animation(deltaTime); //캐릭터 애니메이션만 작동
+			m_Character.Update_Animation(deltaTime); //캐릭터 애니메이션만 작동 + character Bump 상태 변경
 
 			//캐릭터가 일정 시간 이상 부딪힘 Animation을 출력한 후의 처리
 			if (m_Character.Get_Bump_Check() == BUMP_NONE)
@@ -94,7 +94,7 @@ void GameManager::Update(float deltaTime)
 					m_Character.InitialSet(SET_INIT); //캐릭터
 					m_UI.InitialSet(SET_INIT); //UI
 					m_Map.InitialSet(SET_INIT); //배경 + M
-					//m_ObjectMgr.InitialSet(); //Goal + 장애물
+					m_ObjectMgr.InitialSet(SET_INIT); //Goal + 장애물
 				}
 				else //장애물 부딪힘
 				{
@@ -103,10 +103,10 @@ void GameManager::Update(float deltaTime)
 					m_Character.InitialSet(SET_RESPAWN); //캐릭터
 					m_UI.InitialSet(SET_RESPAWN); //UI						
 					m_Map.InitialSet(SET_RESPAWN); //배경 + M				//TODO::M는 유지
-					//m_ObjectMgr.InitialSet(); //Goal + 장애물
+					m_ObjectMgr.InitialSet(SET_RESPAWN); //Goal + 장애물
 				}
 				//m_Prev_MoveDistance = 0;
-				m_ObjectMgr.InitialSet(); //Goal + 장애물
+				//m_ObjectMgr.InitialSet(); //Goal + 장애물
 				m_Draw_CashTextCheck = false; //복주머니 먹고 죽고 재시작시 500 글자 안 뜨게
 			}
 			return;	
@@ -183,6 +183,7 @@ void GameManager::Draw()
 		m_UI.DrawMenu(m_backDC);
 		break;
 	case SCENE_GAME:
+	{
 		m_Map.DrawMap(m_backDC);	//배경
 		m_UI.DrawGame(m_backDC);	//UI
 		if (m_Draw_CashTextCheck == true)
@@ -193,6 +194,15 @@ void GameManager::Draw()
 		m_ObjectMgr.Draw(m_backDC);	//오브젝트 L
 		m_Character.Draw(m_backDC);	//캐릭터
 		m_ObjectMgr.Draw_OnCharacter(m_backDC);	//오브젝트 R
+
+		//auto str = std::to_string(m_Character.Get_Prev_TravelDistance());
+		//TextOutA(m_backDC, 0, 0, str.c_str(), str.length()); ///올리는 조건 찾아ㅇ보기>>>
+
+
+
+		auto str = std::to_string(m_Character.Get_TravelDistance());
+		TextOutA(m_backDC, 0, 0, str.c_str(), str.length()); ///올리는 조건 찾아ㅇ보기>>>
+	}
 		break;
 	case SCENE_GAMECLEAR:
 		m_Map.DrawMap(m_backDC);

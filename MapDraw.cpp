@@ -26,8 +26,19 @@ void MapDraw::InitialSet(SET setType)
 		//SHOW_FIRST 함수가 반드시 먼저 출력되는 M이어야 해서.큰 수를 계산 ( 20단위로 변경되고 있기 때문에 큰 수가 배열 안에서 섞인다.)
 		int value = GMMgr->Judgment_First_M_Value();
 
-		m_Meter[SHOW_FISRT].SetMeter(METER_RATIO_100, value );
-		m_Meter[SHOW_SECOND].SetMeter(METER_RATIO_90, value - METER_VALUE_GAP);
+		//10M에서 죽으면 기존M 들과 다르게 세팅되어야 한다.
+		if (value == 10)
+		{
+			m_Meter[SHOW_FISRT].SetMeter(GOAL_IMG_ARRIVE_X - METER_GAP, value);
+			m_Meter[SHOW_SECOND].SetMeter(GOAL_IMG_ARRIVE_X, value - METER_VALUE_GAP);
+		}
+		else
+		{
+			m_Meter[SHOW_FISRT].SetMeter(METER_RATIO_100, value);
+			m_Meter[SHOW_SECOND].SetMeter(METER_RATIO_90, value - METER_VALUE_GAP);
+		}
+
+
 		break;
 	}
 
@@ -152,7 +163,7 @@ bool MapDraw::MeterEnd_GoalActiveCheck()
 	//		return true;
 	//}
 
-	if (m_Meter[SHOW_FISRT].Get_Meter_Value() == METER_VALUE_END)
+	if (m_Meter[SHOW_FISRT].Get_Meter_Value() == METER_VALUE_END || m_Meter[SHOW_SECOND].Get_Meter_Value() == METER_VALUE_END)
 		return true;
 
 	return false;

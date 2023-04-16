@@ -1,18 +1,38 @@
 #include "ObjectManager.h"
 #include "GameManager.h"
 
-void ObjectManager::InitialSet()
+void ObjectManager::InitialSet(SET setType)
 {
-	//Goal 골
-	m_Goal.InitialSet(GOAL_IMG_X, GOAL_IMG_Y); //인자 사용 안함
+	if (10 == GMMgr->Judgment_First_M_Value() && setType != SET_INIT)
+	{
+		//Goal 골
+		m_Goal.InitialSet(GOAL_IMG_ARRIVE_X, GOAL_IMG_Y); //인자 사용 안함
 
-	//FIrJar 불항아리
-	m_FirJar[OBSTACLE_ONE].InitialSet(FIRJAR_X, FIRJAR_Y);
-	m_FirJar[OBSTACLE_TWO].InitialSet(FIRJAR_X + METER_GAP, FIRJAR_Y);
+		//FIrJar 불항아리
+		m_FirJar[OBSTACLE_ONE].InitialSet(FIRJAR_X_10M, FIRJAR_Y);
+		m_FirJar[OBSTACLE_TWO].InitialSet(FIRJAR_X_10M - METER_GAP, FIRJAR_Y);
 
-	//FireRing 불링 B
-	m_FirRing_B[OBSTACLE_ONE].InitialSet(FIRRING_X, FIRRING_Y); //TODO::수정
-	m_FirRing_B[OBSTACLE_TWO].InitialSet(FIRRING_X + METER_GAP, FIRRING_Y);
+		//FireRing 불링 B
+		m_FirRing_B[OBSTACLE_ONE].InitialSet(MAIN_W, FIRRING_Y); //TODO::수정
+		m_FirRing_B[OBSTACLE_TWO].InitialSet(MAIN_W + METER_GAP, FIRRING_Y);
+	}
+	else //setType == SET_INIT 쌩 초기화
+	{
+		//Goal 골
+		m_Goal.InitialSet(GOAL_IMG_X, GOAL_IMG_Y); //인자 사용 안함
+
+		//FIrJar 불항아리
+		m_FirJar[OBSTACLE_ONE].InitialSet(FIRJAR_X, FIRJAR_Y);
+		m_FirJar[OBSTACLE_TWO].InitialSet(FIRJAR_X + METER_GAP, FIRJAR_Y);
+
+		//수정 안하면 리스폰시 바로 죽어버려서
+		//FireRing 불링 B
+		m_FirRing_B[OBSTACLE_ONE].InitialSet(FIRRING_X, FIRRING_Y); //TODO::수정
+		m_FirRing_B[OBSTACLE_TWO].InitialSet(FIRRING_X + METER_GAP, FIRRING_Y);
+	}
+
+
+
 
 	//FireRing 불링 S
 	m_FirRing_S.InitialSet(END_SHOW_X + 50, FIRRING_Y);
@@ -72,6 +92,11 @@ void ObjectManager::Draw_OnCharacter(HDC hdc)
 
 void ObjectManager::Update(float deltaTime, float thisTurn_MoveDistance, float _Prev_MoveDistance)
 {
+	//Goal이 특정 좌표에 오면 배경+M 움직임을 멈춘다.(뒤로가서 골이 멀어지면 다시 배경 이동으로 전환한다.)
+	//if (GMMgr->Get_GoalEndPositionCheck() == false)
+	//{
+	//}
+
 	if (m_Goal.Get_ActiveCheck() == true)
 		m_Goal.Update(deltaTime, thisTurn_MoveDistance, _Prev_MoveDistance);
 	
@@ -79,24 +104,12 @@ void ObjectManager::Update(float deltaTime, float thisTurn_MoveDistance, float _
 	m_FirJar[OBSTACLE_ONE].Update(deltaTime, thisTurn_MoveDistance, _Prev_MoveDistance);
 	m_FirJar[OBSTACLE_TWO].Update(deltaTime, thisTurn_MoveDistance, _Prev_MoveDistance);
 
-	//불링 화면상에 나타날 시점에 사용
-	//if (m_FirRing_B[OBSTACLE_ONE].Get_UsingCheck() == true)
-	{
-		//FireRing 불링 B
-		m_FirRing_B[OBSTACLE_ONE].Update(deltaTime, thisTurn_MoveDistance, _Prev_MoveDistance);
-		//m_FirRing_B[OBSTACLE_TWO].Update(deltaTime, thisTurn_MoveDistance, _Prev_MoveDistance);
-	}
-	//if (m_FirRing_B[OBSTACLE_TWO].Get_UsingCheck() == true)
-	{
-		m_FirRing_B[OBSTACLE_TWO].Update(deltaTime, thisTurn_MoveDistance, _Prev_MoveDistance);
-	}
+	//FireRing 불링 B
+	m_FirRing_B[OBSTACLE_ONE].Update(deltaTime, thisTurn_MoveDistance, _Prev_MoveDistance);
+	m_FirRing_B[OBSTACLE_TWO].Update(deltaTime, thisTurn_MoveDistance, _Prev_MoveDistance);
 
-	//불링 화면상에 나타날 시점에 사용
-	//if (m_FirRing_S.Get_UsingCheck() == true)
-	{
-		//FireRing 불링 S
-		m_FirRing_S.Update(deltaTime, thisTurn_MoveDistance, _Prev_MoveDistance);
-	}
+	//FireRing 불링 S
+	m_FirRing_S.Update(deltaTime, thisTurn_MoveDistance, _Prev_MoveDistance);
 }
 
 int ObjectManager::ColliderCheck(RECT* characterRect)

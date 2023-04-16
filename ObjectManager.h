@@ -22,7 +22,7 @@ private:
 public:
 
 	//초기 세팅
-	void InitialSet();
+	void InitialSet(SET setType);
 
 	//ObjectMgr에서 rect 체크 후에 해당 object의 범위와 캐릭터의 범위가 겹치면 ture를 리턴한다.
 	//왼쪽 링 + 불 항아리 + 골 등의 장애물
