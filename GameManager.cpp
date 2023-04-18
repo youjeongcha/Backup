@@ -131,6 +131,18 @@ void GameManager::Update(float deltaTime)
 	case SCENE_GAMECLEAR:
 		m_Map.UpdateClapBack(deltaTime);
 		m_Character.Update_Animation(deltaTime);
+
+		if (m_UI.ScoreTotalSum(deltaTime) == true)
+		{
+			m_Scene = SCENE_MENU; //씬 메인메뉴로
+		
+			//초기화
+			m_Prev_MoveDistance = 0;
+			m_Character.InitialSet(SET_INIT); //캐릭터
+			m_UI.InitialSet(SET_INIT); //UI
+			m_Map.InitialSet(SET_INIT); //배경 + M
+			m_ObjectMgr.InitialSet(SET_INIT); //Goal + 장애물
+		}
 		return;
 	}
 
@@ -199,9 +211,21 @@ void GameManager::Draw()
 		//TextOutA(m_backDC, 0, 0, str.c_str(), str.length()); ///올리는 조건 찾아ㅇ보기>>>
 
 
-
-		auto str = std::to_string(m_Character.Get_TravelDistance());
+		//총거리량
+		auto str = "총거리량 : " + std::to_string(m_Character.Get_TravelDistance());
 		TextOutA(m_backDC, 0, 0, str.c_str(), str.length()); ///올리는 조건 찾아ㅇ보기>>>
+
+		//배경 위치
+		auto str1 = "배경 : " + std::to_string(m_Map.Get_mapXXXXXXXXXXXXXXXXXXX());
+		TextOutA(m_backDC, 0, 15, str1.c_str(), str1.length()); ///올리는 조건 찾아ㅇ보기>>>
+
+		//항아리 위치
+		auto str2 = "항아리 : " + std::to_string(m_ObjectMgr.Get_JarXXXXXXXXXXXXXXX());
+		TextOutA(m_backDC, 0, 30, str2.c_str(), str2.length()); ///올리는 조건 찾아ㅇ보기>>>
+
+		//골대 위치
+		auto str3 = "골대 : " + std::to_string(m_ObjectMgr.Get_GoalXXXXXXXXXXXXXXX());
+		TextOutA(m_backDC, 0, 45, str3.c_str(), str3.length()); ///올리는 조건 찾아ㅇ보기>>>
 	}
 		break;
 	case SCENE_GAMECLEAR:

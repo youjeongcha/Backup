@@ -209,7 +209,7 @@ void UI::KeyMoveSelect(int move_Y)
 //----------------게임----------------
 void UI::DrawGame(HDC hdc)
 {
-	//상단 UI
+	//상단 UI 창
 	DrawScoreSpace(hdc);
 	//score
 	DrawScore(hdc);
@@ -222,6 +222,7 @@ void UI::UpdateGame(float deltaTime)
 	//보너스 점수
 	UpdateBonus(deltaTime);
 }
+
 
 
 
@@ -278,4 +279,28 @@ void UI::UpdateBonus(float deltaTime)
 	}
 
 	m_ScoreTime += deltaTime;
+}
+
+
+bool UI::ScoreTotalSum(float deltaTime)
+{
+	if (m_Bonus > 0)
+	{
+		m_Score += (deltaTime * 5000);
+		m_Bonus -= (deltaTime * 5000);
+
+		if (m_Bonus <= 0)
+		{
+			m_Bonus = 0;
+			m_ScoreTime = 0;
+			//return true;
+		}
+		return false;
+	}
+
+	m_ScoreTime += deltaTime;
+
+	if (m_ScoreTime >= 3) //3초 대기후 메인화면으로 넘어가기 위해
+		return true;
+	return false;
 }

@@ -67,6 +67,7 @@ public:
 	bool Get_GoalEndPositionCheck() { return m_ObjectMgr.Get_GoalEndPositionCheck(); } //골이 특정 x 좌표에 닿는것 체크 : 배경 > 캐릭터 이동을 담당
 	//Character에서 사용
 	void Set_GoalEndPositionCheck(bool _EndPositionCheck) { m_ObjectMgr.Set_GoalEndPositionCheck(_EndPositionCheck); }
+	bool Get_GoalActiveCheck() { return m_ObjectMgr.Get_GoalActiveCheck(); }
 
 
 	HBITMAP MyCreateDIBSection(HDC hdc, int width, int height);

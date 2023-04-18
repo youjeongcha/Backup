@@ -188,6 +188,10 @@ public:
 	void DrawGame(HDC hdc);
 	void UpdateGame(float deltaTime);
 
+	//점수 산출-------------------------
+	//점수 산출이 끝나면 ture를 출력한다.
+	bool ScoreTotalSum(float deltaTime); //클리어하면 점수 총합 내기
+
 	//점수 증가
 	void ScoreUp(int score) 
 	{

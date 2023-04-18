@@ -84,6 +84,12 @@ void MapDraw::UpdateMap(float total_MoveDistance, float _Prev_MoveDistance)
 		for (int i = 0; i < SHOW_COUNT; i++)
 			m_Meter[i].UpdateMeter(total_MoveDistance, _Prev_MoveDistance);
 	}
+	else
+	{
+		//골대가 제 위치에 도착하면 float값의 오차로 인해 도착할때마다 지정 위치를 갱신시켜준다.
+		m_Meter[SHOW_FISRT].SetMeter(GOAL_IMG_ARRIVE_X - METER_GAP, 10);
+		m_Meter[SHOW_SECOND].SetMeter(GOAL_IMG_ARRIVE_X, 0);
+	}
 }
 
 

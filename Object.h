@@ -30,6 +30,10 @@ public:
 	//Goal이 그려짐+이동+충돌체크가 가능한 상태
 	void Set_ActiveCheck(bool _ActiveCheck) { m_bActiveCheck = _ActiveCheck; }
 	bool Get_ActiveCheck() { return m_bActiveCheck; }
+
+	float Get_XXXXXXXXXXXXXXXXXXXXXX() { return m_Draw_X; }
+
+	void Set_X(float _X) { m_Draw_X = _X; }
 	
 	//디버깅용 RECT 그리기
 	//void DrawDEbugggggggggggggg(HDC hdc);

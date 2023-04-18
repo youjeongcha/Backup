@@ -10,7 +10,7 @@ void ObjectManager::InitialSet(SET setType)
 
 		//FIrJar 불항아리
 		m_FirJar[OBSTACLE_ONE].InitialSet(FIRJAR_X_10M, FIRJAR_Y);
-		m_FirJar[OBSTACLE_TWO].InitialSet(FIRJAR_X_10M - METER_GAP, FIRJAR_Y);
+		m_FirJar[OBSTACLE_TWO].InitialSet(FIRJAR_X_10M + METER_GAP, FIRJAR_Y); //<<< -에서 +로 변경함  문제 생기면 애 <<<<<<<<<<<<<<<
 
 		//FireRing 불링 B
 		m_FirRing_B[OBSTACLE_ONE].InitialSet(MAIN_W, FIRRING_Y); //TODO::수정
@@ -97,9 +97,21 @@ void ObjectManager::Update(float deltaTime, float thisTurn_MoveDistance, float _
 	//{
 	//}
 
-	if (m_Goal.Get_ActiveCheck() == true)
+	//if (m_Goal.Get_ActiveCheck() == true)
 		m_Goal.Update(deltaTime, thisTurn_MoveDistance, _Prev_MoveDistance);
+	//else
+
 	
+
+
+	//배경이동 > 캐릭터 이동 넘어가는 순간 좌표값 다시 설정해주기
+	if (m_Goal.Get_EndPositionCheck() == true)
+	{
+		//FIrJar 불항아리
+		m_FirJar[OBSTACLE_ONE].Set_X(FIRJAR_X_10M);
+		m_FirJar[OBSTACLE_TWO].Set_X(FIRJAR_X_10M + METER_GAP);
+	}
+
 	//FIrJar 불항아리
 	m_FirJar[OBSTACLE_ONE].Update(deltaTime, thisTurn_MoveDistance, _Prev_MoveDistance);
 	m_FirJar[OBSTACLE_TWO].Update(deltaTime, thisTurn_MoveDistance, _Prev_MoveDistance);

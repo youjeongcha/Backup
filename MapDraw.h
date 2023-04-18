@@ -58,5 +58,11 @@ public:
 	void UpdateClapBack(float deltaTime);
 	//미터가 0이 나올때가 되면 Goal을 활성화한다.
 	bool MeterEnd_GoalActiveCheck(); 
+
+
+	float Get_mapXXXXXXXXXXXXXXXXXXX() {
+		return m_BackIMG_X
+			;
+	}
 };
 

@@ -55,9 +55,7 @@ float Character::Update(float deltaTime)
 	//이동 거리 백업
 
 	if (totalDistance > m_Prev_TravelDiatance + METER_GAP) //M 하나 사이의 거리만큼 >>앞으로<< 이동했을 경우 백업한다.
-	{
 	 	m_Prev_TravelDiatance += METER_GAP;
-	}
 	else if (totalDistance < m_Prev_TravelDiatance) //M 하나 사이의 거리만큼 >>뒤로<< 이동했을 경우 백업한다.
 		m_Prev_TravelDiatance -= METER_GAP;
 

@@ -36,11 +36,17 @@ public:
 	void DrawCashScoreText(HDC hdc) { m_FirRing_S.DrawCashScoreText(hdc); }
 
 	bool Get_GoalEndPositionCheck() { return m_Goal.Get_EndPositionCheck(); }
+	bool Get_GoalActiveCheck() { return m_Goal.Get_ActiveCheck(); }
 	//Goal이 그려짐+이동+충돌체크가 가능한 상태
 	void Set_Goal_ActiveCheck(bool _ActiveCheck) { m_Goal.Set_ActiveCheck(_ActiveCheck); }
 	void Set_GoalEndPositionCheck(bool _EndPositionCheck) { m_Goal.Set_EndPositionCheck(_EndPositionCheck); }
 	//복주머니 해당 ring읜 현재 xy 기준으로 text 출력 좌표 설정
 	void Set_Text_XY() { m_FirRing_S.Set_Text_XY(); }
 	//void Set_Goal_X(float _X) { m_Goal.Set_Goal_X(_X); } //M가 0이 출력될 차례가 오면 goal의 x 좌표 세팅
+
+
+
+	float Get_GoalXXXXXXXXXXXXXXX() { return m_Goal.Get_XXXXXXXXXXXXXXXXXXXXXX(); }
+	float Get_JarXXXXXXXXXXXXXXX() { return m_FirJar[OBSTACLE_ONE].Get_XXXXXXXXXXXXXXXXXXXXXX(); }
 };
 

@@ -46,22 +46,36 @@ void Goal::Draw(HDC hdc)
 
 void Goal::Update(float deltaTime, float total_MoveDistance, float _Prev_MoveDistance)
 {	
-	//캐릭터가 뒤로 가자마자 goal이 없어지고. 다시 앞으로 가서 goal이 갑자기 나타나는 거 해결
-	if (m_EndPositionCheck == false)// || (thisTurn_MoveDistance < 0 && m_ActiveCheck == true))
-		m_Draw_X += (_Prev_MoveDistance - total_MoveDistance);// *10;
-
-	//앞으로 간다. (IMG 왼쪽으로 순환)
-	//배경 이동이 끝이 난다. 특정 x좌표에 도착한 경우
-	if (m_Draw_X <= GOAL_IMG_ARRIVE_X) //도착하기 전까지는 GOAL_IMG_ARRIVE_X가 더 작아야 한다.
+	if (m_bActiveCheck == true)
 	{
-		m_Draw_X = GOAL_IMG_ARRIVE_X;
-		m_EndPositionCheck = true;
-	}
-	else
-		m_EndPositionCheck = false;
+		//캐릭터가 뒤로 가자마자 goal이 없어지고. 다시 앞으로 가서 goal이 갑자기 나타나는 거 해결
+		if (m_EndPositionCheck == false)// || (thisTurn_MoveDistance < 0 && m_ActiveCheck == true))
+			m_Draw_X += (_Prev_MoveDistance - total_MoveDistance);// *10;
 
-	//Rect 세팅
-	SetRect();
+		//앞으로 간다. (IMG 왼쪽으로 순환)
+		//배경 이동이 끝이 난다. 특정 x좌표에 도착한 경우
+		if (m_Draw_X <= GOAL_IMG_ARRIVE_X) //도착하기 전까지는 GOAL_IMG_ARRIVE_X가 더 작아야 한다.
+		{
+			m_Draw_X = GOAL_IMG_ARRIVE_X;
+			m_EndPositionCheck = true;
+		}
+		else
+		{
+			m_EndPositionCheck = false;
+
+			//화면상에 넘어가면 좌표 세팅해두고 사용하지 않음을 표시
+			if (m_Draw_X >= GOAL_IMG_X)
+			{
+				m_Draw_X = GOAL_IMG_X;
+				m_bActiveCheck = false;
+			}
+		}
+
+		//Rect 세팅
+		SetRect();
+	}
+	else //배경 이동 > 캐릭터 이동 전환부분에서 캐릭터 > 배경이동으로 돌아가면 Goal의 x 값이 초기의 값이 되지 않고 적어져서 앞으로 당겨다가오는 오류가 발생
+		m_Draw_X = GOAL_IMG_X;
 }
 
 void Goal::SetRect()
