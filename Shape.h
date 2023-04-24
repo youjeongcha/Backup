@@ -4,7 +4,7 @@
 
 class Shape
 {
-protected:
+public:
 	//XY좌표와 기타 연산자 오버라이딩
 	Vector2 m_Position;
 	//부피
@@ -17,7 +17,7 @@ protected:
 	//중력 가속도
 	//Vector2 m_GravityVelocity; //TODO::각 자식 클래스의 init에서 설정
 
-public:
+//public:
 	virtual void Draw(HDC hdc) abstract;
 	virtual void Update(float detaTime) abstract;
 	void Set_GravityVelocity(Vector2 g) { m_Velocity += g; }

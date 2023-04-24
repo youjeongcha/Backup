@@ -22,8 +22,10 @@ struct Vector2
 	Vector2 operator+=(const Vector2& v) { return Vector2(x += v.x, y += v.y); }
 	Vector2 operator-=(const Vector2& v) { return Vector2(x -= v.x, y -= v.y); }
 
+
+
 	float SqrMagnitude() const { return (x * x) + (y * y); };
-	float Magitude() const { std::sqrt(SqrMagnitude()); };
+	float Magitude() const { return std::sqrt(SqrMagnitude()); };
 
 	//정규화
 	void Normalize()
@@ -55,5 +57,11 @@ int Repeat(int value, const int& max);
 
 //프레임당 중력가속도 :: 속도(gravity) = 중력(g) * FPS(deltaTime)
 static Vector2 Gravity = {0,0};
+
+static float penetration;
+static Vector2 normal;
+static Vector2 RelativeVelocity(const Vector2& av, const Vector2& bv) { return bv - av; }
+static float dot;
+static float Dot_(const Vector2& lhs, const Vector2& rhs) { return (lhs.x * rhs.x) + (lhs.y * rhs.y); }; //이차원 벡터의 내적
 
 //Vector2 GravityVelocity(const Vector2& g, float deltaTime) { return g * deltaTime; }

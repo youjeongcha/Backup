@@ -32,7 +32,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 
     HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_SYSMENU | WS_MINIMIZEBOX,
-        CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+        MAIN_X, MAIN_Y, MAIN_W, MAIN_H, nullptr, nullptr, hInstance, nullptr);
 
     if (!hWnd)
     {

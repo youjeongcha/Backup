@@ -3,7 +3,7 @@
 
 class Box : public Shape
 {
-private:
+public:
 	float m_Half_W, m_Half_H;
 
 public:
