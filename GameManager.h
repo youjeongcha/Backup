@@ -31,13 +31,7 @@ enum GRAVITY_VALUE
 	GRAVITY_VALUE = 50,
 };
 
-enum SHAPE
-{
-	SHAPE_CIRCLE,
-	SHAPE_BOX,
 
-	SHAPE_MAX_SIZE = 50,
-};
 
 class GameManager
 {
@@ -48,15 +42,11 @@ private:
 	//HDC m_frontDC;
 	HDC m_backDC;
 
-	//장애물
-	Box m_Obstacle_B; //큰 장애물
-
 	//도형
-	//Circle* m_circle;
+	//std::vector<Circle*> m_CircleList;
 	std::vector<Circle*> m_CircleList;
-	//std::vector<Box> m_BoxList;
-	//Box m_Box; //TODO::임시 반복적으로 생성되어야 한다.
 
+	//trst
 	//도형 생성
 	SHAPE m_CreateType;
 	float m_CreateTime;

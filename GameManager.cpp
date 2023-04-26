@@ -8,7 +8,8 @@ GameManager::GameManager()
 	m_CreateTime = CREATE_SEC;
 	srand(time(NULL));
 
-	m_Obstacle_B.Init(OBSTACLE_X, OBSTACLE_Y, OBSTACLE_W, OBSTACLE_H);
+	//m_Obstacle_B.Init(OBSTACLE_X, OBSTACLE_Y, OBSTACLE_W, OBSTACLE_H);
+	/*m_Obstacle_B.Init(OBSTACLE_X, OBSTACLE_Y, 80);*/
 }
 
 GameManager::~GameManager()
@@ -32,9 +33,11 @@ void GameManager::Init(HWND hWnd, HDC m_frontDC)
 	m_Window_WH.y = clientRect.bottom - clientRect.top;
 
 
-	//도형 초기화
-	//m_circle.Init(50, 50, 30);
-	//m_Box.Init(300, 50, 50, 50); ////////////////////////////
+	Circle* m_Obstacle_B = new Circle();
+	m_Obstacle_B->Init(OBSTACLE_X, OBSTACLE_Y, 80);
+	m_Obstacle_B->Set_Static();
+	m_CircleList.push_back(m_Obstacle_B);
+
 	//중력(아래로만 떨어지고 있기 때문)
 	Gravity.y = GRAVITY_VALUE;
 }
@@ -45,7 +48,6 @@ void GameManager::RandCreateShaoe(float deltaTime)
 	if (m_CreateTime >= CREATE_SEC)
 	{
 		m_CreateTime = 0;
-		//int iRand = int(deltaTime) % 100; //맵의 최대 w으로 설정 ////////////////////////////
 		int iRand = rand();
 
 		switch (m_CreateType)
@@ -55,15 +57,23 @@ void GameManager::RandCreateShaoe(float deltaTime)
 			//m_CreateType = SHAPE_BOX;
 
 			Circle* newCircle = new Circle();
-			newCircle->Init(iRand % MAIN_W, iRand % 30, iRand % SHAPE_MAX_SIZE);
+			newCircle->Init(iRand % MAIN_W, iRand % 30, iRand % SHAPE_PLUS_SIZE + SHAPE_MIN_SIZE);
+			//newCircle->Init(MAIN_W * 0.5f, iRand % 30, iRand % SHAPE_MAX_SIZE);
 			m_CircleList.push_back(newCircle);
 
 			/////////////////////////////////////////
 
 			iRand = rand();
 			Circle* newCircle2 = new Circle();
-			newCircle2->Init(iRand % MAIN_W, iRand % 30, iRand % SHAPE_MAX_SIZE);
+			newCircle2->Init(iRand % MAIN_W, iRand % 30, iRand % SHAPE_PLUS_SIZE + SHAPE_MIN_SIZE);
 			m_CircleList.push_back(newCircle2);
+
+			///////////////////////////////////////////
+
+			//iRand = rand();
+			//Circle* newCircle3 = new Circle();
+			//newCircle3->Init(iRand % MAIN_W, iRand % 30, iRand % SHAPE_MAX_SIZE);
+			//m_CircleList.push_back(newCircle3);
 			break;
 		}
 		case SHAPE_BOX:
@@ -81,9 +91,6 @@ void GameManager::Update(float deltaTime)
 {
 	//도형 추가
 	RandCreateShaoe(deltaTime);
-	//Circle* newCircle = new Circle();
-	//newCircle->Init(50, 50, 30);
-	//m_CircleList.push_back(newCircle);
 
 	//중력 가속도
 	Vector2 _Gravity = Gravity * deltaTime;
@@ -91,7 +98,6 @@ void GameManager::Update(float deltaTime)
 	for (auto cList : m_CircleList)
 	{
 		cList->Set_GravityVelocity(_Gravity);
-		cList->Update(deltaTime);
 	}
 	//m_circle.Set_GravityVelocity(_Gravity);
 	//m_Box.Set_GravityVelocity(_Gravity);
@@ -101,6 +107,7 @@ void GameManager::Update(float deltaTime)
 	//m_Box.Update(deltaTime);
 
 	//원 vs 원 충돌
+
 	for (int i = 0; i < m_CircleList.size() - 1; i++)
 	{
 		for (int j = i + 1; j < m_CircleList.size(); j++)
@@ -108,63 +115,48 @@ void GameManager::Update(float deltaTime)
 			//충돌이 발생하면 true (부딪힌 상태에서 다시 체크하러 와서 부딪혔다라고 뜰 수 있다. 해당 건은 아래 if에서 걸러질것)
 			if (CirclevsCircle(m_CircleList[i], m_CircleList[j]))
 			{
-				//penetration과 nomal의 값을 CirclevsCircle 함수 안에서 결정했다.
-
-				//A가 B로 향하는 상대속도(rv) = B의 속도(bv) - A의 속도(av)
-				//m_CircleList[i + 1]->m_Velocity - m_CircleList[i]->m_Velocity;
-
-				//두 물체가 멀어지는 중, 충돌 처리를 하지 않는다.(내적(dot)이 > 0 이면 멀어지는 중, 충돌 처리 안함) ( dot < 0 이면 가까워지는 중, 충돌처리 함)
-				dot = Dot_(m_CircleList[j]->m_Velocity - m_CircleList[i]->m_Velocity, normal);
-				if (dot > 0)
+				for (int i = 0; i < 40; i++)
 				{
-					//충돌
-					//float ImpluseMagnitude = -(1.0f + 0.02f) * dot / (m_CircleList[i]->m_InvMass + m_CircleList[j]->m_InvMass);
-					//충돌에 의해 발생한 속도
-					Vector2 Impulse = normal * -(1.0f + 0.02f) * dot / (m_CircleList[i]->m_InvMass + m_CircleList[j]->m_InvMass);
+					//penetration과 nomal의 값을 CirclevsCircle 함수 안에서 결정했다.
 
+					//A가 B로 향하는 상대속도(rv) = B의 속도(bv) - A의 속도(av)
+					Vector2 rv = m_CircleList[j]->m_Velocity - m_CircleList[i]->m_Velocity;
 
-					//TODO::테스트
-					m_CircleList[i]->m_Velocity + Impulse;
-					m_CircleList[j]->m_Velocity - Impulse;
+					//두 물체가 부딪힘.(내적(dot)이 > 0 이면 멀어지는 중, 충돌 처리 안함) ( dot < 0 이면 가까워지는 중, 충돌처리 함)
+					dot = Dot_(rv, normal);
+
+					if (dot < 0)
+					{
+						//충돌
+						//float ImpluseMagnitude = -(1.0f + 0.02f) * dot / (m_CircleList[i]->m_InvMass + m_CircleList[j]->m_InvMass);
+						
+						//충돌에 의해 발생한 속도
+						/*n * 2 * DotProduct(-P, n)
+							normal * (1.0f + e) * dot
+								반사 백터를 사용한 것*/
+						float Impulse = (-(1.0f + 0.02f) * dot / (m_CircleList[i]->m_InvMass + m_CircleList[j]->m_InvMass));
+
+						//튕겨나옴 처리
+						/*normal 값은 기준 도형에 접근하는 물체가 튕겨나갈 방향이다.
+							그러므로 기준 도형이 튕겨 나갈 것은 -가 필요*/
+						m_CircleList[i]->AddForce(-normal * Impulse * deltaTime * 0.01f);
+						m_CircleList[j]->AddForce(normal * Impulse * deltaTime * 0.01f);
+
+						continue; //해당 if문에 해당되면 for문을 계속해서 돈다
+					}
+
+					break;
 				}
 			}
 		}
 	}
 
 
-	//원 vs 장애물 충돌
-	for (int i = 0; i < m_CircleList.size(); i++)
+	//좌표 이동은 무조건 맨 마지막에 실행되어야 한다.
+	for (auto cList : m_CircleList)
 	{
-		//충돌이 발생하면 true (부딪힌 상태에서 다시 체크하러 와서 부딪혔다라고 뜰 수 있다. 해당 건은 아래 if에서 걸러질것)
-		if (AABBvsCircle(&m_Obstacle_B, m_CircleList[i]))
-		{
-			//penetration과 nomal의 값을 CirclevsCircle 함수 안에서 결정했다.
-
-			//A가 B로 향하는 상대속도(rv) = B의 속도(bv) - A의 속도(av)
-			//m_CircleList[i + 1]->m_Velocity - m_CircleList[i]->m_Velocity;
-
-			//두 물체가 멀어지는 중, 충돌 처리를 하지 않는다.(내적(dot)이 > 0 이면 멀어지는 중, 충돌 처리 안함) ( dot < 0 이면 가까워지는 중, 충돌처리 함)
-			dot = Dot_(m_Obstacle_B.m_Velocity - m_CircleList[i]->m_Velocity, normal);
-			if (dot > 0)
-			{
-				//충돌
-				//float ImpluseMagnitude = -(1.0f + 0.02f) * dot / (m_CircleList[i]->m_InvMass + m_CircleList[j]->m_InvMass);
-				//충돌에 의해 발생한 속도
-				Vector2 Impulse = normal * -(1.0f + 0.02f) * dot / (m_CircleList[i]->m_InvMass + m_Obstacle_B.m_InvMass);
-
-
-				//TODO::테스트
-				m_CircleList[i]->m_Velocity = { 0, 0 };
-				//m_CircleList[i]->m_Velocity + Impulse;
-			}
-
-			//TODO::테스트
-			m_CircleList[i]->m_Velocity = { 0, 0 };
-		}
+		cList->Update(deltaTime);
 	}
-	
-	//장애물 제한
-
 }
 
 void GameManager::Draw(HDC m_frontDC)
@@ -173,17 +165,11 @@ void GameManager::Draw(HDC m_frontDC)
 	HBITMAP backBitmap = MyCreateDIBSection(m_frontDC, m_Window_WH.x, m_Window_WH.y); //TODO::임시 W H
 	SelectObject(m_backDC, backBitmap);
 
-	//장애물 그리기
-	m_Obstacle_B.Draw(m_backDC);
-
 	//도형 그리기
 	for (auto cList : m_CircleList)
 	{
 		cList->Draw(m_backDC);
 	}
-	//m_circle.Draw(m_backDC);
-	//m_Box.Draw(m_backDC);
-
 
 	//더블 버퍼링
 	BitBlt(m_frontDC, 0, 0, m_Window_WH.x, m_Window_WH.y, m_backDC, 0, 0, SRCCOPY);
@@ -215,7 +201,7 @@ HBITMAP GameManager::MyCreateDIBSection(HDC hdc, int width, int height)
 bool GameManager::CirclevsCircle(Circle* lhs, Circle* rhs)
 {
 	//lhs를 중심으로 하는 rhs의 상대 위치
-	const Vector2 incident = rhs->m_Position - rhs->m_Position;
+	const Vector2 incident = rhs->m_Position - lhs->m_Position;
 	float radiusSum = lhs->m_Radius + rhs->m_Radius;
 
 	//두 원의 반지름으리 합보다 두원 사이의 거리가 크면 충돌하지 않은 상태
@@ -225,14 +211,17 @@ bool GameManager::CirclevsCircle(Circle* lhs, Circle* rhs)
 	float dist = incident.Magitude();
 	if (0 != dist)
 	{
+		//현재 침투깊이는 쓰지 않고 있어서 지워도 상관이 없다.
+		//침투깊이
 		penetration = radiusSum - dist;
+		//충돌 방향
 		normal = incident;
 	}
 	else
 	{
 		//두 원은 같은 위치에 있다. 겹쳐있다.
-		penetration = lhs->m_Radius;
-		normal = Vector2(1, 0);
+		penetration = lhs->m_Radius; //원의 중심점이 겹치면(반지름 크기 상관X) 주체인 원의 반지를 만큼 튕겨낸다.
+		normal = Vector2(1, 0); //중심 겹친 상대의 원을 오른쪽으로 튕겨낼 것
 	}
 	normal.Normalize();
 

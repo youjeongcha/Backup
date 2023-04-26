@@ -30,11 +30,12 @@ struct Vector2
 	//정규화
 	void Normalize()
 	{
+		float _magitude = Magitude();
 		//Mgt변수 만들기
-		if (Epsilon < Magitude()) //if (0 < magnitude)
+		if (Epsilon < _magitude) //if (0 < magnitude)
 		{
-			float invMagnitude = 1.0f / Magitude();
-			x += invMagnitude;
+			float invMagnitude = 1.0f / _magitude;
+			x *= invMagnitude;
 			y *= invMagnitude;
 		}
 	}
@@ -58,10 +59,13 @@ int Repeat(int value, const int& max);
 //프레임당 중력가속도 :: 속도(gravity) = 중력(g) * FPS(deltaTime)
 static Vector2 Gravity = {0,0};
 
+//침투깊이
 static float penetration;
+//충돌방향
 static Vector2 normal;
 static Vector2 RelativeVelocity(const Vector2& av, const Vector2& bv) { return bv - av; }
 static float dot;
 static float Dot_(const Vector2& lhs, const Vector2& rhs) { return (lhs.x * rhs.x) + (lhs.y * rhs.y); }; //이차원 벡터의 내적
+//sqrt는 연산이 비싸기 때문에, 값 자체가 필요한 것이 아니라면 제곱을 비교
 
 //Vector2 GravityVelocity(const Vector2& g, float deltaTime) { return g * deltaTime; }

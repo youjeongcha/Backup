@@ -2,6 +2,8 @@
 
 void Circle::Init(float _X, float _Y, float _R)
 {//TODO::생성 랜덤으로
+	m_ShapeType = SHAPE_CIRCLE;
+
 	m_Position.x = _X;
 	m_Position.y = _Y;
 	m_Radius = _R;
@@ -22,5 +24,6 @@ void Circle::Draw(HDC hdc)
 
 void Circle::Update(float deltaTime)
 {
-	m_Position += m_Velocity * deltaTime;
+	if (!m_isStatic)
+		m_Position += m_Velocity * deltaTime;
 }

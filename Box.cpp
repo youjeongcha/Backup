@@ -2,6 +2,8 @@
 
 void Box::Init(float _X, float _Y, float _W, float _H)
 {//TODO::생성 랜덤으로
+	m_ShapeType = SHAPE_BOX;
+
 	m_Position.x = _X;
 	m_Position.y = _Y;
 	m_Half_W = _W * 0.5f;
