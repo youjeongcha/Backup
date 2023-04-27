@@ -37,4 +37,6 @@ public:
 	void Set_GravityVelocity(Vector2 g) { if (!m_isStatic) m_Velocity += g; }
 	void AddForce(Vector2 accel) { if (!m_isStatic) m_Velocity += accel; }
 	void Set_Static() { m_isStatic = true; }
+
+	SHAPE Get_ShapeType() { return m_ShapeType; }
 };

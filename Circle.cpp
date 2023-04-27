@@ -25,5 +25,17 @@ void Circle::Draw(HDC hdc)
 void Circle::Update(float deltaTime)
 {
 	if (!m_isStatic)
+	{
 		m_Position += m_Velocity * deltaTime;
+
+		//TODO:: 일정 이하로 떨어지면 다시 위로 올려주기 순환
+		if (m_Position.y >= MAIN_H)
+		{
+			m_Position.x = MAIN_W * 0.5f + 20;
+			m_Position.y = 20;
+			//중력 가속도
+			Vector2 _Gravity = Gravity * deltaTime;
+			m_Velocity = _Gravity;
+		}
+	}
 }

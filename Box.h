@@ -9,5 +9,5 @@ public:
 public:
 	void Init(float _X, float _Y, float _W, float _H);
 	void Draw(HDC hdc) override;
-	void Update(float detaTime) override;
+	void Update(float deltaTime) override;
 };

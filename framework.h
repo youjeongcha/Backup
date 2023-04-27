@@ -13,3 +13,12 @@
 #include <malloc.h>
 #include <memory.h>
 #include <tchar.h>
+
+
+enum WindowXY
+{
+	MAIN_X = 200,
+	MAIN_Y = 100,
+	MAIN_W = 450,
+	MAIN_H = 450,
+};

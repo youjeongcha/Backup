@@ -9,13 +9,7 @@
 
 #define CREATE_SEC 5
 
-enum WindowXY
-{
-	MAIN_X = 200,
-	MAIN_Y = 100,
-	MAIN_W = 450,
-	MAIN_H = 450,
-};
+
 
 enum OBSTACLE_XY
 {
@@ -44,7 +38,7 @@ private:
 
 	//도형
 	//std::vector<Circle*> m_CircleList;
-	std::vector<Circle*> m_CircleList;
+	std::vector<Shape*> m_ShapeList;
 
 	//trst
 	//도형 생성
@@ -58,6 +52,7 @@ private:
 	//충돌 체크
 	bool CirclevsCircle(Circle* lhs, Circle* rhs);
 	bool AABBvsCircle(Box* lhs, Circle* rhs);
+	bool AABBvsAABB(Box* lhs, Box* rhs);
 public:
 	~GameManager();
 

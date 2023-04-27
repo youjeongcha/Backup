@@ -51,7 +51,7 @@ inline bool Equal(float lhs, float rhs) { return (std::abs(lhs - rhs) <= Epsilon
 //해당 #define이 없으면 추가해준다. 충돌 방지
 #ifndef clamp
 #define clamp(v, a, b) (a < b) ? min(max(v, a), b) : min(max(v, b), a) //입력값, 최소값 , 최대값 순으로 인자를 받는다. 사용자가 아니게 쓸 수 있어서 그러하게 바꿔주는 것
-//입력값이 최소값보다 작으면 최소값으로, 최대값보다 크면 최대값으로 고정시키는 함수이다.
+//입력값이 최소값보다 작으면 최소값으로, 최대값보다 크면 최대값으로 이외에는 입력값 그대로 고정시키는 함수이다.
 #endif // !clamp
 
 int Repeat(int value, const int& max);
