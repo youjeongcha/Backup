@@ -10,7 +10,7 @@ struct Vector2
 	Vector2() : x(0), y(0) {}
 	Vector2(float x, float y) : x(x), y(y) {}
 
-	Vector2 operator-() const { return Vector2(-x , -y); }
+	Vector2 operator-() const { return Vector2(-x, -y); }
 
 	Vector2 operator*(const float& value) const { return Vector2(x * value, y * value); }
 	Vector2 operator/(const float& value) const { return Vector2(x / value, y / value); }
@@ -57,7 +57,7 @@ inline bool Equal(float lhs, float rhs) { return (std::abs(lhs - rhs) <= Epsilon
 int Repeat(int value, const int& max);
 
 //프레임당 중력가속도 :: 속도(gravity) = 중력(g) * FPS(deltaTime)
-static Vector2 Gravity = {0,0};
+static Vector2 Gravity = { 0,0 };
 
 //침투깊이
 static float penetration;
