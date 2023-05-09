@@ -1,7 +1,7 @@
 #include "Circle.h"
 
 void Circle::Init(float _X, float _Y, float _R)
-{//TODO::생성 랜덤으로
+{
 	m_ShapeType = SHAPE_CIRCLE;
 
 	m_Position.x = _X;

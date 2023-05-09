@@ -21,7 +21,6 @@ enum OBSTACLE_XY
 
 enum GRAVITY_VALUE
 {
-	//GRAVITY_MAX = 200,
 	GRAVITY_VALUE = 50,
 };
 
@@ -37,7 +36,6 @@ private:
 	HDC m_backDC;
 
 	//도형
-	//std::vector<Circle*> m_CircleList;
 	std::vector<Shape*> m_ShapeList;
 
 	//trst
@@ -47,7 +45,7 @@ private:
 
 	GameManager();
 	HBITMAP MyCreateDIBSection(HDC hdc, int width, int height);
-	void RandCreateShaoe(float deltaTime);
+	void CreateShaoe(float deltaTime);
 
 	//충돌 체크
 	bool CirclevsCircle(Circle* lhs, Circle* rhs);

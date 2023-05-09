@@ -1,5 +1,10 @@
 #include "GameManager.h"
 
+/*-사각형은 회전 되지 않는다.
+-바닥에서 튕기는 듯한 현상(바닥을 파고든만큼 다시 위로 튕겨내고 있어서)
+-높은 곳에서 떨어지면 가끔 땅을 파고 드는 것. 이건 떨림 보정까지 해야 해결 되는 것. 현재 코드 구조에서는 정상 작동이 되는 것이다.
+-시작 점에서 겹치게 생겨난 도형은 충돌 체크가 되지 않는다. 처음부터 파고든 상태로 생겨나서. 인지를 못함*/
+
 GameManager* GameManager::m_pInstance = NULL;
 
 GameManager::GameManager()
@@ -7,9 +12,6 @@ GameManager::GameManager()
 	m_CreateType = SHAPE_CIRCLE;
 	m_CreateTime = CREATE_SEC;
 	srand(time(NULL));
-
-	//m_Obstacle_B.Init(OBSTACLE_X, OBSTACLE_Y, OBSTACLE_W, OBSTACLE_H);
-	/*m_Obstacle_B.Init(OBSTACLE_X, OBSTACLE_Y, 80);*/
 }
 
 GameManager::~GameManager()
@@ -32,84 +34,55 @@ void GameManager::Init(HWND hWnd, HDC m_frontDC)
 	m_Window_WH.x = clientRect.right - clientRect.left;
 	m_Window_WH.y = clientRect.bottom - clientRect.top;
 
-
 	//Circle* m_Obstacle_B = new Circle();
 	//m_Obstacle_B->Init(OBSTACLE_X, OBSTACLE_Y + 30, 100);
 	//m_Obstacle_B->Set_Static();
 	//m_ShapeList.push_back(m_Obstacle_B);
 
+	//장애물 생성 
 	Box* m_Obstacle_B = new Box();
 	//newBox->Init(iRand % MAIN_W, iRand % 30, sizeWH, sizeWH);
 	m_Obstacle_B->Init(OBSTACLE_X, OBSTACLE_Y, OBSTACLE_W, OBSTACLE_H);
 	m_Obstacle_B->Set_Static();
 	m_ShapeList.push_back(m_Obstacle_B);
 
+	Box* m_Obstacle_S = new Box();
+	m_Obstacle_S->Init(OBSTACLE_X + 60, OBSTACLE_Y - 200, 50, OBSTACLE_H);
+	m_Obstacle_S->Set_Static();
+	m_ShapeList.push_back(m_Obstacle_S);
+
 	//중력(아래로만 떨어지고 있기 때문)
 	Gravity.y = GRAVITY_VALUE;
 
 	//______test_____________
 		//도형 추가
-	RandCreateShaoe(CREATE_SEC);
+	CreateShaoe(CREATE_SEC);
 }
 
-void GameManager::RandCreateShaoe(float deltaTime)
+void GameManager::CreateShaoe(float deltaTime)
 {
-	//5초마다 번갈아가며 도형 생성
-	if (m_CreateTime >= CREATE_SEC)
-	{
-		m_CreateTime = 0;
-		int iRand = rand();
 
-		switch (m_CreateType)
-		{
-		case SHAPE_CIRCLE:
-		{
-			//m_CreateType = SHAPE_BOX;
+	Box* newBox = new Box();
+	newBox->Init(MAIN_W * 0.5f - 50, 20, 80, 80);
+	m_ShapeList.push_back(newBox);
 
+	Box* newBox2 = new Box();
+	newBox2->Init(MAIN_W * 0.5f + 10, -50, 60, 60);
+	m_ShapeList.push_back(newBox2);
 
-			iRand = rand();
-			int sizeWH = iRand % SHAPE_PLUS_SIZE + SHAPE_MIN_SIZE; //임시로 정사각형
-			Box* newBox = new Box();
-			//newBox->Init(iRand % MAIN_W, iRand % 30, sizeWH, sizeWH);
-			newBox->Init(MAIN_W * 0.5f - 30, 20, 80, 80);
-			m_ShapeList.push_back(newBox);
+	Circle* newCircle = new Circle();
+	newCircle->Init(MAIN_W * 0.5f + 30, 20, 30);
+	m_ShapeList.push_back(newCircle);
 
-			iRand = rand();
-			Circle* newCircle = new Circle();
-			//newCircle->Init(iRand % MAIN_W, iRand % 30, iRand % SHAPE_PLUS_SIZE + SHAPE_MIN_SIZE);
-			newCircle->Init(MAIN_W * 0.5f + 30, 20, 30);
-			m_ShapeList.push_back(newCircle);
+	Circle* newCircle2 = new Circle();
+	newCircle2->Init(MAIN_W * 0.5f + 50, 70, 20);
+	m_ShapeList.push_back(newCircle2);
 
-			/////////////////////////////////////////
-			/*for (int i = 0; i < 4; i++)
-			{
-				iRand = rand();
-				Circle* newCircle2 = new Circle();
-				m_ShapeList.push_back(newCircle2);
-
-				newCircle2->Init(iRand % MAIN_W, iRand % 30, iRand % SHAPE_PLUS_SIZE + SHAPE_MIN_SIZE);
-			}*/
-
-			///////////////////////////////////////////
-
-			break;
-		}
-		case SHAPE_BOX:
-		{
-			m_CreateType = SHAPE_CIRCLE;
-			break;
-		}
-		}
-	}
-		m_CreateTime += deltaTime;
 }
 
 
 void GameManager::Update(float deltaTime)
 {
-	////도형 추가
-	//RandCreateShaoe(deltaTime);
-
 	//중력 가속도
 	Vector2 _Gravity = Gravity * deltaTime;
 
@@ -117,8 +90,6 @@ void GameManager::Update(float deltaTime)
 	{
 		cList->Set_GravityVelocity(_Gravity);
 	}
-	//m_circle.Set_GravityVelocity(_Gravity);
-	//m_Box.Set_GravityVelocity(_Gravity);
 
 	bool bBump = false;
 	int iMainIndex, iCompareIndex;
@@ -197,7 +168,6 @@ void GameManager::Update(float deltaTime)
 				}
 			bBump = false;
 			}
-
 		}
 	}
 
