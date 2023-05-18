@@ -1,12 +1,13 @@
 #include "WinApiEngine.h"
-
+#include "SceneManager.h"
+#include "InputManager.h"
 
 //전방 선언
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
 namespace ENGINE
 {
-	ENGINE::WinApiEngine::WinApiEngine(HINSTANCE hInstance, std::wstring title, INT32 per_x, INT32 per_y, UINT width, UINT height) : isInit(false), title(title), x(0), y(0), width(width), height(height)
+	WinApiEngine::WinApiEngine(HINSTANCE hInstance, std::wstring title, INT32 per_x, INT32 per_y, UINT width, UINT height) : isInit(false), title(title), x(0), y(0), width(width), height(height)
 	{
 		WNDCLASSEXW wcex =
 		{
@@ -73,7 +74,10 @@ namespace ENGINE
 		UpdateWindow(hWnd);
 
 		srand((unsigned)time(NULL));
+		
 		/*Scene iInitialized*/
+		SceneMgr->Initialize(hWnd, width, height);
+		
 
 		isInit = TRUE;
 	}
@@ -88,13 +92,13 @@ namespace ENGINE
 		MSG msg;
 		ZeroMemory(&msg, sizeof(msg));
 		
-		while (WM_QUIT != msg.message) //Game Loop
+		while (WM_QUIT != msg.message) //Game Loop //게임 종료를 선택하면 PeekMeassage를 거쳐 한번 더 루프를 돌고 끝이 난다.
 		{
 			//메세지 큐로부터 메세지를 가져오는 함수
 			if (PeekMessage(&msg, nullptr, 0U, 0U, PM_REMOVE))
 			{
 				/*if (WM_QUIT == msg.message)
-					break;*/ //필요 X?
+					break;*/ //필요 X? >> while 참조
 
 				TranslateMessage(&msg); //가상 키 코드를 WM_CHAR에서 사용가능한 문자로 변환.
 				DispatchMessage(&msg); //발생한 메시지를 WndProc()에 발송, WndProc()가 호출.
@@ -103,21 +107,8 @@ namespace ENGINE
 			{
 				/*Scene Render*/
 
-				/*
-				checkTime = GetTickCount64(); //5억년 가량의 시간을 카운팅 가능. (서버의 경우 고려가 필요)
-				if (limitTime <= checkTime)
-				{
-					//DeltaTime이란 값은 '각 프레임(하나의 루프) 사이에 걸리는 시간' 
-					//만약 ms 단위로 바꾼다면 현재 int 기준으로 작동하던 함수들의 기준 다 바꾸어야 함
-					//((18067343 - 18067343) + 33) * 0.001f       사실상 밀리초의 차이가 거의 없다.
-					//(checkTime - limitTime)루프에 걸리는 시간까지 더해서 고려해야함
-					float deltaTime = ((checkTime - limitTime) + fps) * 0.001f; //1000ms를 나눠서 second로 단위 변경
-					limitTime = checkTime + fps;
+				SceneMgr->Render();
 
-
-					GMMgr->Update(deltaTime);
-					GMMgr->Draw();
-					*/
 			}
 		}
 		Release();
@@ -127,11 +118,14 @@ namespace ENGINE
 	void WinApiEngine::Release()
 	{
 		/* Scene Destory */
+		SceneMgr->Destroy();
 	}
 } //namespace ENGINE
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM IParam)
 {
+	ENGINE::InputMgr->InputProc(iMessage, wParam, IParam);
+
 	switch (iMessage)
 	{
 	case WM_DESTROY:

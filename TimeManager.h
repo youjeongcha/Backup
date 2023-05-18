@@ -20,7 +20,7 @@ namespace ENGINE
 		BOOL Update();
 		float DeltaTime() const { return elapseTime; }
 
-		friend Singleton; //?
+		friend Singleton; //friend는 사용하는 쪽에서 public으로 접근-사용이 가능하며, 싱글톤 new 생성과 pInstance 접근에 사용되고 있다.
 	};
 
 	#define TimeMgr TimeManager::GetInstance()

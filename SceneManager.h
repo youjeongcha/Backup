@@ -17,8 +17,8 @@ namespace ENGINE
 		UINT32 width, height;
 
 		Scene* currScene;
-		std::string nextScene; //?
-		std::map<std::string, Scene*> scenes; //?
+		std::string nextScene; //key 값으로 사용하고 있다.
+		std::map<std::string, Scene*> scenes; //key 값과 scene들을 저장하고 있다.
 
 		SceneManager() : hWnd(NULL), hDC(NULL), hBackDC(NULL), width(0), height(0), currScene(NULL) {}
 	public:
@@ -40,7 +40,7 @@ namespace ENGINE
 		void Draw();
 		HBITMAP CreateDIBSectionRe(); //Back Bitmap을 만들기 위한 비트맵 Creater
 
-		friend Singleton;
+		friend Singleton; //friend는 사용하는 쪽에서 public으로 접근-사용이 가능하며, 싱글톤 new 생성과 pInstance 접근에 사용되고 있다.
 	}; //class SceneManager
 #define SceneMgr SceneManager::GetInstance()
 } //namespace ENGINE

@@ -44,7 +44,7 @@ namespace ENGINE
 		//생성자, 소멸자, 멤버 변수, 정적(static) 함수 포함 불가
 		void Initialize();
 		void Release();
-		void Update(CONST FLOAT& deltaTime);
+		void Update(CONST float& deltaTime);
 		void Daw();
 	};
 }
