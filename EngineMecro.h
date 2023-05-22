@@ -45,7 +45,7 @@ namespace ENGINE
 		void Initialize();
 		void Release();
 		void Update(CONST float& deltaTime);
-		void Daw();
+		void Draw();
 	};
 }
 

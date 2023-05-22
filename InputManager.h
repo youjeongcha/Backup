@@ -66,8 +66,9 @@ namespace ENGINE
 		void SetMouseButtonUp(UINT keyID);
 		void SetMousePosition(LPARAM IParam) { mousePosition = { LOWORD(IParam), HIWORD(IParam) }; }
 
-		bool KeyCheck(UINT keyID, const InputState & state);
-		bool ButtonCheck(UINT keyID, const InputState & state);
+		bool KeyCheck(UINT keyID, CONST InputState& state);
+		bool ButtonCheck(UINT keyID, CONST InputState& state);
+		friend Singleton;
 	};
 
 #define InputMgr InputManager::GetInstance()

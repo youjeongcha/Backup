@@ -2,6 +2,7 @@
 #include "TimeManager.h"
 #include "InputManager.h"
 #include "ResourceManager.h"
+#include "UIManager.h"
 
 namespace ENGINE
 {
@@ -23,6 +24,7 @@ namespace ENGINE
 		TimeMgr->Initialize(FPS); //FPS : EngineMecro::ENGINE::enum::FPS
 		InputMgr->Initialize();
 		ResourceMgr->Initialize();
+		UIMgr->Initialize();
 	}
 
 	void SceneManager::Release()
@@ -32,6 +34,7 @@ namespace ENGINE
 		InputMgr->Destroy();
 		TimeMgr->Destroy();
 		ResourceMgr->Destroy();
+		UIMgr->Destroy();
 		
 		//for each 반복문에서는 반복 변수의 자료형을 자동으로 추론하며, map의 경우 각 원소가 pair<const Key, T> 형태로 저장되어 있기 때문
 		for (std::pair<std::string, Scene*> scene : scenes) //map은 key와 값으로 구성 >  pair로 접근을 해야한다.
@@ -65,6 +68,7 @@ namespace ENGINE
 		if (currScene)
 		{
 			currScene->Release();
+			UIMgr->Clear();
 			ResourceMgr->Clear();
 		}
 
@@ -74,6 +78,7 @@ namespace ENGINE
 	}
 	void SceneManager::Update()
 	{
+		UIMgr->Update();
 		currScene->Update(TimeMgr->DeltaTime());
 	}
 	void SceneManager::Draw()
@@ -81,7 +86,8 @@ namespace ENGINE
 		HBITMAP backBitmap = CreateDIBSectionRe();
 		SelectObject(hBackDC, backBitmap);
 
-		currScene->Daw();
+		currScene->Draw();
+		UIMgr->Draw();
 
 		BitBlt(hDC, 0, 0, width, height, hBackDC, 0, 0, SRCCOPY); //그림-사진
 		DeleteObject(backBitmap);

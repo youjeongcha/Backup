@@ -2,7 +2,7 @@
 #include <fstream>
 #include <io.h> //access()
 
-#define _SILENCE_EXPERIMNTAL_FILESYSTEM_DEPRECATION_WARNING //c++17 이상의 경우 #include<filesystem>을 사용.
+#define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING //c++17 이상의 경우 #include<filesystem>을 사용.
 #include <experimental/filesystem> //directory_iterator()
 using namespace std::experimental::filesystem;
 
@@ -53,7 +53,7 @@ namespace ENGINE
 
 			//비트맵 리소스만을 로드
 			if (".bmp" != path.extension().u8string())
-				continue; 
+				continue;
 
 			name = path.u8string();
 			//Load()에서 defualatPath를 추가해서 쓰기 때문에 문자열에서 제거

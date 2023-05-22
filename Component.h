@@ -24,8 +24,8 @@ namespace ENGINE
 
 	struct Transform : public Component
 	{
-		Vector2 position;
-		Vector2 scale;
+		Vector2 position; //ÁÂÇ¥
+		Vector2 scale; //¹«°Ô
 
 		Transform() : position(0.0f, 0.0f), scale(1.0f, 1.0f) {}
 

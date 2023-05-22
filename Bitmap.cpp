@@ -11,7 +11,7 @@ namespace ENGINE
 
 	VOID Bitmap::Load(std::string name)
 	{
-		memDC == CreateCompatibleDC(SceneMgr->GetBackDC()); //메모리 DC 생성
+		memDC = CreateCompatibleDC(SceneMgr->GetBackDC()); //메모리 DC 생성
 		hBitmap = (HBITMAP)LoadImageA(NULL, name.c_str(), IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION | LR_DEFAULTSIZE | LR_LOADFROMFILE); //비트맵 이미지 로드
 		SelectObject(memDC, hBitmap);
 
@@ -62,6 +62,6 @@ namespace ENGINE
 
 	BOOL Bitmap::TransparentBlt(INT32 x, INT32 y, UINT transparent)
 	{
-		return ::TransparentBlt(SceneMgr->GetBackDC(), pivot.x + x, pivot.y + y, dest.cx, dest.cy, memDC, src.left, src.top, src.right, src.bottom, transparent)
+		return ::TransparentBlt(SceneMgr->GetBackDC(), pivot.x + x, pivot.y + y, dest.cx, dest.cy, memDC, src.left, src.top, src.right, src.bottom, transparent);
 	}
 }
