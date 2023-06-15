@@ -1,34 +1,20 @@
 #pragma once
-#include "Mecro.h"
+#include "Character.h"
 
-//#define MAXLIFE 10 //플레이어 최대 목숨
-//define은 다른 곳에서 디버깅히면 MAXLIFE 변수명이 아니라 10으로 떠서 사용 지양
 
-enum MAXLIFE
-{
-	MAXLIFE = 10,
-};
-
-class Player
-{
+class Player : public Character {
 private:
-	int mLife;
-	int mScore;
-	std::string mName;
+
+
 public:
-	Player();
-	~Player();
+    Player();
+    //Player(const std::string& playerName, const std::vector<int>& items, const std::string& path);
+    ~Player();
 
-	void InitalSetting();
-	//목숨 감소
-	void DecreasePlayerLife();
+    //TODO::인벤토리 보여주기
+    void Inventory();
 
-	int Get_PlayerLife() const { return mLife; };
-	int Get_PlayerScore() const { return mScore; };
-	std::string Get_PlayerName() const { return mName; };
+    // 플레이어에게 특화된 함수들...
 
-	void Set_PlayerName(std::string _Nmae) { mName = _Nmae; };
-	void Set_PlayerScore(int _Score) { mScore = _Score; };
-	void Set_PlayerLife(int _Life) { mLife = _Life; };
+    
 };
-

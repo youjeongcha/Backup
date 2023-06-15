@@ -2,72 +2,7 @@
 #include "ResourceManager.h"
 #include "SceneManager.h"
 
-Player::Player()
-{
-    state = State::Idle;
-    dir = Direction::Right;
-
-    ResourceMgr->Load("Player.bmp");
-
-    renderer = new SpriteRenderer("Player.bmp", SpritesX, SpritesY);
-    renderer->SetPivot(Pivot::Left | Pivot::Bottom);
-    renderer->SetScale(transform->scale.x, transform->scale.y);
-    AddComponent(renderer);
-    AddComponent(anim = new SpriteAnimation(SpritesX, SpritesY));
-
-    InputComponent* input = new InputComponent;
-    input->AddBinding(VK_LEFT, [&]() { dir = Direction::Left; state = State::Move; }, [&]() { state = State::Idle; });
-    input->AddBinding(VK_RIGHT, [&]() { dir = Direction::Right; state = State::Move; }, [&]() { state = State::Idle; });
-    AddComponent(input);
-}
-
-VOID Player::SetScale(const Vector2& scale)
-{
-    GameObject::SetScale(scale);
-    if (renderer) renderer->SetScale(scale.x, scale.y);
-}
-
-VOID Player::Initialize()
-{
-    transform->position = { 400, 600 };
-}
-
-VOID Player::Release()
-{
-}
-
-VOID Player::Update(const FLOAT& deltaTime)
-{
-    Operate(this);
-
-    switch (state)
-    {
-    case State::Move: 
-        Move(deltaTime); 
-        break;
-    default: 
-        anim->Stop(); 
-        break;
-    }
-}
-
-VOID Player::Draw()
-{
-    renderer->Draw();
-}
-
-VOID Player::Move(const FLOAT& deltaTime)
-{
-    switch (dir)
-    {
-    case Direction::Right:anim->Play(0); 
-        transform->position.x += Speed * deltaTime; 
-        break;
-    case Direction::Left:anim->Play(1); 
-        transform->position.x -= Speed * deltaTime; 
-        break;
-    }
-}
+// 
 
 VOID DemoScene::Initialize()
 {
@@ -85,6 +20,8 @@ VOID DemoScene::Initialize()
     background = ResourceMgr->GetBitmap("background.bmp");
     background->SetDrawSize(bounds, SceneMgr->GetHeight());
 
+
+    //TODO::GameManager·Î ÀÌµ¿
     player = new Player;
     player->Initialize();
     playerTr = player->GetTransform();
@@ -126,11 +63,16 @@ VOID DemoScene::Release()
 
 VOID DemoScene::Update(const FLOAT& deltaTime)
 {
-    if (isPause) return;
+    if (isPause) 
+        return;
 
     player->Update(deltaTime);
-    if (0 > playerTr->position.x) playerTr->position.x = 0;
-    if (bounds < playerTr->position.x) playerTr->position.x = bounds;
+
+    if (0 > playerTr->position.x) 
+        playerTr->position.x = 0;
+
+    if (bounds < playerTr->position.x) 
+        playerTr->position.x = bounds;
 }
 
 VOID DemoScene::Draw()

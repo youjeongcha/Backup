@@ -89,6 +89,7 @@ namespace ENGINE
 
 		VOID SetSpeed(FLOAT speed);
 		VOID Play(UINT index) { this->index = clamp(index, 0, maxSize - 1); isPlaying = TRUE; }
+		VOID Idle(UINT index) { this->index = clamp(index, 0, maxSize - 1); isPlaying = TRUE; }
 		VOID Stop() { isPlaying = FALSE; }
 		// Component을(를) 통해 상속됨
 		virtual ComponentType GetType() const override { return ComponentType::Animation; }

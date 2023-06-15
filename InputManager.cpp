@@ -14,20 +14,24 @@ namespace ENGINE
 	VOID InputManager::Update()
 	{
 		str = " ";
-			for (std::pair<CONST UINT, InputState>& key : keys)
+		for (std::pair<CONST UINT, InputState>& key : keys)
+		{
+			switch (key.second)
 			{
-				switch (key.second)
-				{
-				case InputState::DOWN: key.second = InputState::PRESSED; break;
-				case InputState::UP: key.second = InputState::NONE; break;
-				}
+			case InputState::DOWN: 
+				key.second = InputState::PRESSED; break;
+			case InputState::UP: 
+				key.second = InputState::NONE; break;
 			}
+		}
 		for (std::pair<CONST UINT, InputState>& button : mouse)
 		{
 			switch (button.second)
 			{
-			case InputState::DOWN: button.second = InputState::PRESSED; break;
-			case InputState::UP: button.second = InputState::NONE; break;
+			case InputState::DOWN: 
+				button.second = InputState::PRESSED; break;
+			case InputState::UP: 
+				button.second = InputState::NONE; break;
 			}
 		}
 	}

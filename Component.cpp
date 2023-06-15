@@ -16,28 +16,34 @@ namespace ENGINE
 	}
 	GameObject::~GameObject()
 	{
-		for (std::pair<ComponentType, Component*> c : components) DEL(c.second);
+		for (std::pair<ComponentType, Component*> c : components) 
+			DEL(c.second);
 	}
 	Component* GameObject::GetComponent(CONST ComponentType& type)
 	{
 		auto iter = components.find(type);
-		if (components.end() != iter) return iter->second;
+		if (components.end() != iter) 
+			return iter->second;
 
 		return nullptr;
 	}
 	BOOL GameObject::AddComponent(Component* component)
 	{
-		if (!component || GetComponent(component->GetType())) return FALSE;
+		if (!component || GetComponent(component->GetType())) 
+			return FALSE;
+
 		components.insert(std::make_pair(component->GetType(), component));
 		return TRUE;
 	}
 	VOID GameObject::Operate(GameObject* Owner)
 	{
-		for (std::pair<ComponentType, Component*> c : components) c.second->Operate(this);
+		for (std::pair<ComponentType, Component*> c : components) 
+			c.second->Operate(this);
 	}
 	VOID GameObject::Reset()
 	{
-		for (std::pair<ComponentType, Component*> c : components) c.second->Reset();
+		for (std::pair<ComponentType, Component*> c : components) 
+			c.second->Reset();
 	}
 
 	VOID AnimationComponent::SetSpeed(FLOAT speed)

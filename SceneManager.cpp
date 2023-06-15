@@ -6,6 +6,10 @@
 
 namespace ENGINE
 {
+	/*이름으로 정의되어 있으며, 씬의 전환과 렌더링을 관리합니다. 씬의 전환은 LoadScene 함수를 사용하여 다음에 표시할 씬을 설정합니다. 또한, Update 함수와 Draw 함수를 호출하여 현재 씬의 업데이트와 렌더링을 처리
+	scenes라는 맵(Map)이 존재하며, 이 맵은 씬 이름과 씬 객체(Scene)를 매핑하여 관리합니다. RegisterScene 함수를 사용하여 씬을 등록하고, SetScene 함수를 호출하여 다음에 표시할 씬을 설정
+
+	따라서 DemoScene은 SceneMgr에 의해 관리되며, 게임 화면의 이미지를 변경하고 플레이어 객체를 업데이트하고 그리는 역할을 수행*/
 	SceneManager::~SceneManager() { Release(); }
 
 	void SceneManager::Initialize(HWND hWnd, UINT32 width, UINT32 height)
