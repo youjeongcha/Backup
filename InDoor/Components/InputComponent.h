@@ -9,7 +9,7 @@ namespace ENGINE
 	class InputComponent : public Component
 	{
 	protected:
-		std::map<char, EventListener[2]> mappings; //TODO
+		std::map<char, EventListener[2]> mappings; //TODO::
 
 	public:
 		virtual ~InputComponent() { }

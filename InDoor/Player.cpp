@@ -8,9 +8,9 @@ Player::Player()
     dir = Direction::Right;
 
     ENGINE::ResourceMgr->Load("Player_Idle.bmp");
-    vResources.push_back({ "Player_Idle.bmp",  SpritesX_Idle, SpritesY, {1.0f / SpritesX_Idle, 1.0f / SpritesY} });
-
     ENGINE::ResourceMgr->Load("Player_Run.bmp");
+
+    vResources.push_back({ "Player_Idle.bmp",  SpritesX_Idle, SpritesY, {1.0f / SpritesX_Idle, 1.0f / SpritesY} });
     vResources.push_back({ "Player_Run.bmp", SpritesX, SpritesY,  {1.0f / SpritesX, 1.0f / SpritesY} });
 
 ///
@@ -18,7 +18,7 @@ Player::Player()
     renderer = new ENGINE::SpriteRenderer(vResources);
     renderer->SetPivot(ENGINE::Pivot::Left | ENGINE::Pivot::Bottom);
     renderer->SetScale(transform->scale.x, transform->scale.y);
-    AddComponent(renderer); //TODO::스프라이트 랜더러를 한번에 뭉쳐서 넣게 되는듯
+    AddComponent(renderer);
 
     //vResources[0].divX
     //TODO::해당 스프라이트 나누는 함수 각 이미지마다 다르게 나와야 한다.

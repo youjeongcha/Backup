@@ -66,22 +66,24 @@ VOID Character::Update(const FLOAT& deltaTime)
     switch (state)
     {
     case State::Move:
-        renderer->ChangeSpritese(vResources[1]); //run
-       
         Move(deltaTime);
         break;
     default:
-        //renderer->ChangeSpritese(vResources[0]); //idle
+        renderer->ChangeSpritese(vResources[0]); //idle
         //anim->Idle(deltaTime);
         //anim->Play(0);
+       // anim->SetRange(0, 0); // idle 애니메이션 범위 설정
+        //anim->Play();
         break;
     }
 
     switch (dir)
     {
-    case Direction::Right:anim->Play(0);
+    case Direction::Right:
+        anim->Play(0);
         break;
-    case Direction::Left:anim->Play(1);
+    case Direction::Left:
+        anim->Play(1);
         break;
     }
 }
@@ -95,12 +97,22 @@ VOID Character::Move(const FLOAT& deltaTime)
 {
     switch (dir)
     {
-    case Direction::Right:anim->Play(0);
-        anim->SetChangeResouce(vResources[1]); //TODO::전환되는 한번의 포인트를 찾는다. //TODO::버튼을 누르고 있을때 작동되도록 //TODO::idle 왼오 나누어야 함
+    case Direction::Right:
+        // 이미지 변경
+        renderer->ChangeSpritese(vResources[1]);  //TODO::전환되는 한번의 포인트를 찾는다. //TODO::버튼을 누르고 있을때 작동되도록 //TODO::idle 왼오 나누어야 함
+        anim->SetChangeResouce(vResources[1]);
+        // 애니메이션 재생
+        anim->Play(0);
         transform->position.x += Speed * deltaTime;
         break;
-    case Direction::Left:anim->Play(1);
-        anim->SetChangeResouce(vResources[1]); //TODO::전환되는 한번의 포인트를 찾는다. //TODO::버튼을 누르고 있을때 작동되도록 //TODO::idle 왼오 나누어야 함
+    case Direction::Left:
+        // 이미지 변경
+        renderer->ChangeSpritese(vResources[1]);
+        anim->SetChangeResouce(vResources[1]);
+        // 애니메이션 재생
+        anim->Play(1);
+        //renderer->ChangeSpritese(vResources[1]);
+        //anim->SetChangeResouce(vResources[1]); //TODO::전환되는 한번의 포인트를 찾는다. //TODO::idle 왼오 나누어야 함
         transform->position.x -= Speed * deltaTime;
         break;
     }

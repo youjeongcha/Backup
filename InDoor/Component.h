@@ -96,7 +96,11 @@ namespace ENGINE
 		AnimationComponent();
 	public:
 		//AnimationComponent(UINT count, UINT length, BOOL autoPlay) : isPlaying(autoPlay), isReverse(FALSE), index(0U), speed(1.0f), length(length), maxSize(count), frameRate(1.0f / length) { }
-		AnimationComponent(ENGINE::TotalResource resource, BOOL autoPlay) : isPlaying(autoPlay), isReverse(FALSE), index(0U), speed(1.0f), length(resource.divY), maxSize(resource.divX), frameRate(1.0f / length) { }
+		AnimationComponent(ENGINE::TotalResource resource, BOOL autoPlay)
+		{
+			SetChangeResouce(resource);
+		}
+
 		virtual ~AnimationComponent() { }
 
 		VOID SetSpeed(FLOAT speed);
@@ -107,12 +111,16 @@ namespace ENGINE
 		virtual ComponentType GetType() const override { return ComponentType::Animation; }
 
 		//추가 코드
-		//VOID SetChangeResouce(ENGINE::TotalResource resource, BOOL autoPlay = FALSE) 
-		//{ 
-		//	isPlaying = autoPlay; isReverse = FALSE; index = 0U; speed = 1.0f; 
-		//	length = resource.divY; maxSize = resource.divX; 
-		//	frameRate = 1.0f / length; 
-		//}
+		VOID SetChangeResouce(ENGINE::TotalResource resource, BOOL autoPlay = FALSE) 
+		{ 
+			isPlaying = autoPlay; 
+			isReverse = FALSE; 
+			index = 0U;
+			speed = 1.0f; 
+			length = resource.divY; 
+			maxSize = resource.divX; 
+			frameRate = 1.0f / length; 
+		}
 	};
 }
 

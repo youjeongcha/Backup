@@ -13,7 +13,9 @@ namespace ENGINE
 	SpriteAnimation::SpriteAnimation(ENGINE::TotalResource resource, BOOL autoPlay) : AnimationComponent(resource, autoPlay)
 	//SpriteAnimation::SpriteAnimation(UINT divX, UINT divY, BOOL autoPlay)
 	{ 
-		ChangeAnim(resource, autoPlay);
+		frame = 0;
+		animTimer = frameRate;
+		renderer = nullptr;
 	}
 
 	VOID SpriteAnimation::Operate(GameObject* Owner)
@@ -45,10 +47,10 @@ namespace ENGINE
 		frame = 0;
 		animTimer = frameRate;
 	}
-	VOID SpriteAnimation::ChangeAnim(ENGINE::TotalResource resource, BOOL autoPlay)
-	{
-		frame = 0;
-		animTimer = frameRate;
-		renderer = nullptr;
-	}
+	//VOID SpriteAnimation::ChangeAnim(ENGINE::TotalResource resource, BOOL autoPlay)
+	//{
+	//	frame = 0;
+	//	animTimer = frameRate;
+	//	renderer = nullptr;
+	//}
 }

@@ -31,7 +31,7 @@ namespace ENGINE
 
 		for (auto iter = mappings.begin(); iter != mappings.end(); iter++)
 		{
-			if (ENGINE::InputMgr->GetKeyDown(iter->first)) 
+			if (ENGINE::InputMgr->GetKeyPressed(iter->first)) //pressed가 누른 순간 + 눌러진 상태 다 고려함
 				iter->second[0]();
 		}
 		//TODO::해당 부분에 누르고 있는 상태

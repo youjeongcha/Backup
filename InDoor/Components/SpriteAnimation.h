@@ -24,7 +24,7 @@ namespace ENGINE
 		virtual VOID Reset() override;
 
 		//추가 코드
-		VOID ChangeAnim(ENGINE::TotalResource resource, BOOL autoPlay = FALSE);
+		//VOID ChangeAnim(ENGINE::TotalResource resource, BOOL autoPlay = FALSE);
 	};
 }
 
