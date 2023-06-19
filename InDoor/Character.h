@@ -13,18 +13,22 @@ protected:
     std::string name;
     std::vector<char> itemIDs;
     std::string filePath;
+    //ENGINE::NowKeyState nowKeyState; //현재 키와 이전 키 비교해서 스프라이트 변경위해
 
     enum Data { SpritesX = 8, SpritesY = 2, SpritesX_Idle = 4, Speed = 200 };
     enum class State { Idle, Move };
-    enum class Direction { Right, Left, Up, Down };
+    enum class Direction { Right, Left };
 
     std::vector<ENGINE::TotalResource> vResources; //리소스 뭉치
 
     State state;
+    State prevState;
     Direction dir;
 
     ENGINE::SpriteRenderer* renderer;
     ENGINE::AnimationComponent* anim;
+
+   
 
     VOID Move(const FLOAT& deltaTime);
 

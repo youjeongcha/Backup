@@ -7,15 +7,14 @@ Player::Player()
     state = State::Idle;
     dir = Direction::Right;
 
-    ENGINE::ResourceMgr->Load("Player_Idle.bmp");
-    ENGINE::ResourceMgr->Load("Player_Run.bmp");
-
     vResources.push_back({ "Player_Idle.bmp",  SpritesX_Idle, SpritesY, {1.0f / SpritesX_Idle, 1.0f / SpritesY} });
     vResources.push_back({ "Player_Run.bmp", SpritesX, SpritesY,  {1.0f / SpritesX, 1.0f / SpritesY} });
 
+    for (auto resource : vResources)
+        ENGINE::ResourceMgr->Load(resource.name);
 ///
 
-    renderer = new ENGINE::SpriteRenderer(vResources);
+    renderer = new ENGINE::SpriteRenderer(vResources); //안에서[0]만 세팅해주고 있음
     renderer->SetPivot(ENGINE::Pivot::Left | ENGINE::Pivot::Bottom);
     renderer->SetScale(transform->scale.x, transform->scale.y);
     AddComponent(renderer);

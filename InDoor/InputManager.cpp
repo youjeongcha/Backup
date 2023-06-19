@@ -44,33 +44,48 @@ namespace ENGINE
 		switch (message)
 		{
 		case WM_CHAR: str = wParam; break;
-		case WM_KEYDOWN: case WM_SYSKEYDOWN: SetKeyDown(wParam); break;
-		case WM_KEYUP: case WM_SYSKEYUP: SetKeyUp(wParam); break;
-		case WM_LBUTTONDOWN: SetMouseButtonDown(VK_LBUTTON); break;
-		case WM_RBUTTONDOWN: SetMouseButtonDown(VK_RBUTTON); break;
-		case WM_MBUTTONDOWN: SetMouseButtonDown(VK_MBUTTON); break;
+		case WM_KEYDOWN: 
+		case WM_SYSKEYDOWN: 
+			SetKeyDown(wParam); break;
+		case WM_KEYUP: 
+		case WM_SYSKEYUP: 
+			SetKeyUp(wParam); break;
+		case WM_LBUTTONDOWN: 
+			SetMouseButtonDown(VK_LBUTTON); break;
+		case WM_RBUTTONDOWN: 
+			SetMouseButtonDown(VK_RBUTTON); break;
+		case WM_MBUTTONDOWN: 
+			SetMouseButtonDown(VK_MBUTTON); break;
 		case WM_XBUTTONDOWN:
 		{
 			switch (wParam)
 			{
-			case XBUTTON1: SetMouseButtonDown(VK_XBUTTON1); break; // 마우스 왼쪽 뒤 버튼.
-			case XBUTTON2: SetMouseButtonDown(VK_XBUTTON2); break; // 마우스 왼쪽 앞 버튼.
+			case XBUTTON1: 
+				SetMouseButtonDown(VK_XBUTTON1); break; // 마우스 왼쪽 뒤 버튼.
+			case XBUTTON2: 
+				SetMouseButtonDown(VK_XBUTTON2); break; // 마우스 왼쪽 앞 버튼.
 			}
 		}
 		break;
-		case WM_LBUTTONUP: SetMouseButtonUp(VK_LBUTTON); break;
-		case WM_RBUTTONUP: SetMouseButtonUp(VK_RBUTTON); break;
-		case WM_MBUTTONUP: SetMouseButtonUp(VK_MBUTTON); break;
+		case WM_LBUTTONUP: 
+			SetMouseButtonUp(VK_LBUTTON); break;
+		case WM_RBUTTONUP:
+			SetMouseButtonUp(VK_RBUTTON); break;
+		case WM_MBUTTONUP: 
+			SetMouseButtonUp(VK_MBUTTON); break;
 		case WM_XBUTTONUP:
 		{
 			switch (wParam)
 			{
-			case XBUTTON1: SetMouseButtonUp(VK_XBUTTON1); break; // 마우스 왼쪽 뒤 버튼.
-			case XBUTTON2: SetMouseButtonUp(VK_XBUTTON2); break; // 마우스 왼쪽 앞 버튼.
+			case XBUTTON1: 
+				SetMouseButtonUp(VK_XBUTTON1); break; // 마우스 왼쪽 뒤 버튼.
+			case XBUTTON2: 
+				SetMouseButtonUp(VK_XBUTTON2); break; // 마우스 왼쪽 앞 버튼.
 			}
 		}
 		break;
-		case WM_MOUSEMOVE: SetMousePosition(lParam); break;
+		case WM_MOUSEMOVE: 
+			SetMousePosition(lParam); break;
 		}
 	}
 	BOOL InputManager::PressedAnyKey()

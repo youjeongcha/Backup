@@ -105,21 +105,23 @@ namespace ENGINE
 
 		VOID SetSpeed(FLOAT speed);
 		VOID Play(UINT index) { this->index = clamp(index, 0, maxSize - 1); isPlaying = TRUE; }
-		VOID Idle(UINT index) { this->index = clamp(index, 0, maxSize - 1); isPlaying = TRUE; }
+		//VOID Idle(UINT index) { this->index = clamp(index, 0, maxSize - 1); isPlaying = TRUE; }
 		VOID Stop() { isPlaying = FALSE; }
 		// Component을(를) 통해 상속됨
 		virtual ComponentType GetType() const override { return ComponentType::Animation; }
 
 		//추가 코드
+		/*VOID ChangeAnimComp(ENGINE::TotalResource resource, BOOL autoPlay) { SetChangeResouce(resource); };*/
+
 		VOID SetChangeResouce(ENGINE::TotalResource resource, BOOL autoPlay = FALSE) 
 		{ 
 			isPlaying = autoPlay; 
 			isReverse = FALSE; 
 			index = 0U;
 			speed = 1.0f; 
-			length = resource.divY; 
+			length = resource.divY;
 			maxSize = resource.divX; 
-			frameRate = 1.0f / length; 
+			frameRate = 1.0f / maxSize; 
 		}
 	};
 }
