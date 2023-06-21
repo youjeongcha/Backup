@@ -95,11 +95,18 @@ namespace ENGINE
 	private:
 		AnimationComponent();
 	public:
-		//AnimationComponent(UINT count, UINT length, BOOL autoPlay) : isPlaying(autoPlay), isReverse(FALSE), index(0U), speed(1.0f), length(length), maxSize(count), frameRate(1.0f / length) { }
-		AnimationComponent(ENGINE::TotalResource resource, BOOL autoPlay)
-		{
-			SetChangeResouce(resource);
-		}
+		AnimationComponent(UINT count, UINT length, BOOL autoPlay) : isPlaying(autoPlay), isReverse(FALSE), index(0U), speed(1.0f), length(length), maxSize(count), frameRate(1.0f / length) { }
+		//AnimationComponent(ENGINE::TotalResource resource, BOOL autoPlay)
+		//{
+		//	isPlaying = autoPlay;
+		//	isReverse = FALSE;
+		//	index = 0U;
+		//	speed = 1.0f;
+		//	length = resource.divY;
+		//	maxSize = resource.divX;
+		//	frameRate = 1.0f / maxSize;
+		//	//SetChangeResouce(resource);
+		//}
 
 		virtual ~AnimationComponent() { }
 
@@ -113,16 +120,16 @@ namespace ENGINE
 		//추가 코드
 		/*VOID ChangeAnimComp(ENGINE::TotalResource resource, BOOL autoPlay) { SetChangeResouce(resource); };*/
 
-		VOID SetChangeResouce(ENGINE::TotalResource resource, BOOL autoPlay = FALSE) 
-		{ 
-			isPlaying = autoPlay; 
-			isReverse = FALSE; 
-			index = 0U;
-			speed = 1.0f; 
-			length = resource.divY;
-			maxSize = resource.divX; 
-			frameRate = 1.0f / maxSize; 
-		}
+		//VOID SetChangeResouce(ENGINE::TotalResource resource, BOOL autoPlay = FALSE) 
+		//{ 
+		//	isPlaying = autoPlay; 
+		//	isReverse = FALSE; 
+		//	index = 0U;
+		//	speed = 1.0f; 
+		//	length = resource.divY;
+		//	maxSize = resource.divX; 
+		//	frameRate = 1.0f / maxSize; 
+		//}
 	};
 }
 

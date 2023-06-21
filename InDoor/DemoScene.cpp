@@ -7,6 +7,10 @@
 VOID DemoScene::Initialize()
 {
     ResourceMgr->Load("background.bmp");
+    ResourceMgr->Load("Home_Door.bmp");
+
+
+
     ResourceMgr->Load("pause_normal.bmp");
     ResourceMgr->Load("pause_pressed.bmp");
     ResourceMgr->Load("base_panel.bmp");

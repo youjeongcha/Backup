@@ -13,13 +13,13 @@ namespace ENGINE
 	private:
 		Bitmap* sprites;
 		SIZE localSize, size;
-		Vector2 pos;//, divide;
+		Vector2 pos, divide;
 
 	private:
 		SpriteRenderer();
 	public:
-		//SpriteRenderer(LPCSTR name, UINT divX = 1, UINT divY = 1);
-		SpriteRenderer(std::vector<ENGINE::TotalResource> vResources);
+		SpriteRenderer(LPCSTR name, UINT divX = 1, UINT divY = 1);
+		//SpriteRenderer(std::vector<ENGINE::TotalResource> vResources);
 
 		VOID SetPivot(INT pivot) { if (sprites) sprites->SetPivot(pivot); }
 		VOID SetSrc(UINT cx, UINT cy);
@@ -32,7 +32,7 @@ namespace ENGINE
 		virtual VOID Draw() override;
 
 		//추가 코드
-		VOID ChangeSpritese(ENGINE::TotalResource vResource);
+		//VOID ChangeSpritese(ENGINE::TotalResource vResource);
 	};
 }
 

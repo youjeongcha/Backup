@@ -25,15 +25,22 @@ namespace ENGINE
 	{
 		for (auto iter = mappings.begin(); iter != mappings.end(); iter++)
 		{
-			if (ENGINE::InputMgr->GetKeyUp(iter->first)) 
-				iter->second[1]();
+			if (ENGINE::InputMgr->GetKeyUp(iter->first))
+			{
+				//nowKeyState.currentKey = iter->first; //왼쪽% //오른쪽'
+				//nowKeyState.currentState = '0';
+				iter->second[1](); //State idle 상태
+			}
 		}
 
 		for (auto iter = mappings.begin(); iter != mappings.end(); iter++)
 		{
 			if (ENGINE::InputMgr->GetKeyPressed(iter->first)) //pressed가 누른 순간 + 눌러진 상태 다 고려함
-				iter->second[0]();
+			{
+				/*nowKeyState.currentKey = iter->first;
+				nowKeyState.currentState = '1';*/
+				iter->second[0](); //State Move 상태
+			}
 		}
-		//TODO::해당 부분에 누르고 있는 상태
 	}
 }

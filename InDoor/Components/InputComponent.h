@@ -8,8 +8,9 @@ namespace ENGINE
 	//게임 오브젝트와 입력 동작을 연결하여 입력에 따라 동작을 수행할 수 있도록 한다. 
 	class InputComponent : public Component
 	{
-	protected:
-		std::map<char, EventListener[2]> mappings; //TODO::
+	protected: //TODO::키 추가는 해당 변수 수정
+		//첫번째 인자:키. 두번째 인자:작동 중일때,작동 끝났을때의 상태
+		std::map<char, EventListener[2]> mappings; 
 
 	public:
 		virtual ~InputComponent() { }
@@ -21,6 +22,8 @@ namespace ENGINE
 		virtual VOID Operate(GameObject* Owner) override;
 		virtual VOID Reset() override { mappings.clear(); }
 		virtual ComponentType GetType() const override { return ComponentType::Input; }
+
+		//NowKeyState GetKeyCheck() { return nowKeyState; } //왼쪽% //오른쪽'
 	};
 }
 

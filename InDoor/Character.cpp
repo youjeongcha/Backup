@@ -16,8 +16,6 @@ int main() {
 
 Character::Character() 
 {
-    //nowKeyState.currentKey = ' ';
-    //nowKeyState.currentState = '1'; //idle 상태
 }
 
 //Character::Character(const std::string& charName, const std::vector<char>& items)
@@ -53,7 +51,7 @@ VOID Character::SetScale(const Vector2& scale)
 
 VOID Character::Initialize()
 {
-    transform->position = { 400, 600 };
+    transform->position = { ENGINE::ClientSize_Width / 2,  ENGINE::ClientSize_Height };
 }
 
 VOID Character::Release()
@@ -62,10 +60,7 @@ VOID Character::Release()
 
 VOID Character::Update(const FLOAT& deltaTime)
 {
-    Operate(this); //
-
-
-    //nowKeyState = input->GetKeyCheck();
+    Operate(this);
 
     //key를 떼면 state가 idle 상태로 벼한다. -> 스프라이트도 idle 상태로 변경되어야 한다.
     //renderer->ChangeSpritese(vResources[0]); //idle
@@ -73,8 +68,8 @@ VOID Character::Update(const FLOAT& deltaTime)
     switch (state)
     {
     case State::Move:
-        renderer->ChangeSpritese(vResources[1]);
-        anim->SetChangeResouce(vResources[1]);
+        //renderer->ChangeSpritese(vResources[1]);
+        //anim->SetChangeResouce(vResources[1]);
         Move(deltaTime);
         break;
     case State::Idle:
@@ -82,11 +77,7 @@ VOID Character::Update(const FLOAT& deltaTime)
         if (prevState == State::Move) //'0'은 move 상태일때
         {
             renderer->SetPivot(ENGINE::Pivot::Left | ENGINE::Pivot::Bottom);
-            renderer->ChangeSpritese(vResources[0]); //idle //TODO::이거 왼오 나눠야 함
-            anim->SetChangeResouce(vResources[0]);
         }
-        //key를 떼면 state가 idle 상태로 벼한다. -> 스프라이트도 idle 상태로 변경되어야 한다.
-        //anim->Play();
         break;
     }
 
@@ -94,10 +85,10 @@ VOID Character::Update(const FLOAT& deltaTime)
     switch (dir)
     { 
     case Direction::Right:
-        anim->Play(0);
+        anim->Play(0 + (int)state * 2);
         break;
     case Direction::Left:
-        anim->Play(1);
+        anim->Play(1 + (int)state * 2);
         break;
     }
 
@@ -114,19 +105,11 @@ VOID Character::Move(const FLOAT& deltaTime)
     switch (dir)
     {
     case Direction::Right:
-        // 이미지 변경
-        //renderer->ChangeSpritese(vResources[1]);  //TODO::전환되는 한번의 포인트를 찾는다. //TODO::버튼을 누르고 있을때 작동되도록 //TODO::idle 왼오 나누어야 함
-        //anim->SetChangeResouce(vResources[1]);
-        // 애니메이션 재생
-        //anim->Play(0);
+        anim->Play(0);
         transform->position.x += Speed * deltaTime;
         break;
     case Direction::Left:
-        // 이미지 변경
-       // renderer->ChangeSpritese(vResources[1]);
-        //anim->SetChangeResouce(vResources[1]);
-        // 애니메이션 재생
-        //anim->Play(1);
+        anim->Play(1);
         transform->position.x -= Speed * deltaTime;
         break;
     }

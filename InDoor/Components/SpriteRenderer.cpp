@@ -3,10 +3,19 @@
 
 namespace ENGINE
 {
-    //SpriteRenderer::SpriteRenderer(LPCSTR name, UINT divX, UINT divY) : divide({ 1.0f / divX, 1.0f / divY })
-    SpriteRenderer::SpriteRenderer(std::vector<ENGINE::TotalResource> vResources)// : divide({ 1.0f / vResources.divX, 1.0f / resource.divY })
+    SpriteRenderer::SpriteRenderer(LPCSTR name, UINT divX, UINT divY) : divide({ 1.0f / divX, 1.0f / divY })
+    //SpriteRenderer::SpriteRenderer(std::vector<ENGINE::TotalResource> vResources)// : divide({ 1.0f / vResources.divX, 1.0f / resource.divY })
     {
-        ChangeSpritese(vResources[0]);
+        //ChangeSpritese(vResources[0]);
+        //sprites = ResourceMgr->GetBitmap(vResource.name);
+        sprites = ResourceMgr->GetBitmap(name);
+
+        localSize = sprites->GetBitmapSize();
+        localSize.cx *= divide.x;
+        localSize.cy *= divide.y;
+        size = localSize;
+        SetSrc(0, 0);
+        SetScale(1, 1);
     }
 
     VOID SpriteRenderer::SetSrc(UINT cx, UINT cy)
@@ -42,14 +51,15 @@ namespace ENGINE
             sprites->TransparentBlt(pos.x, pos.y);
     }
 
-    VOID SpriteRenderer::ChangeSpritese(ENGINE::TotalResource vResource)
-    {
-        sprites = ResourceMgr->GetBitmap(vResource.name);
+    //VOID SpriteRenderer::ChangeSpritese(ENGINE::TotalResource vResource)
+    //{
+    //    sprites = ResourceMgr->GetBitmap(vResource.name);
 
-        localSize = sprites->GetBitmapSize();
-        localSize.cx *= vResource.divide.x;
-        localSize.cy *= vResource.divide.y;
-        size = localSize;
-        SetSrc(0, 0);
-    }
+    //    localSize = sprites->GetBitmapSize();
+    //    localSize.cx *= vResource.divide.x;
+    //    localSize.cy *= vResource.divide.y;
+    //    size = localSize;
+    //    SetSrc(0, 0);
+    //    SetScale(1,1);
+    //}
 }

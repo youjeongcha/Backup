@@ -16,8 +16,8 @@ namespace ENGINE
 	private:
 		SpriteAnimation();
 	public:
-		SpriteAnimation(ENGINE::TotalResource resource, BOOL autoPlay = FALSE);
-		//SpriteAnimation(UINT divX, UINT divY, BOOL autoPlay = FALSE);
+		//SpriteAnimation(ENGINE::TotalResource resource, BOOL autoPlay = FALSE);
+		SpriteAnimation(UINT divX, UINT divY, BOOL autoPlay = FALSE);
 
 		// AnimationComponent을(를) 통해 상속됨
 		virtual VOID Operate(GameObject* Owner) override;

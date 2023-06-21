@@ -33,7 +33,8 @@ namespace ENGINE
 	enum //무명(no name) enum, 게임 엔진에 사용되는 여러 기본 데이터 서렁 값
 	{
 		ClientSize_Width = 800,
-		ClientSize_Height = 600,
+		//ClientSize_Height = 600,
+		ClientSize_Height = 140,
 		Client_Per_X = 50,
 		Client_Per_Y = 50, /*0 ~ 100%*/
 		FPS = 120/*초당 프레임*/
