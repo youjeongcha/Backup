@@ -74,10 +74,10 @@ VOID Character::Update(const FLOAT& deltaTime)
         break;
     case State::Idle:
 
-        if (prevState == State::Move) //'0'은 move 상태일때
-        {
-            renderer->SetPivot(ENGINE::Pivot::Left | ENGINE::Pivot::Bottom);
-        }
+        //if (prevState == State::Move) //'0'은 move 상태일때
+        //{
+        //    renderer->SetPivot(ENGINE::Pivot::Left | ENGINE::Pivot::Bottom);
+        //}
         break;
     }
 

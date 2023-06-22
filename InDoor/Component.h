@@ -12,13 +12,13 @@ typedef std::function<VOID()> EventListener;
 
 namespace ENGINE
 {
-	struct TotalResource
-	{
-		LPCSTR name;
-		UINT divX;
-		UINT divY;
-		Vector2 divide;
-	};
+	//struct TotalResource
+	//{
+	//	LPCSTR name;
+	//	UINT divX;
+	//	UINT divY;
+	//	Vector2 divide;
+	//};
 	enum class ComponentType { GameObject, Transform, Graphic, Input, Animation, };
 
 	class GameObject;
