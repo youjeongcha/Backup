@@ -34,7 +34,7 @@ VOID Furniture::Update(const FLOAT& deltaTime)
         //TODO::애니메이션 있는 가구에 별도로 추가
         //anim->SetChangeResouce(vResources[1]);
         break;
-    case false:
+    case false :
         //renderer->ChangeSpritese(vResources[1]);
         break;
     }

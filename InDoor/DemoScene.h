@@ -41,6 +41,7 @@ class DemoScene : public Scene
 	INT bounds;
 
 	Bitmap* background = nullptr;
+	Bitmap* door = nullptr; //
 	Player* player = nullptr;
 	Transform* playerTr = nullptr;
 	SpriteRenderer* playerSr = nullptr;
