@@ -7,7 +7,7 @@
 VOID DemoScene::Initialize()
 {
     ResourceMgr->Load("background.bmp");
-    ResourceMgr->Load("Home_Door.bmp");
+    //ResourceMgr->Load("Home_Door.bmp");
 
     ResourceMgr->Load("pause_normal.bmp");
     ResourceMgr->Load("pause_pressed.bmp");
@@ -22,8 +22,8 @@ VOID DemoScene::Initialize()
     background = ResourceMgr->GetBitmap("background.bmp");
     background->SetDrawSize(bounds, SceneMgr->GetHeight());
     ///
-    door = ResourceMgr->GetBitmap("Home_Door.bmp");
-    door->SetDrawSize(30, SceneMgr->GetHeight());
+    //door = ResourceMgr->GetBitmap("Home_Door.bmp");
+    //door->SetDrawSize(30, SceneMgr->GetHeight());
 
 
     //TODO::GameManager로 이동
@@ -83,8 +83,11 @@ VOID DemoScene::Update(const FLOAT& deltaTime)
 VOID DemoScene::Draw()
 {
     background->StretchBlt(0, 0);
-    //각종 가구들
-    door->TransparentBlt(600, 30); //
+
+    //각종 가구들 그리기
+    door.Draw();
+    window.Draw();
+
     player->Draw();
 }
 

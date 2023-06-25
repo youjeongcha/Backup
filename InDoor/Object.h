@@ -29,7 +29,7 @@ protected:
     ENGINE::SpriteRenderer* renderer;
     ENGINE::AnimationComponent* anim;
 
-    //아이템 영구사용 + 일회성 사용 조정/ 움직임 체크/ 애니메이션 체크/ 활성화 체크
+    //아이템 사용가능 조정/ 움직임 체크/ 애니메이션 체크/ 활성화 체크
     bool Available, isMove, isAnim, isActive;
 
     //인벤토리 들어올 수 있음 없음 체크 //TODO::가구 배치 가능하게 할거면 필요 없고

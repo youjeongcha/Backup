@@ -23,6 +23,7 @@ namespace ENGINE
 
 		VOID SetPivot(INT pivot) { if (sprites) sprites->SetPivot(pivot); }
 		VOID SetSrc(UINT cx, UINT cy);
+		void SetPos(float x, float y) { pos.x = x; pos.y = y; }
 		SIZE GetDrawSize() { return size; }
 
 		// GrahpicComponent을(를) 통해 상속됨

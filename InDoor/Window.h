@@ -1,14 +1,14 @@
 #pragma once
 #include "Object.h"
 
-class Door : public Object
+class Window : public Object
 {
 private:
-
 public:
-	Door();
-	~Door();
+	Window();
+	~Window();
 	VOID Initialize() override;
 	VOID Move(const FLOAT& deltaTime) override;
 };
+
 
