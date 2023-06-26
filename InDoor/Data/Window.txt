@@ -1,0 +1,7 @@
+Ã¢¹®
+false false false true
+1 2
+Home_Window.bmp
+1
+0 true fasle false true 450 32 0 0 0
+

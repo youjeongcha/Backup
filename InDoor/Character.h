@@ -19,6 +19,7 @@ protected:
     enum class State { Idle, Move };
     enum class Direction { Right, Left };
 
+
    // std::vector<ENGINE::TotalResource> vResources; //¸®¼Ò½º ¹¶Ä¡
 
     State state;
@@ -46,6 +47,6 @@ public:
     //---------------------------------------------------
     VOID Initialize();
     VOID Release();
-    VOID Update(const FLOAT& deltaTime);
+    virtual VOID Update(const FLOAT& deltaTime);
     VOID Draw();
 };

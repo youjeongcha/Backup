@@ -7,6 +7,7 @@ private:
 
 public:
 	Door();
+	Door(const ObjectData& dataSet, int index);
 	~Door();
 	VOID Initialize() override;
 	VOID Move(const FLOAT& deltaTime) override;

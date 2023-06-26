@@ -6,6 +6,7 @@ Player::Player()
 {
     state = State::Idle;
     dir = Direction::Right;
+    isSpace = false;
 
     ENGINE::ResourceMgr->Load("Player.bmp");
 
@@ -18,6 +19,7 @@ Player::Player()
     ENGINE::InputComponent* input = new ENGINE::InputComponent;
     input->AddBinding(VK_LEFT, [&]() { dir = Direction::Left; state = State::Move; }, [&]() { state = State::Idle; });
     input->AddBinding(VK_RIGHT, [&]() { dir = Direction::Right; state = State::Move; }, [&]() { state = State::Idle; });
+    input->AddBinding(VK_SPACE, [&]() {  isSpace = true; state = State::Idle; }, [&]() { isSpace = false; state = State::Idle; }); //
     AddComponent(input);
 
     /*
@@ -51,6 +53,47 @@ Player::Player()
 
 Player::~Player()
 {
+}
+
+VOID Player::Update(const FLOAT& deltaTime)
+{
+    Operate(this);
+
+    //key를 떼면 state가 idle 상태로 벼한다. -> 스프라이트도 idle 상태로 변경되어야 한다.
+    //renderer->ChangeSpritese(vResources[0]); //idle
+
+    switch (state)
+    {
+    case State::Move:
+        //renderer->ChangeSpritese(vResources[1]);
+        //anim->SetChangeResouce(vResources[1]);
+        Move(deltaTime);
+        break;
+    case State::Idle:
+        if (isSpace) //스페이스를 누른 상태 bool 값
+        {
+            //가구 좌표와 크기 필요
+        }
+
+        //if (prevState == State::Move) //'0'은 move 상태일때
+        //{
+        //    renderer->SetPivot(ENGINE::Pivot::Left | ENGINE::Pivot::Bottom);
+        //}
+        break;
+    }
+
+    //스프라이트 왼오 나눠서 애니메이션 플레이
+    switch (dir)
+    {
+    case Direction::Right:
+        anim->Play(0 + (int)state * 2);
+        break;
+    case Direction::Left:
+        anim->Play(1 + (int)state * 2);
+        break;
+    }
+
+    prevState = state;
 }
 
 

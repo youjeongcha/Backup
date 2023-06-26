@@ -43,8 +43,8 @@ class DemoScene : public Scene
 	INT bounds;
 
 	//가구 추가
-	Door door;
-	Window window;
+	//Door door;
+	//Window window;
 
 	Bitmap* background = nullptr;
 	//Bitmap* door = nullptr; //

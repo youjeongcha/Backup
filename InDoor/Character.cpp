@@ -60,39 +60,39 @@ VOID Character::Release()
 
 VOID Character::Update(const FLOAT& deltaTime)
 {
-    Operate(this);
+    //Operate(this);
 
-    //key를 떼면 state가 idle 상태로 벼한다. -> 스프라이트도 idle 상태로 변경되어야 한다.
-    //renderer->ChangeSpritese(vResources[0]); //idle
+    ////key를 떼면 state가 idle 상태로 벼한다. -> 스프라이트도 idle 상태로 변경되어야 한다.
+    ////renderer->ChangeSpritese(vResources[0]); //idle
 
-    switch (state)
-    {
-    case State::Move:
-        //renderer->ChangeSpritese(vResources[1]);
-        //anim->SetChangeResouce(vResources[1]);
-        Move(deltaTime);
-        break;
-    case State::Idle:
+    //switch (state)
+    //{
+    //case State::Move:
+    //    //renderer->ChangeSpritese(vResources[1]);
+    //    //anim->SetChangeResouce(vResources[1]);
+    //    Move(deltaTime);
+    //    break;
+    //case State::Idle:
 
-        //if (prevState == State::Move) //'0'은 move 상태일때
-        //{
-        //    renderer->SetPivot(ENGINE::Pivot::Left | ENGINE::Pivot::Bottom);
-        //}
-        break;
-    }
+    //    //if (prevState == State::Move) //'0'은 move 상태일때
+    //    //{
+    //    //    renderer->SetPivot(ENGINE::Pivot::Left | ENGINE::Pivot::Bottom);
+    //    //}
+    //    break;
+    //}
 
-    //스프라이트 왼오 나눠서 애니메이션 플레이
-    switch (dir)
-    { 
-    case Direction::Right:
-        anim->Play(0 + (int)state * 2);
-        break;
-    case Direction::Left:
-        anim->Play(1 + (int)state * 2);
-        break;
-    }
+    ////스프라이트 왼오 나눠서 애니메이션 플레이
+    //switch (dir)
+    //{ 
+    //case Direction::Right:
+    //    anim->Play(0 + (int)state * 2);
+    //    break;
+    //case Direction::Left:
+    //    anim->Play(1 + (int)state * 2);
+    //    break;
+    //}
 
-    prevState = state;
+    //prevState = state;
 }
 
 VOID Character::Draw()

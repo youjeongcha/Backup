@@ -1,7 +1,47 @@
 #include "Object.h"
+#include "ResourceManager.h"
 
 Object::Object()
 {
+}
+
+Object::Object(const ObjectData& dataSet, int index)
+{
+    name = dataSet.name;
+    //오브젝트 타입 설정
+    typeCheck = dataSet.typeCheck;
+    //리소스
+    SpritesX = dataSet.spritesX;
+    SpritesY = dataSet.spritesY;
+
+    //Objeect 개별
+    mapIndex = dataSet.eachObject[index].mapIndex;
+
+    Available = dataSet.eachObject[index].Available;
+    isMove = dataSet.eachObject[index].isMove;
+    isAnim = dataSet.eachObject[index].isAnim;
+    isActive = dataSet.eachObject[index].isActive;
+
+    ENGINE::ResourceMgr->Load(dataSet.fileName);
+
+    renderer = new ENGINE::SpriteRenderer(dataSet.fileName.c_str(), SpritesX, SpritesY);
+    renderer->SetPos(dataSet.eachObject->x, dataSet.eachObject->y);
+    renderer->SetPivot(ENGINE::Pivot::Left | ENGINE::Pivot::Top);
+    renderer->SetScale(transform->scale.x, transform->scale.y);
+    if (isActive) //작동 여부에 따라 이미지 다르게
+        renderer->SetSrc(0, 1);
+    AddComponent(renderer);
+
+    //Anim 관련
+    if (isAnim) //TODO::애니메이션 속도 조절 부분은 AnimationComponent
+        AddComponent(anim = new ENGINE::SpriteAnimation(SpritesX, SpritesY));
+    else
+        anim = NULL;
+
+    //Move 관련
+    dir = (Direction)dataSet.eachObject[index].move_X; //TODO::이거 
+    //dir = (Direction)dataSet.eachObject[index].move_Y; //move_Y 부분도 해당 되게
+    moveSpeed = dataSet.eachObject[index].move_Speed;
 }
 
 Object::~Object()

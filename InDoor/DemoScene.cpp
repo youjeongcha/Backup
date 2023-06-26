@@ -1,12 +1,13 @@
 #include "DemoScene.h"
 #include "ResourceManager.h"
 #include "SceneManager.h"
+#include "ObjectManager.h"
 
 // 
 
 VOID DemoScene::Initialize()
 {
-    ResourceMgr->Load("background.bmp");
+    ResourceMgr->Load("background.bmp"); 
     //ResourceMgr->Load("Home_Door.bmp");
 
     ResourceMgr->Load("pause_normal.bmp");
@@ -83,10 +84,13 @@ VOID DemoScene::Update(const FLOAT& deltaTime)
 VOID DemoScene::Draw()
 {
     background->StretchBlt(0, 0);
+    
+    ObjectMgr->Draw();
+
 
     //각종 가구들 그리기
-    door.Draw();
-    window.Draw();
+    //door.Draw();
+    //window.Draw();
 
     player->Draw();
 }
