@@ -1,199 +1,192 @@
 #include "ObjectManager.h"
-#include "GameManager.h"
 
-void ObjectManager::InitialSet(SET setType)
+namespace ENGINE
 {
-	if (10 == GMMgr->Judgment_First_M_Value() && setType != SET_INIT)
+	ObjectManager::ObjectManager()
 	{
-		//Goal 골
-		m_Goal.InitialSet(GOAL_IMG_ARRIVE_X, GOAL_IMG_Y); //인자 사용 안함
-
-		//FIrJar 불항아리
-		m_FirJar[OBSTACLE_ONE].InitialSet(FIRJAR_X_10M, FIRJAR_Y);
-		m_FirJar[OBSTACLE_TWO].InitialSet(FIRJAR_X_10M + METER_GAP, FIRJAR_Y); //<<< -에서 +로 변경함  문제 생기면 애 <<<<<<<<<<<<<<<
-
-		//FireRing 불링 B
-		m_FirRing_B[OBSTACLE_ONE].InitialSet(MAIN_W, FIRRING_Y); //TODO::수정
-		m_FirRing_B[OBSTACLE_TWO].InitialSet(MAIN_W + METER_GAP, FIRRING_Y);
+		LoadData();
+		//door = new Door();
+		//다 객체 생성해두고 그리고 그리지 않고로
+		door = new Door(objectData.find("Door")->second, 0);
+		window = new Window(objectData.find("Window")->second, 0);
 	}
-	else //setType == SET_INIT 쌩 초기화
+
+	ObjectManager::~ObjectManager()
 	{
-		//Goal 골
-		m_Goal.InitialSet(GOAL_IMG_X, GOAL_IMG_Y); //인자 사용 안함
+		delete door;  // door 포인터의 메모리 정리
+	}
 
-		//FIrJar 불항아리
-		m_FirJar[OBSTACLE_ONE].InitialSet(FIRJAR_X, FIRJAR_Y);
-		m_FirJar[OBSTACLE_TWO].InitialSet(FIRJAR_X + METER_GAP, FIRJAR_Y);
-
-		//수정 안하면 리스폰시 바로 죽어버려서
-		//FireRing 불링 B
-		m_FirRing_B[OBSTACLE_ONE].InitialSet(FIRRING_X, FIRRING_Y); //TODO::수정
-		m_FirRing_B[OBSTACLE_TWO].InitialSet(FIRRING_X + METER_GAP, FIRRING_Y);
+	VOID ObjectManager::LoadData()
+	{
+		FileRead("Door");
+		FileRead("Window");
 	}
 
 
+	VOID ObjectManager::FileRead(const std::string& file) {
+
+		std::ifstream load("Data/" + file + ".txt");
+
+		//오브젝트 객체 하나당 데이터 설정값
+		ObjectData tmpObjectData; //하나의 가구 종류
+
+		if (load.is_open()) {
+			std::string line;
+
+			// 읽어올 데이터가 있는지 확인
+			if (std::getline(load, line)) {
+				//이름
+				tmpObjectData.name = line;
+
+				// 사용 타입
+				std::getline(load, line);
+				std::istringstream typeStream(line);
+
+				std::string typeCheckValue;
+				for (int i = 0; i < 4; i++) {
+					typeStream >> typeCheckValue;
+					if (typeCheckValue == "true") //문자열을 전부 false로 판단
+						tmpObjectData.typeCheck[static_cast<OBJECT_TYPE>(i)] = true;
+					else
+						tmpObjectData.typeCheck[static_cast<OBJECT_TYPE>(i)] = false;
+				}
+
+				// 스플릿 분리 xy
+				std::getline(load, line);
+				std::istringstream splitStream(line);
+				splitStream >> tmpObjectData.spritesX;
+				splitStream >> tmpObjectData.spritesY;
+
+				// 이미지 파일
+				std::getline(load, line);
+				tmpObjectData.fileName = line;
+
+				// 총 수량
+				std::getline(load, line);
+				std::istringstream countStream(line);
+				countStream >> tmpObjectData.objectCount;
+
+				// 오브젝트 객체 하나당 데이터 설정값
+				for (int i = 0; i < tmpObjectData.objectCount; ++i) {
+					std::getline(load, line);
+					std::istringstream objStream(line);
+					EachObject tmpEachObject; //가구 한 종류 안에서 객체들 관리
+
+					// 사용 맵의 인덱스
+					objStream >> tmpEachObject.mapIndex;
+
+					// 현재 상태
+					bool bTmp;
+
+					std::string typeCheckValue;
+					for (int i = 0; i < 4; i++) {
+
+						objStream >> typeCheckValue;
+
+						if (typeCheckValue == "true") //문자열을 전부 false로 판단
+							bTmp = true;
+						else
+							bTmp = false;
+
+						switch (i)
+						{
+						case 0:
+							tmpEachObject.Available = bTmp;
+							break;
+						case 1:
+							tmpEachObject.isMove = bTmp;
+							break;
+						case 2:
+							tmpEachObject.isAnim = bTmp;
+							break;
+						case 3:
+							tmpEachObject.isActive = bTmp;
+							break;
+						}
+					}
+
+					// 좌표
+					objStream >> tmpEachObject.x;
+					objStream >> tmpEachObject.y;
+					// 위치 이동 정도
+					objStream >> tmpEachObject.move_X;
+					objStream >> tmpEachObject.move_Y;
+					objStream >> tmpEachObject.move_Speed;
 
 
-	//FireRing 불링 S
-	m_FirRing_S.InitialSet(END_SHOW_X + 50, FIRRING_Y);
-}
-
-void ObjectManager::Draw(HDC hdc)
-{
-	if (m_Goal.Get_ActiveCheck() == true)
-		m_Goal.Draw(hdc);
-	
-	//불항아리 그리기
-	m_FirJar[OBSTACLE_ONE].Draw(hdc);
-	m_FirJar[OBSTACLE_TWO].Draw(hdc);
-
-	//FireRing 불링 B
-	//if (m_FirRing_B[OBSTACLE_ONE].Get_UsingCheck() == true)
-	{
-		m_FirRing_B[OBSTACLE_ONE].Draw(hdc);
-		//m_FirRing_B[OBSTACLE_ONE].DrawDEbugggggggggggggg(hdc);
-	}
-	//if (m_FirRing_B[OBSTACLE_TWO].Get_UsingCheck() == true)
-	{
-		m_FirRing_B[OBSTACLE_TWO].Draw(hdc);
-		//m_FirRing_B[OBSTACLE_TWO].DrawDEbugggggggggggggg(hdc);
-	}
-
-	//불링 화면상에 나타날 시점에 사용
-	//if (m_FirRing_S.Get_UsingCheck() == true)
-	{
-		//FireRing 불링 S
-		m_FirRing_S.Draw(hdc);
-		//m_FirRing_S.DrawDEbugggggggggggggg(hdc);
-	}
-}
-
-void ObjectManager::Draw_OnCharacter(HDC hdc)
-{
-	//FireRing 불링 B
-	//if (m_FirRing_B[OBSTACLE_ONE].Get_UsingCheck() == true)
-	{
-		m_FirRing_B[OBSTACLE_ONE].Draw_OnCharacter(hdc);
-		//m_FirRing_B[OBSTACLE_ONE].DrawDEbugggggggggggggg(hdc);
-	}
-	//if (m_FirRing_B[OBSTACLE_TWO].Get_UsingCheck() == true)
-	{
-		m_FirRing_B[OBSTACLE_TWO].Draw_OnCharacter(hdc);
-		//m_FirRing_B[OBSTACLE_TWO].DrawDEbugggggggggggggg(hdc);
-	}
-
-	//불링 화면상에 나타날 시점에 사용
-	//if (m_FirRing_S.Get_UsingCheck() == true)
-	{
-		//FireRing 불링 S
-		m_FirRing_S.Draw_OnCharacter(hdc);
-	}
-}
-
-void ObjectManager::Update(float deltaTime, float thisTurn_MoveDistance, float _Prev_MoveDistance)
-{
-	//Goal이 특정 좌표에 오면 배경+M 움직임을 멈춘다.(뒤로가서 골이 멀어지면 다시 배경 이동으로 전환한다.)
-	//if (GMMgr->Get_GoalEndPositionCheck() == false)
-	//{
-	//}
-
-	//if (m_Goal.Get_ActiveCheck() == true)
-		m_Goal.Update(deltaTime, thisTurn_MoveDistance, _Prev_MoveDistance);
-	//else
-
-	
-
-
-	//배경이동 > 캐릭터 이동 넘어가는 순간 좌표값 다시 설정해주기
-	if (m_Goal.Get_EndPositionCheck() == true)
-	{
-		//FIrJar 불항아리
-		m_FirJar[OBSTACLE_ONE].Set_X(FIRJAR_X_10M);
-		m_FirJar[OBSTACLE_TWO].Set_X(FIRJAR_X_10M + METER_GAP);
-	}
-
-	//FIrJar 불항아리
-	m_FirJar[OBSTACLE_ONE].Update(deltaTime, thisTurn_MoveDistance, _Prev_MoveDistance);
-	m_FirJar[OBSTACLE_TWO].Update(deltaTime, thisTurn_MoveDistance, _Prev_MoveDistance);
-
-	//FireRing 불링 B
-	m_FirRing_B[OBSTACLE_ONE].Update(deltaTime, thisTurn_MoveDistance, _Prev_MoveDistance);
-	m_FirRing_B[OBSTACLE_TWO].Update(deltaTime, thisTurn_MoveDistance, _Prev_MoveDistance);
-
-	//FireRing 불링 S
-	m_FirRing_S.Update(deltaTime, thisTurn_MoveDistance, _Prev_MoveDistance);
-}
-
-int ObjectManager::ColliderCheck(RECT* characterRect)
-{
-	//RECT lprcDst;
-	int score = 0;
-
-	//--------------- 골에 부딪히면 리턴 0 ---------------
-	if (m_Goal.Get_ActiveCheck() == true)
-	{
-
-		//ObjectMgr에서 rect 체크 후에 해당 object의 범위와 캐릭터의 범위가 겹치면 true를 리턴한다.
-		if (m_Goal.ColliderCheck(characterRect, RECT_BUMP))
-			return BUMP_GOAL;
-		//if (IntersectRect(&lprcDst, m_Goal.Get_Rect(RECT_BUMP), characterRect))
-		//	return BUMP_GOAL;
-	}
-
-	//scroe 변수 만들긴
-	for (int i = 0; i < OBSTACLE_COUNT; i++)
-	{//장애물 두개씩 존재한다.(화면상에서 돌려쓰기)
-
-		//--------------- 장애물에 부딪히면 리턴 -1 ---------------
-		 
-		//불항아리 Bump
-		//if (IntersectRect(&lprcDst, m_FirJar[i].Get_Rect(RECT_BUMP), characterRect))
-		if (m_FirJar[i].ColliderCheck(characterRect, RECT_BUMP))
-    		return BUMP_OBSTACLE;
-
-		//--------------- 스코어 RECT 부딪히면 1~이상 상승 ---------------
-		
-		//불항아리 Score
-		//if (IntersectRect(&lprcDst, m_FirJar[i].Get_Rect(RECT_SCORE), characterRect))
-		if (m_FirJar[i].ColliderCheck(characterRect, RECT_SCORE))
-			score += m_FirJar[i].Get_AllotScore(); //TODO::해당 오브제의 함수로 점수 상승
-
-		//
-
-		//불링 화면상에 나타날 시점에 사용
-		//if (m_FirRing_B[i].Get_UsingCheck() == true)
-		{
-			//불링B Bump
-			//if (IntersectRect(&lprcDst, m_FirRing_B[i].Get_Rect(RECT_BUMP), characterRect))
-			if (m_FirRing_B[i].ColliderCheck(characterRect, RECT_BUMP))
-  				return BUMP_OBSTACLE;
-
-			//불링B Score
-			//if (IntersectRect(&lprcDst, m_FirRing_B[i].Get_Rect(RECT_SCORE), characterRect))
-			if (m_FirRing_B[i].ColliderCheck(characterRect, RECT_SCORE))
-				score += m_FirRing_B[i].Get_AllotScore(); //TODO::해당 오브제의 함수로 점수 상승
-		}
-	}
-
-	//불링 화면상에 나타날 시점에 사용
-	//if (m_FirRing_S.Get_UsingCheck() == true)
-	{
-		//불링S는 하나 //70나올때 생성
-		//if (IntersectRect(&lprcDst, m_FirRing_S.Get_Rect(RECT_BUMP), characterRect))
-		if (m_FirRing_S.ColliderCheck(characterRect, RECT_BUMP))
-			return BUMP_OBSTACLE;
-
-		//if (IntersectRect(&lprcDst, m_FirRing_S.Get_Rect(RECT_SCORE), characterRect))
-		if (m_FirRing_S.ColliderCheck(characterRect, RECT_SCORE))
-		{
-			score += m_FirRing_S.Get_AllotScore(); //TODO::해당 오브제의 함수로 점수 상승
-			m_FirRing_S.Set_bCashDraw(false); //복주머니 먹으면 사라져야 하므로
+					tmpObjectData.eachObject = new EachObject(tmpEachObject);
+				}
+			}
+			objectData.insert({ file, tmpObjectData }); //pair로 만들기
+			load.close();
 		}
 	}
 
 
-	if (score > 0) //점수가 1 이상이라는 건 점수 딴 거
-		return score;
-	else //이외에는 겹치지 않는 경우
-		return BUMP_NONE;
+	/*
+	VOID ObjectManager::FileRead(std::string file)
+	{
+		std::string test;
+		std::ifstream load;
+
+		//오브젝트 객체 하나당 데이터 설정값
+		ObjectData tmpObjectData; //하나의 가구 종류
+		EachObject tmpEachObject; //가구 한 종류 안에서 객체들 관리
+
+		load.open("Data/" + file + ".txt");
+		if (load.is_open())
+		{
+			//명칭
+			load >> tmpObjectData.name;
+			//사용 타입
+			load >> tmpObjectData.typeCheck[OBJECT_TYPE::NORMAL];
+			load >> tmpObjectData.typeCheck[OBJECT_TYPE::MOVE];
+			load >> tmpObjectData.typeCheck[OBJECT_TYPE::ANIM];
+			load >> tmpObjectData.typeCheck[OBJECT_TYPE::ACTIVE];
+			//스플릿 분리 xy
+			load >> tmpObjectData.spritesX;
+			load >> tmpObjectData.spritesY;
+			//이미지 파일
+			load >> tmpObjectData.fileName;
+			//총수량
+			load >> tmpObjectData.objectCount;
+
+			//--오브젝트 객체 하나당 데이터 설정값---------
+
+			for (int i = 0; i < tmpObjectData.objectCount; i++)
+			{
+				//사용 맵의 인덱스
+				load >> tmpEachObject.mapIndex;
+				//현재 상태
+				load >> tmpEachObject.Available;
+				load >> tmpEachObject.isMove;
+				load >> tmpEachObject.isAnim;
+				load >> tmpEachObject.isActive;
+				//좌표
+				load >> tmpEachObject.x;
+				load >> tmpEachObject.y;
+				//위치 이동 정도(TODO::수정 필요)
+				load >> tmpEachObject.move_X;
+				load >> tmpEachObject.move_Y;
+				load >> tmpEachObject.move_Speed;
+
+				tmpObjectData.eachObject = new EachObject(tmpEachObject);
+			}
+
+			objectData.insert({ file, tmpObjectData }); //pair로 만들기
+			load.close();
+		}
+	}*/
+
+	void ObjectManager::InitSetting()
+	{
+		//door = new Door();
+	}
+
+	void ObjectManager::Draw()
+	{//TODO:: 맵 인덱스 따라 그리도록 수정
+		door->Draw();
+		window->Draw();
+	}
+
 }
