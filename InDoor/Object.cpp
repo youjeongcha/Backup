@@ -5,9 +5,9 @@ Object::Object()
 {
 }
 
-Object::Object(const ObjectData& dataSet, int index)
+Object::Object(const ObjectData& dataSet, int eachObjectindex)
 {
-    name = dataSet.name;
+    eachObjectIndex.name = dataSet.eachObject[eachObjectindex].obejctIndex.name;
     //오브젝트 타입 설정
     typeCheck = dataSet.typeCheck;
     //리소스
@@ -15,12 +15,13 @@ Object::Object(const ObjectData& dataSet, int index)
     SpritesY = dataSet.spritesY;
 
     //Objeect 개별
-    mapIndex = dataSet.eachObject[index].mapIndex;
+    eachObjectIndex.mapIndex = dataSet.eachObject[eachObjectindex].obejctIndex.mapIndex;
+    eachObjectIndex.eachObjectIndex = dataSet.eachObject[eachObjectindex].obejctIndex.eachObjectIndex;
 
-    Available = dataSet.eachObject[index].Available;
-    isMove = dataSet.eachObject[index].isMove;
-    isAnim = dataSet.eachObject[index].isAnim;
-    isActive = dataSet.eachObject[index].isActive;
+    Available = dataSet.eachObject[eachObjectindex].Available;
+    isMove = dataSet.eachObject[eachObjectindex].isMove;
+    isAnim = dataSet.eachObject[eachObjectindex].isAnim;
+    isActive = dataSet.eachObject[eachObjectindex].isActive;
 
     ENGINE::ResourceMgr->Load(dataSet.fileName);
 
@@ -39,9 +40,9 @@ Object::Object(const ObjectData& dataSet, int index)
         anim = NULL;
 
     //Move 관련
-    dir = (Direction)dataSet.eachObject[index].move_X; //TODO::이거 
+    dir = (Direction)dataSet.eachObject[eachObjectindex].move_X; //TODO::이거 
     //dir = (Direction)dataSet.eachObject[index].move_Y; //move_Y 부분도 해당 되게
-    moveSpeed = dataSet.eachObject[index].move_Speed;
+    moveSpeed = dataSet.eachObject[eachObjectindex].move_Speed;
 }
 
 Object::~Object()

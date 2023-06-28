@@ -17,24 +17,34 @@ enum class OBJECT_TYPE
     TYPE_COUNT
 };
 
+struct EachObjectIndex
+{//해당 object를 특정해내기 위한 요소들
+    std::string name;
+    int mapIndex, eachObjectIndex; //사용 맵이 어디인지 //맵에서 해당 object 안에서의 번호
+};
+
 struct EachObject
 {
-    int mapIndex; //사용 맵이 어디인지
+    //int mapIndex, index; //사용 맵이 어디인지 //맵에서 해당 object 안에서의 번호
+    EachObjectIndex obejctIndex;
     bool Available, isMove, isAnim, isActive;
     float x, y, move_X, move_Y, move_Speed;
 };
 
 struct ObjectData
 {
-    std::string name;
+    //std::string name;
     std::map<OBJECT_TYPE, bool> typeCheck;
     int spritesX, spritesY;
     std::string fileName;
 
     int objectCount; //해당 오브젝트의 총 수량
 
+    //objectData(Door)안에 해당 모든 eachObject들의 데이터들을 가지고 있다
     EachObject* eachObject;
 };
+
+
 
 
 //오브젝트의 상태 네가지로 나뉜다.
@@ -45,8 +55,9 @@ struct ObjectData
 class Object : public ENGINE::GameObject
 {
 protected:
-    std::string name;
-    int mapIndex;
+    //std::string name;
+    //int mapIndex, index; //mapIndex 해당 Object의 소속 Map //map + 해당 Object에서의 Index 번호
+    EachObjectIndex eachObjectIndex;
 
     //리소스
     int SpritesX, SpritesY;

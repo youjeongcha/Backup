@@ -23,6 +23,10 @@ namespace ENGINE
 		VOID Clear();
 		VOID Update();
 		VOID Draw();
+
+		//플레이어와 겹치는 가로축 object의 index를 선택하도록
+		
+
 		template<typename T> T* AddUI(std::string name, UIPanel* parent = nullptr);
 		UIPanel* GetUI(std::string name);
 		BOOL Remove(std::string name);

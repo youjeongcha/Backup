@@ -74,13 +74,15 @@ VOID Player::Update(const FLOAT& deltaTime)
         if (isSpace) //스페이스를 누른 상태 bool 값 //오브젝트와 겹침 체크
         {
             //상호작용이 가능한 object의 인덱스를 리턴
-            //ENGINE::ObjectMgr->InteractiveCheck_toPlayer(&renderer->GetRect());
-
             RECT tmpRect = renderer->GetRect();
 
-            if (ENGINE::ObjectMgr->InteractiveCheck_toPlayer(tmpRect))
+            EachObjectIndex* objectIndexs = { nullptr };
+            int count = ENGINE::ObjectMgr->InteractiveCheck_toPlayer(&objectIndexs, tmpRect);
+
+            if (objectIndexs != nullptr)
             {
-                ENGINE::ObjectMgr->ChangeActiveState();
+                //TODO::UIManager에서 상호작용할 Object의 인덱스를 선별
+                ENGINE::ObjectMgr->ChangeActiveState(objectIndexs, count);
             }
 
             //TODO::선택지 창 띄우기 - switch문
