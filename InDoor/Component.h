@@ -12,6 +12,8 @@ typedef std::function<VOID()> EventListener;
 
 namespace ENGINE
 {
+
+
 	//struct TotalResource
 	//{
 	//	LPCSTR name;

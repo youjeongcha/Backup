@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "ResourceManager.h"
 #include "SceneManager.h"
+#include "ObjectManager.h"
 
 Player::Player()
 {
@@ -70,10 +71,23 @@ VOID Player::Update(const FLOAT& deltaTime)
         Move(deltaTime);
         break;
     case State::Idle:
-        if (isSpace) //스페이스를 누른 상태 bool 값
+        if (isSpace) //스페이스를 누른 상태 bool 값 //오브젝트와 겹침 체크
         {
-            //가구 좌표와 크기 필요
+            //상호작용이 가능한 object의 인덱스를 리턴
+            //ENGINE::ObjectMgr->InteractiveCheck_toPlayer(&renderer->GetRect());
+
+            RECT tmpRect = renderer->GetRect();
+
+            if (ENGINE::ObjectMgr->InteractiveCheck_toPlayer(tmpRect))
+            {
+                ENGINE::ObjectMgr->ChangeActiveState();
+            }
+
+            //TODO::선택지 창 띄우기 - switch문
+            //상호작용이 가능한 object의 상태(?)를 변환시킨다
         }
+
+        //isSpace = false;
 
         //if (prevState == State::Move) //'0'은 move 상태일때
         //{
@@ -92,6 +106,9 @@ VOID Player::Update(const FLOAT& deltaTime)
         anim->Play(1 + (int)state * 2);
         break;
     }
+
+    //플레이어 범위 체크 위해서
+    renderer->SetRect(); //좌표 이동에 따라 Rect 변화
 
     prevState = state;
 }

@@ -29,8 +29,6 @@ protected:
     ENGINE::SpriteRenderer* renderer;
     ENGINE::AnimationComponent* anim;
 
-   
-
     VOID Move(const FLOAT& deltaTime);
 
 public:
@@ -49,4 +47,7 @@ public:
     VOID Release();
     virtual VOID Update(const FLOAT& deltaTime);
     VOID Draw();
+
+    //ÄÄÆ÷³ÍÆ® °ãÄ¨ ÆÇ´Ü
+    RECT GetRect() { return renderer->GetRect(); }
 };

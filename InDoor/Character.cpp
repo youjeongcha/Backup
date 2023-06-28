@@ -60,6 +60,7 @@ VOID Character::Release()
 
 VOID Character::Update(const FLOAT& deltaTime)
 {
+    renderer->SetRect(); //좌표 이동에 따라 Rect 변화
     //Operate(this);
 
     ////key를 떼면 state가 idle 상태로 벼한다. -> 스프라이트도 idle 상태로 변경되어야 한다.

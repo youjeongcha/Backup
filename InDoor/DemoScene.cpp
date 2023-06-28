@@ -74,6 +74,8 @@ VOID DemoScene::Update(const FLOAT& deltaTime)
 
     player->Update(deltaTime);
 
+    ObjectMgr->Update(deltaTime);
+
     if (0 > playerTr->position.x) 
         playerTr->position.x = 0;
 

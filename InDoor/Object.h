@@ -14,7 +14,7 @@ enum class OBJECT_TYPE
     MOVE,
     ANIM,
     ACTIVE,
-    TYPE_COUNT = ACTIVE
+    TYPE_COUNT
 };
 
 struct EachObject
@@ -47,11 +47,7 @@ class Object : public ENGINE::GameObject
 protected:
     std::string name;
     int mapIndex;
-    //std::vector<char> itemIDs;
-    //std::string filePath;
-    //std::vector<ENGINE::TotalResource> vResources; //리소스 뭉치
 
-    //enum Data { SpritesX = 8, SpritesY = 4, SpritesX_Idle = 4, Speed = 200 };
     //리소스
     int SpritesX, SpritesY;
 
@@ -65,11 +61,6 @@ protected:
 
     //오브젝트의 가능 상태 네가지 
     std::map<OBJECT_TYPE, bool> typeCheck; //오브젝트 종류(키), 해당 오브젝트의 작동 종류(bool)
-   // std::vector<OBJECT_TYPE, bool> typeCheck;
-
-    //OBJECT_TYPE::ACTIVE (등불 불 켜졌는지)
-    //enum class State { ACTIVE, INACTIVE };
-    //State state, prevState;
 
     //OBJECT_TYPE::MOVE
     enum class Direction { NONE, RIGHT, LEFT }; //오브젝트 자동 이동
@@ -88,5 +79,17 @@ public:
     virtual VOID Move(const FLOAT& deltaTime) abstract;
     VOID Draw();
     VOID Release();
+
+    //컴포넌트 겹칩 판단
+    RECT GetRect() { return renderer->GetRect(); } //반환형에 const 한정자 지정
+
+
+    //상태 변경
+    bool ChangeActiveState(); //TODO::낀다, 끈다, 닫다의 개념. 현재 상태 판단도 필요하다.
+
+
+    //ENGINE::RECT* GetRect() { return &renderer->GetRect(); }
+    //Vector2 GetPos() { return renderer->GetPos(); }
+    //SIZE GetSize() { return renderer->GetDrawSize(); }
 };
 

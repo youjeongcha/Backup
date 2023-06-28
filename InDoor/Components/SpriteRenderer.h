@@ -6,7 +6,11 @@
 
 namespace ENGINE
 {
-
+	struct Location
+	{
+		Vector2 pos;
+		SIZE size;
+	};
 
 	class SpriteRenderer : public GrahpicComponent
 	{
@@ -14,6 +18,8 @@ namespace ENGINE
 		Bitmap* sprites;
 		SIZE localSize, size;
 		Vector2 pos, divide;
+		//Location location; //
+		RECT rect; //범위 체크 위해 추가
 
 	private:
 		SpriteRenderer();
@@ -24,7 +30,20 @@ namespace ENGINE
 		VOID SetPivot(INT pivot) { if (sprites) sprites->SetPivot(pivot); }
 		VOID SetSrc(UINT cx, UINT cy);
 		void SetPos(float x, float y) { pos.x = x; pos.y = y; }
+		//void SetLocation() { location.pos = pos; location.size = size; }
+		void SetRect() 
+		{
+			rect.left = pos.x;
+			rect.top = pos.y;
+			rect.right = rect.left + size.cx;
+			rect.bottom = rect.top + size.cy;
+		}
 		SIZE GetDrawSize() { return size; }
+		//Location GetLocation() { return location; }
+		RECT GetRect() { return rect; } //범위 체크 위해 추가
+		//Vector2 GetPos() { return pos; } //범위 체크 위해 추가
+		//SIZE GetSize() { return size; } //범위 체크 위해 추가
+		//Vector2 GetPos() { return pos; }
 
 		// GrahpicComponent을(를) 통해 상속됨
 		virtual VOID Operate(GameObject* Owner) override;

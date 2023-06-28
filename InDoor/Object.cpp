@@ -59,25 +59,19 @@ VOID Object::Update(const FLOAT& deltaTime)
 
     //비활성화 상태이면 
 
-    Operate(this);
+    //Operate(this);
     //TODO:: 보여줄 상태에 따라 출력 이미지 변화
     //if (prevState == State::Move) //'0'은 move 상태일때
     //{
     //    renderer->SetPivot(ENGINE::Pivot::Left | ENGINE::Pivot::Bottom);
     //}
 
+    if (isActive) //작동 여부에 따라 이미지 다르게
+        renderer->SetSrc(0, 1);
+    else
+        renderer->SetSrc(0, 0);
 
-    switch (isActive)
-    {
-    case true:
-        //renderer->ChangeSpritese(vResources[1]);
-        //TODO::애니메이션 있는 가구에 별도로 추가
-        //anim->SetChangeResouce(vResources[1]);
-        break;
-    case false:
-        //renderer->ChangeSpritese(vResources[1]);
-        break;
-    }
+    renderer->SetRect(); //좌표 이동에 따라 Rect 변화
 }
 
 VOID Object::Move(const FLOAT& deltaTime)
@@ -98,6 +92,13 @@ VOID Object::Move(const FLOAT& deltaTime)
 VOID Object::Draw()
 {
 	renderer->Draw();
+}
+
+bool Object::ChangeActiveState()
+{ 
+    isActive = !isActive; 
+
+    return isActive;
 }
 
 VOID Object::Release()
