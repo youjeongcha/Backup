@@ -1,52 +1,56 @@
 #pragma once
-#include "Goal.h"
-#include "FirJar.h"
-#include "FirRing_B.h"
-#include "FirRing_S.h"
+#include <fstream>
+#include <sstream>
+#include "Singleton.h"
+#include "Door.h"
+#include "Window.h"
 
-
-enum OBSTACLE_COUNT
+enum INTERACTIVE
 {
-	OBSTACLE_ONE,
-	OBSTACLE_TWO,
-	OBSTACLE_COUNT,
+	INTERACTIVE_MAX = 3
 };
 
-class ObjectManager
+namespace ENGINE
 {
-private:
-	Goal m_Goal;
-	FirJar m_FirJar[OBSTACLE_COUNT]; //불항아리
-	FirRing_B m_FirRing_B[OBSTACLE_COUNT]; //불링Big
-	FirRing_S m_FirRing_S; //불링Small
-public:
+	class ObjectManager : public Singleton<ObjectManager>
+	{
+	private:
+		int mapIndex;
+		//가구 Load 저장 데이터
+		std::map <std::string, ObjectData> objectData;
 
-	//초기 세팅
-	void InitialSet(SET setType);
+		//가구 객체 보관
+		//std::map <EachObjectIndex, Object> map0_Objects;
+		/*Door* door;
+		Window* window;*/
 
-	//ObjectMgr에서 rect 체크 후에 해당 object의 범위와 캐릭터의 범위가 겹치면 ture를 리턴한다.
-	//왼쪽 링 + 불 항아리 + 골 등의 장애물
-	void Draw(HDC hdc);
-	void Draw_OnCharacter(HDC hdc);
-	void Update(float deltaTime, float thisTurn_MoveDistance, float _Prev_MoveDistance);
-	//현재 겹친 object의 속성에 따라 처리를 다르게 한다.(ex.골-게임 클리어, 장애물-목숨감소+게임오버)
-	int ColliderCheck(RECT* characterRect);
-	
+		std::vector<Door*> door;
+		std::vector<Window*> window;
 
-	void DrawCashScoreText(HDC hdc) { m_FirRing_S.DrawCashScoreText(hdc); }
+		ObjectManager();
 
-	bool Get_GoalEndPositionCheck() { return m_Goal.Get_EndPositionCheck(); }
-	bool Get_GoalActiveCheck() { return m_Goal.Get_ActiveCheck(); }
-	//Goal이 그려짐+이동+충돌체크가 가능한 상태
-	void Set_Goal_ActiveCheck(bool _ActiveCheck) { m_Goal.Set_ActiveCheck(_ActiveCheck); }
-	void Set_GoalEndPositionCheck(bool _EndPositionCheck) { m_Goal.Set_EndPositionCheck(_EndPositionCheck); }
-	//복주머니 해당 ring읜 현재 xy 기준으로 text 출력 좌표 설정
-	void Set_Text_XY() { m_FirRing_S.Set_Text_XY(); }
-	//void Set_Goal_X(float _X) { m_Goal.Set_Goal_X(_X); } //M가 0이 출력될 차례가 오면 goal의 x 좌표 세팅
+	public:
+		~ObjectManager();
 
+		//txt에서 정보 받아오기
+		void LoadData();
+		void FileRead(const std::string& file);
 
+		//map 변경될때마다 객체 설정 다시 하기
+		void InitSetting(int _mapIndex);
+		void Draw();
+		void Update(const FLOAT& deltaTime);
+		//상호작용이 가능한 object의 인덱스를 리턴
 
-	float Get_GoalXXXXXXXXXXXXXXX() { return m_Goal.Get_XXXXXXXXXXXXXXXXXXXXXX(); }
-	float Get_JarXXXXXXXXXXXXXXX() { return m_FirJar[OBSTACLE_ONE].Get_XXXXXXXXXXXXXXXXXXXXXX(); }
-};
+		int InteractiveCheck_toPlayer(EachObjectIndex** objectIndexs, const RECT characterRect);
+		void ChangeActiveState(EachObjectIndex* eachObjectindexs, int interactive_Count); //활성화 상태 전환 //TODO::낀다, 끈다, 닫다의 개념. 현재 상태 판단도 필요하다.
+
+		//EachObjectIndex* InteractiveCheck_toPlayer( const RECT characterRect);
+		//bool InteractiveCheck_toPlayer(const RECT characterRect);
+
+		friend Singleton;
+	};
+#define ObjectMgr ObjectManager::GetInstance()
+}
+
 

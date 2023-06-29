@@ -1,33 +1,112 @@
 #include "Object.h"
+#include "ResourceManager.h"
 
-//void Object::DrawDEbugggggggggggggg(HDC hdc)
-//{
-//	Rectangle(hdc, m_Collider_Rect[RECT_BUMP].left, m_Collider_Rect[RECT_BUMP].top, m_Collider_Rect[RECT_BUMP].right, m_Collider_Rect[RECT_BUMP].bottom);
-//}
-
-bool Object::ColliderCheck(RECT* characterRect, RECT_USE useType)
+Object::Object()
 {
-	RECT lprcDst;
-
-
-	if ((m_bActiveCheck == true) && (useType == RECT_SCORE))
-	{
-		if (IntersectRect(&lprcDst, &m_Collider_Rect[RECT_SCORE], characterRect))
-		{
-			m_bActiveCheck = false;
-			return true;
-		}
-	}
-	if (useType == RECT_BUMP)
-	{
-		if (IntersectRect(&lprcDst, &m_Collider_Rect[RECT_BUMP], characterRect))
-			return true;
-	}
-
-	return false;
 }
 
-//RECT* Object::Get_Rect(RECT_USE useType)
-//{
-//	return &m_Collider_Rect[useType];
-//}
+Object::Object(const ObjectData& dataSet, int eachObjectindex)
+{
+    eachObjectIndex.name = dataSet.eachObject[eachObjectindex].obejctIndex.name;
+    //오브젝트 타입 설정
+    typeCheck = dataSet.typeCheck;
+    //리소스
+    SpritesX = dataSet.spritesX;
+    SpritesY = dataSet.spritesY;
+
+    //Objeect 개별
+    eachObjectIndex.mapIndex = dataSet.eachObject[eachObjectindex].obejctIndex.mapIndex;
+    eachObjectIndex.eachObjectIndex = dataSet.eachObject[eachObjectindex].obejctIndex.eachObjectIndex;
+
+    Available = dataSet.eachObject[eachObjectindex].Available;
+    isMove = dataSet.eachObject[eachObjectindex].isMove;
+    isAnim = dataSet.eachObject[eachObjectindex].isAnim;
+    isActive = dataSet.eachObject[eachObjectindex].isActive;
+
+    ENGINE::ResourceMgr->Load(dataSet.fileName);
+
+    renderer = new ENGINE::SpriteRenderer(dataSet.fileName.c_str(), SpritesX, SpritesY);
+    renderer->SetPos(dataSet.eachObject->x, dataSet.eachObject->y);
+    renderer->SetPivot(ENGINE::Pivot::Left | ENGINE::Pivot::Top);
+    renderer->SetScale(transform->scale.x, transform->scale.y);
+    if (isActive) //작동 여부에 따라 이미지 다르게
+        renderer->SetSrc(0, 1);
+    AddComponent(renderer);
+
+    //Anim 관련
+    if (isAnim) //TODO::애니메이션 속도 조절 부분은 AnimationComponent
+        AddComponent(anim = new ENGINE::SpriteAnimation(SpritesX, SpritesY));
+    else
+        anim = NULL;
+
+    //Move 관련
+    dir = (Direction)dataSet.eachObject[eachObjectindex].move_X; //TODO::이거 
+    //dir = (Direction)dataSet.eachObject[index].move_Y; //move_Y 부분도 해당 되게
+    moveSpeed = dataSet.eachObject[eachObjectindex].move_Speed;
+}
+
+Object::~Object()
+{
+}
+
+VOID Object::Initialize()
+{
+}
+
+VOID Object::Update(const FLOAT& deltaTime)
+{//TODO::애니메이션 있는 가구에 별도로 추가
+    //활성, 비활성화 구분해서. 활성화 상태일때
+    //TODO::애니메이션 재생할지, 아니면 이미지만 바꿀지 생각해봐야 함.
+
+    //비활성화 상태이면 
+
+    //Operate(this);
+    //TODO:: 보여줄 상태에 따라 출력 이미지 변화
+    //if (prevState == State::Move) //'0'은 move 상태일때
+    //{
+    //    renderer->SetPivot(ENGINE::Pivot::Left | ENGINE::Pivot::Bottom);
+    //}
+
+    //if (isActive) //작동 여부에 따라 이미지 다르게
+    //    renderer->SetSrc(0, 1);
+    //else
+    //    renderer->SetSrc(0, 0);
+
+    renderer->SetRect(); //좌표 이동에 따라 Rect 변화
+}
+
+VOID Object::Move(const FLOAT& deltaTime)
+{
+    switch (dir)
+    {
+    case Direction::RIGHT:
+        anim->Play(0);
+        transform->position.x += moveSpeed * deltaTime;
+        break;
+    case Direction::LEFT:
+        anim->Play(1);
+        transform->position.x -= moveSpeed * deltaTime;
+        break;
+    }
+}
+
+VOID Object::Draw()
+{
+	renderer->Draw();
+}
+
+void Object::ChangeActiveState()
+{ 
+    isActive = !isActive; 
+
+    if (isActive) //작동 여부에 따라 이미지 다르게
+        renderer->SetSrc(0, 1);
+    else
+        renderer->SetSrc(0, 0);
+
+    //return isActive;
+}
+
+VOID Object::Release()
+{
+}

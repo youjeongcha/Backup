@@ -5,25 +5,184 @@ namespace ENGINE
 	ObjectManager::ObjectManager()
 	{
 		LoadData();
-		//door = new Door();
-		//다 객체 생성해두고 그리고 그리지 않고로
-		door = new Door(objectData.find("Door")->second, 0);
-		window = new Window(objectData.find("Window")->second, 0);
+		InitSetting(0);
 	}
 
 	ObjectManager::~ObjectManager()
 	{
-		delete door;  // door 포인터의 메모리 정리
+		for (auto index : door)
+		{
+			delete index;
+		}
+		for (auto index : window)
+		{
+			delete index;
+		}
 	}
 
-	VOID ObjectManager::LoadData()
+	void ObjectManager::LoadData()
 	{
 		FileRead("Door");
 		FileRead("Window");
 	}
 
 
-	VOID ObjectManager::FileRead(const std::string& file) {
+	void ObjectManager::InitSetting(int _mapIndex)
+	{
+		mapIndex = _mapIndex;
+
+		door.clear();
+		window.clear();
+
+		//map 변경될때마다 객체 설정 다시 하기
+		for (int i = 0; i < objectData.find("Door")->second.objectCount; i++)
+		{
+			//해당 맵에 배치된 Object 인지 판별
+			if (mapIndex == objectData.find("Door")->second.eachObject[i].obejctIndex.mapIndex)
+			{
+				door.push_back(new Door(objectData.find("Door")->second, i));
+			}
+		}
+		for (int i = 0; i < objectData.find("Window")->second.objectCount; i++)
+		{
+			if (mapIndex == objectData.find("Window")->second.eachObject[i].obejctIndex.mapIndex)
+			{
+				window.push_back(new Window(objectData.find("Window")->second, i));
+			}
+		}
+		//window = new Window(objectData.find("Window")->second, 0);
+	}
+
+	void ObjectManager::ChangeActiveState(EachObjectIndex* eachObjectindexs, int interactive_Count)
+	{
+		//TODO::해당 오브젝트만 수정 가능하게
+		//TODO::낀다, 끈다, 닫다의 개념. 현재 상태 판단도 필요하다.
+		//00을 00하다
+		for (int i = 0; i < interactive_Count; i++)
+		{
+			if (eachObjectindexs[i].name == "문")
+			{
+				//해당 Object 이면
+				if (eachObjectindexs[i].eachObjectIndex == objectData.find("Door")->second.eachObject[i].obejctIndex.eachObjectIndex)
+					door[i]->ChangeActiveState();
+			}
+			else if (eachObjectindexs[i].name == "창문")
+			{
+				if (eachObjectindexs[i].eachObjectIndex == objectData.find("Window")->second.eachObject[i].obejctIndex.eachObjectIndex)
+					window[i]->ChangeActiveState();
+			}
+		}
+	}
+
+	void ObjectManager::Draw()
+	{//맵 인덱스 따라 그리도록
+		//for (auto index : door)
+		//{
+		//	index.Draw();
+		//}
+		//for (auto index : window)
+		//{
+		//	index.Draw();
+		//}
+		for (int i = 0;i < door.size(); i++)
+		{
+			door[i]->Draw();
+		}
+		for (int i = 0;i < window.size(); i++)
+		{
+			window[i]->Draw();
+		}
+		//TODO::해당 맵의 object count를 알아야 한다.
+		//for (int i = 0; i < objectData.find("Door")->second.objectCount; i++)
+		//{
+		//	door[i].Draw();
+		//}
+		//for (int i = 0; i < objectData.find("Window")->second.objectCount; i++)
+		//{
+		//	window[i].Draw();
+		//}
+	}
+
+	void ObjectManager::Update(const FLOAT& deltaTime)
+	{//LATER::필요에 따라 Map별 업데이트 설정
+
+		for (int i = 0;i < door.size(); i++)
+		{
+			door[i]->Update(deltaTime);
+		}
+		for (int i = 0;i < window.size(); i++)
+		{
+			window[i]->Update(deltaTime);
+		}
+		//for (auto index : door)
+		//{
+		//	index.Update(deltaTime);
+		//}
+		//for (auto index : window)
+		//{
+		//	index.Update(deltaTime);
+		//}
+	}
+
+	int ObjectManager::InteractiveCheck_toPlayer(EachObjectIndex** objectIndexs, const RECT characterRect)
+	{ //TODO::현재 맵의 인덱스에 속하는 모든 Object를 검사해야 한다.
+		LPRECT lprcDst = NULL;
+		EachObjectIndex* interactArray[INTERACTIVE_MAX] = { nullptr };
+		RECT objectRect;
+		int count = 0;
+
+
+		for (int i = 0; i < objectData.find("Door")->second.objectCount; i++)
+		{
+			//해당 맵에 배치된 Object 인지 판별
+			if (mapIndex == objectData.find("Door")->second.eachObject[i].obejctIndex.mapIndex)
+			{
+				objectRect = door[i]->GetRect();
+
+
+				if ((characterRect.right >= objectRect.left) && (objectRect.right >= characterRect.left))
+				{
+					count++;
+					interactArray[i] = &objectData.find("Door")->second.eachObject[i].obejctIndex;
+				}
+			}
+		}
+
+		for (int i = 0; i < objectData.find("Window")->second.objectCount; i++)
+		{
+			if (mapIndex == objectData.find("Window")->second.eachObject[i].obejctIndex.mapIndex)
+			{
+				objectRect = window[i]->GetRect();
+
+				if ((characterRect.right >= objectRect.left) && (objectRect.right >= characterRect.left))
+				{
+					count++;
+					interactArray[i] = &objectData.find("Window")->second.eachObject[i].obejctIndex;
+				}
+			}
+		}
+		
+
+		// 동적으로 메모리를 할당하여 배열을 생성
+		*objectIndexs = new EachObjectIndex[INTERACTIVE_MAX];
+		// interactArray의 값을 resultArray로 복사
+		for (int i = 0; i < count; i++)
+		{
+			*objectIndexs[i] = *interactArray[i];
+		}
+		//EachObjectIndex* resultArray = new EachObjectIndex[INTERACTIVE_MAX];
+		//// interactArray의 값을 resultArray로 복사
+		//for (int i = 0; i < count; i++)
+		//{
+		//	resultArray[i] = *interactArray[i];
+		//}
+
+
+		return count;
+	}
+
+
+	void ObjectManager::FileRead(const std::string& file) {
 
 		std::ifstream load("Data/" + file + ".txt");
 
@@ -36,10 +195,10 @@ namespace ENGINE
 			// 읽어올 데이터가 있는지 확인
 			if (std::getline(load, line)) {
 				//이름
-				tmpObjectData.name = line;
+				//tmpObjectData.eachObject->obejctIndex.name = line;
 
 				// 사용 타입
-				std::getline(load, line);
+				//std::getline(load, line);
 				std::istringstream typeStream(line);
 
 				std::string typeCheckValue;
@@ -72,8 +231,13 @@ namespace ENGINE
 					std::istringstream objStream(line);
 					EachObject tmpEachObject; //가구 한 종류 안에서 객체들 관리
 
+					//이름
+					objStream >> tmpEachObject.obejctIndex.name;
+
 					// 사용 맵의 인덱스
-					objStream >> tmpEachObject.mapIndex;
+					objStream >> tmpEachObject.obejctIndex.mapIndex;
+
+					objStream >> tmpEachObject.obejctIndex.eachObjectIndex;
 
 					// 현재 상태
 					bool bTmp;
@@ -121,72 +285,4 @@ namespace ENGINE
 			load.close();
 		}
 	}
-
-
-	/*
-	VOID ObjectManager::FileRead(std::string file)
-	{
-		std::string test;
-		std::ifstream load;
-
-		//오브젝트 객체 하나당 데이터 설정값
-		ObjectData tmpObjectData; //하나의 가구 종류
-		EachObject tmpEachObject; //가구 한 종류 안에서 객체들 관리
-
-		load.open("Data/" + file + ".txt");
-		if (load.is_open())
-		{
-			//명칭
-			load >> tmpObjectData.name;
-			//사용 타입
-			load >> tmpObjectData.typeCheck[OBJECT_TYPE::NORMAL];
-			load >> tmpObjectData.typeCheck[OBJECT_TYPE::MOVE];
-			load >> tmpObjectData.typeCheck[OBJECT_TYPE::ANIM];
-			load >> tmpObjectData.typeCheck[OBJECT_TYPE::ACTIVE];
-			//스플릿 분리 xy
-			load >> tmpObjectData.spritesX;
-			load >> tmpObjectData.spritesY;
-			//이미지 파일
-			load >> tmpObjectData.fileName;
-			//총수량
-			load >> tmpObjectData.objectCount;
-
-			//--오브젝트 객체 하나당 데이터 설정값---------
-
-			for (int i = 0; i < tmpObjectData.objectCount; i++)
-			{
-				//사용 맵의 인덱스
-				load >> tmpEachObject.mapIndex;
-				//현재 상태
-				load >> tmpEachObject.Available;
-				load >> tmpEachObject.isMove;
-				load >> tmpEachObject.isAnim;
-				load >> tmpEachObject.isActive;
-				//좌표
-				load >> tmpEachObject.x;
-				load >> tmpEachObject.y;
-				//위치 이동 정도(TODO::수정 필요)
-				load >> tmpEachObject.move_X;
-				load >> tmpEachObject.move_Y;
-				load >> tmpEachObject.move_Speed;
-
-				tmpObjectData.eachObject = new EachObject(tmpEachObject);
-			}
-
-			objectData.insert({ file, tmpObjectData }); //pair로 만들기
-			load.close();
-		}
-	}*/
-
-	void ObjectManager::InitSetting()
-	{
-		//door = new Door();
-	}
-
-	void ObjectManager::Draw()
-	{//TODO:: 맵 인덱스 따라 그리도록 수정
-		door->Draw();
-		window->Draw();
-	}
-
 }
