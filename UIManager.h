@@ -23,6 +23,7 @@ namespace ENGINE
 		VOID Clear();
 		VOID Update();
 		VOID Draw();
+
 		template<typename T> T* AddUI(std::string name, UIPanel* parent = nullptr);
 		UIPanel* GetUI(std::string name);
 		BOOL Remove(std::string name);

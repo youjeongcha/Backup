@@ -12,6 +12,15 @@ typedef std::function<VOID()> EventListener;
 
 namespace ENGINE
 {
+
+
+	//struct TotalResource
+	//{
+	//	LPCSTR name;
+	//	UINT divX;
+	//	UINT divY;
+	//	Vector2 divide;
+	//};
 	enum class ComponentType { GameObject, Transform, Graphic, Input, Animation, };
 
 	class GameObject;
@@ -22,6 +31,7 @@ namespace ENGINE
 		ComponentType GetType() CONST;
 	};
 
+	//게임 오브젝트의 위치와 크기를 관리
 	struct Transform : public Component
 	{
 		Vector2 position; //좌표
@@ -77,22 +87,51 @@ namespace ENGINE
 		BOOL isPlaying, isReverse;
 		UINT index;
 		FLOAT speed;
-		CONST UINT length;
-		CONST UINT maxSize;
-		CONST FLOAT frameRate;
+		UINT length;
+		UINT maxSize;
+		FLOAT frameRate;
+		//CONST UINT length;
+		//CONST UINT maxSize;
+		//CONST FLOAT frameRate;
 
 	private:
 		AnimationComponent();
 	public:
 		AnimationComponent(UINT count, UINT length, BOOL autoPlay) : isPlaying(autoPlay), isReverse(FALSE), index(0U), speed(1.0f), length(length), maxSize(count), frameRate(1.0f / length) { }
+		//AnimationComponent(ENGINE::TotalResource resource, BOOL autoPlay)
+		//{
+		//	isPlaying = autoPlay;
+		//	isReverse = FALSE;
+		//	index = 0U;
+		//	speed = 1.0f;
+		//	length = resource.divY;
+		//	maxSize = resource.divX;
+		//	frameRate = 1.0f / maxSize;
+		//	//SetChangeResouce(resource);
+		//}
+
 		virtual ~AnimationComponent() { }
 
 		VOID SetSpeed(FLOAT speed);
 		VOID Play(UINT index) { this->index = clamp(index, 0, maxSize - 1); isPlaying = TRUE; }
-		VOID Idle(UINT index) { this->index = clamp(index, 0, maxSize - 1); isPlaying = TRUE; }
+		//VOID Idle(UINT index) { this->index = clamp(index, 0, maxSize - 1); isPlaying = TRUE; }
 		VOID Stop() { isPlaying = FALSE; }
 		// Component을(를) 통해 상속됨
 		virtual ComponentType GetType() const override { return ComponentType::Animation; }
+
+		//추가 코드
+		/*VOID ChangeAnimComp(ENGINE::TotalResource resource, BOOL autoPlay) { SetChangeResouce(resource); };*/
+
+		//VOID SetChangeResouce(ENGINE::TotalResource resource, BOOL autoPlay = FALSE) 
+		//{ 
+		//	isPlaying = autoPlay; 
+		//	isReverse = FALSE; 
+		//	index = 0U;
+		//	speed = 1.0f; 
+		//	length = resource.divY;
+		//	maxSize = resource.divX; 
+		//	frameRate = 1.0f / maxSize; 
+		//}
 	};
 }
 

@@ -42,8 +42,8 @@ namespace ENGINE
 		void Update(const FLOAT& deltaTime);
 		//상호작용이 가능한 object의 인덱스를 리턴
 
-		int InteractiveCheck_toPlayer(EachObjectIndex** objectIndexs, const RECT characterRect);
-		void ChangeActiveState(EachObjectIndex* eachObjectindexs, int interactive_Count); //활성화 상태 전환 //TODO::낀다, 끈다, 닫다의 개념. 현재 상태 판단도 필요하다.
+		int InteractiveCheck_toPlayer(Object** objectIndexs, const RECT characterRect);
+		void ChangeActiveState(Object** eachObjectindexs, int interactive_Count); //활성화 상태 전환 //TODO::낀다, 끈다, 닫다의 개념. 현재 상태 판단도 필요하다.
 
 		//EachObjectIndex* InteractiveCheck_toPlayer( const RECT characterRect);
 		//bool InteractiveCheck_toPlayer(const RECT characterRect);

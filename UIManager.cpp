@@ -12,6 +12,20 @@ namespace ENGINE
 		Clear();
 	}
 
+	BOOL UIManager::Remove(std::string name)
+	{
+		auto ui = GetUI(name);
+
+		if (nullptr != ui)
+		{
+			map_UI.erase(name);
+			DEL(ui);
+
+			return true;
+		}
+		return false;
+	}
+
 	VOID UIManager::Clear()
 	{
 		for (std::pair<std::string, UIPanel*> pair : map_UI)
@@ -46,17 +60,4 @@ namespace ENGINE
 		return nullptr;
 	}
 
-	BOOL UIManager::Remove(std::string name)
-	{
-		auto ui = GetUI(name);
-		
-		if (nullptr != ui)
-		{
-			map_UI.erase(name);
-			DEL(ui);
-
-			return true;
-		}
-		return false;
-	}
 } //namespace ENGINE

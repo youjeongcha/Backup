@@ -16,7 +16,6 @@ int main() {
 
 Character::Character() 
 {
-
 }
 
 //Character::Character(const std::string& charName, const std::vector<char>& items)
@@ -45,13 +44,14 @@ Character::~Character()
 VOID Character::SetScale(const Vector2& scale)
 {
     GameObject::SetScale(scale);
+
     if (renderer) 
         renderer->SetScale(scale.x, scale.y);
 }
 
 VOID Character::Initialize()
 {
-    transform->position = { 400, 600 };
+    transform->position = { ENGINE::ClientSize_Width / 2,  ENGINE::ClientSize_Height };
 }
 
 VOID Character::Release()
@@ -60,21 +60,40 @@ VOID Character::Release()
 
 VOID Character::Update(const FLOAT& deltaTime)
 {
-    Operate(this);
-    
+    renderer->SetRect(); //좌표 이동에 따라 Rect 변화
+    //Operate(this);
 
-    switch (state)
-    {
-    case State::Move:
-        renderer->ChangeSpritese(vResources[1]); //run
-        Move(deltaTime);
-        break;
-    default:
-        //renderer->ChangeSpritese(vResources[0]); //idle
-        //anim->Idle(deltaTime);
-        anim->Play(0);
-        break;
-    }
+    ////key를 떼면 state가 idle 상태로 벼한다. -> 스프라이트도 idle 상태로 변경되어야 한다.
+    ////renderer->ChangeSpritese(vResources[0]); //idle
+
+    //switch (state)
+    //{
+    //case State::Move:
+    //    //renderer->ChangeSpritese(vResources[1]);
+    //    //anim->SetChangeResouce(vResources[1]);
+    //    Move(deltaTime);
+    //    break;
+    //case State::Idle:
+
+    //    //if (prevState == State::Move) //'0'은 move 상태일때
+    //    //{
+    //    //    renderer->SetPivot(ENGINE::Pivot::Left | ENGINE::Pivot::Bottom);
+    //    //}
+    //    break;
+    //}
+
+    ////스프라이트 왼오 나눠서 애니메이션 플레이
+    //switch (dir)
+    //{ 
+    //case Direction::Right:
+    //    anim->Play(0 + (int)state * 2);
+    //    break;
+    //case Direction::Left:
+    //    anim->Play(1 + (int)state * 2);
+    //    break;
+    //}
+
+    //prevState = state;
 }
 
 VOID Character::Draw()
@@ -86,10 +105,12 @@ VOID Character::Move(const FLOAT& deltaTime)
 {
     switch (dir)
     {
-    case Direction::Right:anim->Play(0);
+    case Direction::Right:
+        anim->Play(0);
         transform->position.x += Speed * deltaTime;
         break;
-    case Direction::Left:anim->Play(1);
+    case Direction::Left:
+        anim->Play(1);
         transform->position.x -= Speed * deltaTime;
         break;
     }

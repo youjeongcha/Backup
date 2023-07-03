@@ -46,9 +46,6 @@ class DemoScene : public Scene
 	//Door door;
 	//Window window;
 
-	
-
-
 	Bitmap* background = nullptr;
 	//Bitmap* door = nullptr; //
 	Player* player = nullptr;
@@ -56,7 +53,7 @@ class DemoScene : public Scene
 	SpriteRenderer* playerSr = nullptr;
 
 	UIButton* pauseBtn;
-	UIImage* pauseWindow;
+	UIImage* pauseWindow; //명칭 변경하기
 
 public:
 	// Scene을(를) 통해 상속됨
@@ -68,6 +65,9 @@ public:
 	VOID PauseBtnClickHandler();
 	VOID ContinueBtnClickHandler();
 	VOID QuitBtnClickHandler();
+
+
+
 };
 
 #endif // !DEMO_SCENE_H

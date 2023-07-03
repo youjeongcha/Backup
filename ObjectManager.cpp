@@ -14,10 +14,13 @@ namespace ENGINE
 		{
 			delete index;
 		}
+		door.clear(); // 객체들을 삭제한 후 벡터를 비움
+
 		for (auto index : window)
 		{
 			delete index;
 		}
+		window.clear();
 	}
 
 	void ObjectManager::LoadData()
@@ -53,22 +56,23 @@ namespace ENGINE
 		//window = new Window(objectData.find("Window")->second, 0);
 	}
 
-	void ObjectManager::ChangeActiveState(EachObjectIndex* eachObjectindexs, int interactive_Count)
+	//void ObjectManager::ChangeActiveState(Object** eachObjectindexs, int interactive_Count)
+	void ObjectManager::ChangeActiveState(Object** eachObjectindexs, int interactive_Count)
 	{
 		//TODO::해당 오브젝트만 수정 가능하게
 		//TODO::낀다, 끈다, 닫다의 개념. 현재 상태 판단도 필요하다.
 		//00을 00하다
 		for (int i = 0; i < interactive_Count; i++)
 		{
-			if (eachObjectindexs[i].name == "문")
+			if (eachObjectindexs[i]->GetEachObjectIndex().name == "문")
 			{
 				//해당 Object 이면
-				if (eachObjectindexs[i].eachObjectIndex == objectData.find("Door")->second.eachObject[i].obejctIndex.eachObjectIndex)
+				if (eachObjectindexs[i]->GetEachObjectIndex().eachObjectIndex == objectData.find("Door")->second.eachObject[i].obejctIndex.eachObjectIndex)
 					door[i]->ChangeActiveState();
 			}
-			else if (eachObjectindexs[i].name == "창문")
+			else if (eachObjectindexs[i]->GetEachObjectIndex().name == "창문")
 			{
-				if (eachObjectindexs[i].eachObjectIndex == objectData.find("Window")->second.eachObject[i].obejctIndex.eachObjectIndex)
+				if (eachObjectindexs[i]->GetEachObjectIndex().eachObjectIndex == objectData.find("Window")->second.eachObject[i].obejctIndex.eachObjectIndex)
 					window[i]->ChangeActiveState();
 			}
 		}
@@ -124,14 +128,14 @@ namespace ENGINE
 		//}
 	}
 
-	int ObjectManager::InteractiveCheck_toPlayer(EachObjectIndex** objectIndexs, const RECT characterRect)
+	int ObjectManager::InteractiveCheck_toPlayer(Object** interObject, const RECT characterRect)
 	{ //TODO::현재 맵의 인덱스에 속하는 모든 Object를 검사해야 한다.
 		LPRECT lprcDst = NULL;
-		EachObjectIndex* interactArray[INTERACTIVE_MAX] = { nullptr };
+		//Object* interactArray[INTERACTIVE_MAX] = { nullptr };
 		RECT objectRect;
 		int count = 0;
 
-
+		//전체 해당 오브젝트의 전체 개수를 가지고 있는것
 		for (int i = 0; i < objectData.find("Door")->second.objectCount; i++)
 		{
 			//해당 맵에 배치된 Object 인지 판별
@@ -139,11 +143,12 @@ namespace ENGINE
 			{
 				objectRect = door[i]->GetRect();
 
-
+				//가로폭 영역이 겹치는지 확인
 				if ((characterRect.right >= objectRect.left) && (objectRect.right >= characterRect.left))
 				{
 					count++;
-					interactArray[i] = &objectData.find("Door")->second.eachObject[i].obejctIndex;
+					//interactArray[i] = &objectData.find("Door")->second.eachObject[i].obejctIndex;
+					interObject[i] = new Object(objectData.find("Door")->second, i); //i는 파일내에서의 몇번째 오브젝트 사용인지 판단
 				}
 			}
 		}
@@ -157,19 +162,24 @@ namespace ENGINE
 				if ((characterRect.right >= objectRect.left) && (objectRect.right >= characterRect.left))
 				{
 					count++;
-					interactArray[i] = &objectData.find("Window")->second.eachObject[i].obejctIndex;
+					//interactArray[i] = &objectData.find("Window")->second.eachObject[i].obejctIndex;
+					interObject[i] = new Object(objectData.find("Window")->second, 0);
 				}
 			}
 		}
 		
 
 		// 동적으로 메모리를 할당하여 배열을 생성
-		*objectIndexs = new EachObjectIndex[INTERACTIVE_MAX];
+		//for (int i = 0; i <= ; i++)
+		//{
+		//	*objectIndexs = new Object();
+		//}
+		
 		// interactArray의 값을 resultArray로 복사
-		for (int i = 0; i < count; i++)
-		{
-			*objectIndexs[i] = *interactArray[i];
-		}
+		//for (int i = 0; i < count; i++)
+		//{
+			//*objectIndexs[i] =
+		//}
 		//EachObjectIndex* resultArray = new EachObjectIndex[INTERACTIVE_MAX];
 		//// interactArray의 값을 resultArray로 복사
 		//for (int i = 0; i < count; i++)
@@ -236,7 +246,7 @@ namespace ENGINE
 
 					// 사용 맵의 인덱스
 					objStream >> tmpEachObject.obejctIndex.mapIndex;
-
+					//맵마다 해당 오브젝트가 몇번째 번호인지
 					objStream >> tmpEachObject.obejctIndex.eachObjectIndex;
 
 					// 현재 상태

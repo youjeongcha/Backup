@@ -1,12 +1,15 @@
 #include "DemoScene.h"
 #include "ResourceManager.h"
 #include "SceneManager.h"
+#include "ObjectManager.h"
 
 // 
 
 VOID DemoScene::Initialize()
 {
-    ResourceMgr->Load("background.bmp");
+    ResourceMgr->Load("background.bmp"); 
+    //ResourceMgr->Load("Home_Door.bmp");
+
     ResourceMgr->Load("pause_normal.bmp");
     ResourceMgr->Load("pause_pressed.bmp");
     ResourceMgr->Load("base_panel.bmp");
@@ -19,6 +22,9 @@ VOID DemoScene::Initialize()
 
     background = ResourceMgr->GetBitmap("background.bmp");
     background->SetDrawSize(bounds, SceneMgr->GetHeight());
+    ///
+    //door = ResourceMgr->GetBitmap("Home_Door.bmp");
+    //door->SetDrawSize(30, SceneMgr->GetHeight());
 
 
     //TODO::GameManager로 이동
@@ -26,6 +32,11 @@ VOID DemoScene::Initialize()
     player->Initialize();
     playerTr = player->GetTransform();
     playerSr = static_cast<SpriteRenderer*>(player->GetComponent(ComponentType::Graphic));
+
+
+
+
+    ///-----------------------------------------------------------------------
 
     pauseBtn = UIMgr->AddUI<UIButton>("Pause Btn");
     pauseBtn->Initialize("pause_normal.bmp", "pause_pressed.bmp", "", "", DrawType::Transparent);
@@ -56,6 +67,7 @@ VOID DemoScene::Initialize()
     isPause = FALSE;
 }
 
+
 VOID DemoScene::Release()
 {
     REL_DEL(player);
@@ -68,6 +80,10 @@ VOID DemoScene::Update(const FLOAT& deltaTime)
 
     player->Update(deltaTime);
 
+    //player가 상호작용할 object를 선택
+
+    ObjectMgr->Update(deltaTime);
+
     if (0 > playerTr->position.x) 
         playerTr->position.x = 0;
 
@@ -78,8 +94,18 @@ VOID DemoScene::Update(const FLOAT& deltaTime)
 VOID DemoScene::Draw()
 {
     background->StretchBlt(0, 0);
+    
+    ObjectMgr->Draw();
+
+
+    //각종 가구들 그리기
+    //door.Draw();
+    //window.Draw();
+
     player->Draw();
 }
+
+
 
 VOID DemoScene::PauseBtnClickHandler()
 {
@@ -99,3 +125,5 @@ VOID DemoScene::QuitBtnClickHandler()
 {
     PostQuitMessage(0);
 }
+
+
