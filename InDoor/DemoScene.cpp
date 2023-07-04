@@ -33,6 +33,11 @@ VOID DemoScene::Initialize()
     playerTr = player->GetTransform();
     playerSr = static_cast<SpriteRenderer*>(player->GetComponent(ComponentType::Graphic));
 
+
+
+
+    ///-----------------------------------------------------------------------
+    /*
     pauseBtn = UIMgr->AddUI<UIButton>("Pause Btn");
     pauseBtn->Initialize("pause_normal.bmp", "pause_pressed.bmp", "", "", DrawType::Transparent);
     pauseBtn->SetPosition(bounds - pauseBtn->GetSize().cx - 22, 10);
@@ -59,8 +64,9 @@ VOID DemoScene::Initialize()
 
     bounds -= playerSr->GetDrawSize().cx;
 
-    isPause = FALSE;
+    isPause = FALSE;*/
 }
+
 
 VOID DemoScene::Release()
 {
@@ -97,7 +103,10 @@ VOID DemoScene::Draw()
     //window.Draw();
 
     player->Draw();
+
 }
+
+
 
 VOID DemoScene::PauseBtnClickHandler()
 {
@@ -117,3 +126,5 @@ VOID DemoScene::QuitBtnClickHandler()
 {
     PostQuitMessage(0);
 }
+
+

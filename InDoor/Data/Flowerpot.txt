@@ -1,0 +1,5 @@
+false false false false
+3 2
+Home_Flowerpot.bmp
+1
+Ш­Ка 0 0 true false false false 450 65 0 0 0

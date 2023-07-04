@@ -2,6 +2,7 @@
 #include "ResourceManager.h"
 #include "SceneManager.h"
 #include "ObjectManager.h"
+#include "GUIManager.h"
 
 Player::Player()
 {
@@ -76,25 +77,17 @@ VOID Player::Update(const FLOAT& deltaTime)
             //상호작용이 가능한 object의 인덱스를 리턴
             RECT tmpRect = renderer->GetRect();
 
-            EachObjectIndex* objectIndexs = { nullptr };
-            int count = ENGINE::ObjectMgr->InteractiveCheck_toPlayer(&objectIndexs, tmpRect);
+            //EachObjectIndex* objectIndexs = { nullptr }; //현재 상호작용 가능한 가구들을 담는다.
+            Object* interObject = { nullptr }; //현재 상호작용 가능한 가구들을 담는다.
+            int inter_Count = ENGINE::ObjectMgr->InteractiveCheck_toPlayer(&interObject, tmpRect);
 
-            if (objectIndexs != nullptr)
+            if (interObject != nullptr)
             {
-                //TODO::UIManager에서 상호작용할 Object의 인덱스를 선별
-                ENGINE::ObjectMgr->ChangeActiveState(objectIndexs, count);
+                //GUIMgr SelectOptional()에서 상호작용할 Object의 인덱스를 선별
+                //상호작용이 가능한 object의 상태를 변환시킨다
+                ENGINE::ObjectMgr->ChangeActiveState(&interObject[ENGINE::GUIMgr->SelectOptional(&interObject, inter_Count)]);
             }
-
-            //TODO::선택지 창 띄우기 - switch문
-            //상호작용이 가능한 object의 상태(?)를 변환시킨다
         }
-
-        //isSpace = false;
-
-        //if (prevState == State::Move) //'0'은 move 상태일때
-        //{
-        //    renderer->SetPivot(ENGINE::Pivot::Left | ENGINE::Pivot::Bottom);
-        //}
         break;
     }
 

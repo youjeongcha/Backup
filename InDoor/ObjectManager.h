@@ -4,6 +4,8 @@
 #include "Singleton.h"
 #include "Door.h"
 #include "Window.h"
+#include "Drawer.h"
+#include "Flowerpot.h"
 
 enum INTERACTIVE
 {
@@ -20,9 +22,15 @@ namespace ENGINE
 		std::map <std::string, ObjectData> objectData;
 
 		//가구 객체 보관
-		//std::map <EachObjectIndex, Object> m_Object;
-		Door* door;
-		Window* window;
+		//std::map <EachObjectIndex, Object> map0_Objects;
+		/*Door* door;
+		Window* window;*/
+
+		std::vector<Door*> door;
+		std::vector<Window*> window;
+		std::vector<Drawer*> drawer;
+		std::vector<Flowerpot*> flowerpot;
+
 
 		ObjectManager();
 
@@ -39,8 +47,9 @@ namespace ENGINE
 		void Update(const FLOAT& deltaTime);
 		//상호작용이 가능한 object의 인덱스를 리턴
 
-		int InteractiveCheck_toPlayer(EachObjectIndex** objectIndexs, const RECT characterRect);
-		void ChangeActiveState(EachObjectIndex* eachObjectindexs, int count); //활성화 상태 전환 //TODO::낀다, 끈다, 닫다의 개념. 현재 상태 판단도 필요하다.
+		int InteractiveCheck_toPlayer(Object** objectIndexs, const RECT characterRect);
+		//void ChangeActiveState(Object** eachObjectindexs, int interactive_Count); //활성화 상태 전환 //TODO::낀다, 끈다, 닫다의 개념. 현재 상태 판단도 필요하다.
+		void ChangeActiveState(Object* eachObjectindexs); //굳이 int 쓴다면 ex.바람이 불어서 모든 촛불이 꺼진다.
 
 		//EachObjectIndex* InteractiveCheck_toPlayer( const RECT characterRect);
 		//bool InteractiveCheck_toPlayer(const RECT characterRect);

@@ -80,14 +80,49 @@ protected:
 
 
 public:
+    Object& operator=(const Object& other) {
+        // 할당 연산자의 동작을 정의합니다
+        // 적절한 멤버 변수들을 other의 멤버 변수 값으로 할당합니다
+        // 필요에 따라 얕은 복사 또는 깊은 복사를 수행해야 합니다
+        // 반환값으로 *this를 반환합니다
+
+        eachObjectIndex = other.eachObjectIndex;
+
+        //리소스
+        SpritesX = other.SpritesX;
+        SpritesY = other.SpritesY;
+
+        renderer = other.renderer;
+        anim = other.anim;
+
+        //아이템 사용가능 조정/ 움직임 체크/ 애니메이션 체크/ 활성화 체크
+        Available = other.Available;
+        isMove = other.isMove;
+        isAnim = other.isAnim;
+        isActive = other.isActive;
+
+        //인벤토리 들어올 수 있음 없음 체크 //TODO::가구 배치 가능하게 할거면 필요 없고
+
+        //오브젝트의 가능 상태 네가지 
+        typeCheck = other.typeCheck; //오브젝트 종류(키), 해당 오브젝트의 작동 종류(bool)
+
+        //OBJECT_TYPE::MOVE
+        dir = other.dir; //이동 방향
+        moveSpeed = other.moveSpeed;
+
+        return *this;
+    }
+
     Object();
-	Object(const ObjectData& dataSet, int index); //객체 하나만 정보 줘야해서
+	Object(const ObjectData& dataSet, int index); //파일기준 인덱스(파일에서 객체들 정보 순서대로 있는 것)//객체 하나만 정보 줘야한다.
 	~Object();
 
-    virtual VOID Initialize() abstract;
+   // virtual VOID Initialize() abstract;
+    virtual VOID Initialize();
     //virtual VOID Update(const FLOAT& deltaTime) abstract;
     VOID Update(const FLOAT& deltaTime);
-    virtual VOID Move(const FLOAT& deltaTime) abstract;
+    virtual VOID Move(const FLOAT& deltaTime);
+   // virtual VOID Move(const FLOAT& deltaTime) abstract;
     VOID Draw();
     VOID Release();
 
@@ -96,7 +131,9 @@ public:
 
 
     //상태 변경
-    bool ChangeActiveState(); //TODO::낀다, 끈다, 닫다의 개념. 현재 상태 판단도 필요하다.
+    void ChangeActiveState(); //TODO::낀다, 끈다, 닫다의 개념. 현재 상태 판단도 필요하다.
+
+    EachObjectIndex GetEachObjectIndex() { return eachObjectIndex; }
 
 
     //ENGINE::RECT* GetRect() { return &renderer->GetRect(); }

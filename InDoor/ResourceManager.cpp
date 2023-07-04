@@ -31,7 +31,7 @@ namespace ENGINE
 		// 6 : 읽기 쓰기 접근 가능 여부
 		// return : 0(true), -1(false)
 
-		if (0 != _access(path.c_str(), 0))
+		if (-1 == _access(path.c_str(), 0)) //파일이 존재한다면 0, 존재하지 않는다면 -1이 return
 			return false;
 
 		Bitmap* bitmap = new Bitmap;
