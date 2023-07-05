@@ -74,19 +74,20 @@ VOID Player::Update(const FLOAT& deltaTime)
     case State::Idle:
         if (isSpace) //스페이스를 누른 상태 bool 값 //오브젝트와 겹침 체크
         {
-            //상호작용이 가능한 object의 인덱스를 리턴
-            RECT tmpRect = renderer->GetRect();
+           // Object* interObject = { nullptr }; //현재 상호작용 가능한 가구들을 담는다.
+            std::vector<Object> interObject; //현재 상호작용 가능한 가구들을 담는다.
 
-            //EachObjectIndex* objectIndexs = { nullptr }; //현재 상호작용 가능한 가구들을 담는다.
-            Object* interObject = { nullptr }; //현재 상호작용 가능한 가구들을 담는다.
-            int inter_Count = ENGINE::ObjectMgr->InteractiveCheck_toPlayer(&interObject, tmpRect);
+            //int inter_Count = ENGINE::ObjectMgr->InteractiveCheck_toPlayer(interObject, tmpRect);
+            ENGINE::ObjectMgr->InteractiveCheck_toPlayer(interObject, renderer->GetRect()); //상호작용이 가능한 object의 인덱스
 
-            if (interObject != nullptr)
+            if (interObject.size())
             {
+                ENGINE::GUIMgr->SelectOptional(interObject);
                 //GUIMgr SelectOptional()에서 상호작용할 Object의 인덱스를 선별
                 //상호작용이 가능한 object의 상태를 변환시킨다
-                ENGINE::ObjectMgr->ChangeActiveState(&interObject[ENGINE::GUIMgr->SelectOptional(&interObject, inter_Count)]);
+                //ENGINE::ObjectMgr->ChangeActiveState(&interObject[ENGINE::GUIMgr->SelectOptional(&interObject, inter_Count)]);
             }
+            isSpace = false;
         }
         break;
     }

@@ -2,13 +2,20 @@
 #include "ResourceManager.h"
 #include "SceneManager.h"
 #include "ObjectManager.h"
+#include "GUIManager.h"
 
 // 
 
 VOID DemoScene::Initialize()
 {
+    //-------------추가된 것--------------
     ResourceMgr->Load("background.bmp"); 
-    //ResourceMgr->Load("Home_Door.bmp");
+    ResourceMgr->Load("Select_Panel_2.bmp");
+    ResourceMgr->Load("Select_Panel_3.bmp");
+    ResourceMgr->Load("Select_Panel_4.bmp");
+    ResourceMgr->Load("Select_Btn_Normal.bmp");
+    ResourceMgr->Load("Select_Btn_Pressed.bmp");
+    //------------------------------------
 
     ResourceMgr->Load("pause_normal.bmp");
     ResourceMgr->Load("pause_pressed.bmp");
@@ -75,6 +82,8 @@ VOID DemoScene::Release()
 
 VOID DemoScene::Update(const FLOAT& deltaTime)
 {
+    isPause = GUIMgr->Get_IsPause();
+
     if (isPause) 
         return;
 

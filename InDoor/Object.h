@@ -26,7 +26,7 @@ struct EachObjectIndex
 struct EachObject
 {
     //int mapIndex, index; //사용 맵이 어디인지 //맵에서 해당 object 안에서의 번호
-    EachObjectIndex obejctIndex;
+    EachObjectIndex objectIndex;
     bool Available, isMove, isAnim, isActive;
     float x, y, move_X, move_Y, move_Speed;
 };
@@ -36,6 +36,8 @@ struct ObjectData
     //std::string name;
     std::map<OBJECT_TYPE, bool> typeCheck;
     int spritesX, spritesY;
+
+    std::string objectName;
     std::string fileName;
 
     int objectCount; //해당 오브젝트의 총 수량
@@ -59,6 +61,11 @@ protected:
     //int mapIndex, index; //mapIndex 해당 Object의 소속 Map //map + 해당 Object에서의 Index 번호
     EachObjectIndex eachObjectIndex;
 
+    //명칭
+    std::string objectname;
+    //파일명
+    std::string fileName;
+
     //리소스
     int SpritesX, SpritesY;
 
@@ -80,6 +87,30 @@ protected:
 
 
 public:
+    Object(const Object& other) {
+        // 멤버 변수들을 깊은 복사
+        eachObjectIndex = other.eachObjectIndex;
+        objectname = other.objectname;
+        fileName = other.fileName;
+        SpritesX = other.SpritesX;
+        SpritesY = other.SpritesY;
+        Available = other.Available;
+        isMove = other.isMove;
+        isAnim = other.isAnim;
+        isActive = other.isActive;
+        typeCheck = other.typeCheck;
+        dir = other.dir;
+        moveSpeed = other.moveSpeed;
+
+        // renderer를 깊은 복사
+        renderer = new ENGINE::SpriteRenderer(*other.renderer);
+        // anim도 필요한 경우 깊은 복사
+        //if (other.anim)
+        //    anim = new ENGINE::AnimationComponent(*other.anim);
+        //else
+        //    anim = nullptr;
+    }
+    /*
     Object& operator=(const Object& other) {
         // 할당 연산자의 동작을 정의합니다
         // 적절한 멤버 변수들을 other의 멤버 변수 값으로 할당합니다
@@ -111,7 +142,7 @@ public:
         moveSpeed = other.moveSpeed;
 
         return *this;
-    }
+    }*/
 
     Object();
 	Object(const ObjectData& dataSet, int index); //파일기준 인덱스(파일에서 객체들 정보 순서대로 있는 것)//객체 하나만 정보 줘야한다.
@@ -128,12 +159,12 @@ public:
 
     //컴포넌트 겹칩 판단
     RECT GetRect() { return renderer->GetRect(); } //반환형에 const 한정자 지정
-
+    EachObjectIndex GetEachObjectIndex() { return eachObjectIndex; }
+    std::string GetObjectName() { return objectname; }
 
     //상태 변경
     void ChangeActiveState(); //TODO::낀다, 끈다, 닫다의 개념. 현재 상태 판단도 필요하다.
 
-    EachObjectIndex GetEachObjectIndex() { return eachObjectIndex; }
 
 
     //ENGINE::RECT* GetRect() { return &renderer->GetRect(); }

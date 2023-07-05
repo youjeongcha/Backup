@@ -7,16 +7,21 @@ Object::Object()
 
 Object::Object(const ObjectData& dataSet, int index)
 {
-    eachObjectIndex.name = dataSet.eachObject[index].obejctIndex.name;
+    eachObjectIndex.name = dataSet.eachObject[index].objectIndex.name;
     //오브젝트 타입 설정
     typeCheck = dataSet.typeCheck;
     //리소스
     SpritesX = dataSet.spritesX;
     SpritesY = dataSet.spritesY;
 
+    //오브젝트 명칭
+    objectname = dataSet.objectName;
+    //파일명
+    fileName = dataSet.fileName;
+
     //Objeect 개별
-    eachObjectIndex.mapIndex = dataSet.eachObject[index].obejctIndex.mapIndex;
-    eachObjectIndex.eachObjectIndex = dataSet.eachObject[index].obejctIndex.eachObjectIndex;
+    eachObjectIndex.mapIndex = dataSet.eachObject[index].objectIndex.mapIndex;
+    eachObjectIndex.eachObjectIndex = dataSet.eachObject[index].objectIndex.eachObjectIndex;
 
     Available = dataSet.eachObject[index].Available;
     isMove = dataSet.eachObject[index].isMove;

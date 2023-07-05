@@ -10,28 +10,30 @@ namespace ENGINE
 
 	ObjectManager::~ObjectManager()
 	{
-		for (auto index : door)
-		{
-			delete index;
-		}
-		door.clear(); // 객체들을 삭제한 후 벡터를 비움
+		Delete_mObject();
 
-		for (auto index : window)
-		{
-			delete index;
-		}
-		window.clear();
-		
-		for (auto index : drawer)
-		{
-			delete index;
-		}
-		drawer.clear();
-		for (auto index : flowerpot)
-		{
-			delete index;
-		}
-		flowerpot.clear();
+		//for (auto index : vObject)
+		//{
+		//	delete index;
+		//}
+		//vObject.clear(); // 객체들을 삭제한 후 벡터를 비움
+
+		//for (auto index : window)
+		//{
+		//	delete index;
+		//}
+		//window.clear();
+		//
+		//for (auto index : drawer)
+		//{
+		//	delete index;
+		//}
+		//drawer.clear();
+		//for (auto index : flowerpot)
+		//{
+		//	delete index;
+		//}
+		//flowerpot.clear();
 	}
 
 	void ObjectManager::LoadData()
@@ -43,83 +45,169 @@ namespace ENGINE
 	}
 
 
+	void ObjectManager::Delete_mObject()
+	{
+		if (mObject.size() > 0)
+		{
+			for (std::map<std::string, std::vector<Object*>>::iterator iter = mObject.begin(); iter != mObject.end(); iter++)
+				delete& iter->second;
+			mObject.clear();
+		}
+	}
+
 	void ObjectManager::InitSetting(int _mapIndex)
 	{
 		mapIndex = _mapIndex;
 
-		door.clear();
-		window.clear();
-		drawer.clear();
-		flowerpot.clear();
+		//Delete_mObject();
+
+		//door.clear();
+		//window.clear();
+		//drawer.clear();
+		//flowerpot.clear();
 
 		//map 변경될때마다 객체 설정 다시 하기
+
+		//Door
+		std::vector<Object*> tmpObject;
 		for (int i = 0; i < objectData.find("Door")->second.objectCount; i++)
 		{
 			//해당 맵에 배치된 Object 인지 판별
-			if (mapIndex == objectData.find("Door")->second.eachObject[i].obejctIndex.mapIndex)
+			if (mapIndex == objectData.find("Door")->second.eachObject[i].objectIndex.mapIndex)
 			{
-				door.push_back(new Door(objectData.find("Door")->second, i));
+				tmpObject.push_back(new Door(objectData.find("Door")->second, i));
+				//mObject.insert({"Door", new Door(objectData.find("Door")->second, i)}); //pair로 만들기
 			}
 		}
+		mObject.insert({ "Door", tmpObject }); //pair로 만들기
+
+		tmpObject.clear();
+
+		//Window
 		for (int i = 0; i < objectData.find("Window")->second.objectCount; i++)
 		{
-			if (mapIndex == objectData.find("Window")->second.eachObject[i].obejctIndex.mapIndex)
+			//해당 맵에 배치된 Object 인지 판별
+			if (mapIndex == objectData.find("Window")->second.eachObject[i].objectIndex.mapIndex)
 			{
-				window.push_back(new Window(objectData.find("Window")->second, i));
+				tmpObject.push_back(new Window(objectData.find("Window")->second, i));
+				//mObject.insert({"Door", new Door(objectData.find("Door")->second, i)}); //pair로 만들기
 			}
 		}
+		mObject.insert({ "Window", tmpObject }); //pair로 만들기
+
+		tmpObject.clear();
+
+		//Drawer
 		for (int i = 0; i < objectData.find("Drawer")->second.objectCount; i++)
 		{
-			if (mapIndex == objectData.find("Drawer")->second.eachObject[i].obejctIndex.mapIndex)
+			//해당 맵에 배치된 Object 인지 판별
+			if (mapIndex == objectData.find("Drawer")->second.eachObject[i].objectIndex.mapIndex)
 			{
-				drawer.push_back(new Drawer(objectData.find("Drawer")->second, i));
+				tmpObject.push_back(new Drawer(objectData.find("Drawer")->second, i));
+				//mObject.insert({"Door", new Door(objectData.find("Door")->second, i)}); //pair로 만들기
 			}
 		}
+		mObject.insert({ "Drawer", tmpObject }); //pair로 만들기
+
+		tmpObject.clear();
+
+
+		//Flowerpot
 		for (int i = 0; i < objectData.find("Flowerpot")->second.objectCount; i++)
 		{
-			if (mapIndex == objectData.find("Flowerpot")->second.eachObject[i].obejctIndex.mapIndex)
+			//해당 맵에 배치된 Object 인지 판별
+			if (mapIndex == objectData.find("Flowerpot")->second.eachObject[i].objectIndex.mapIndex)
 			{
-				flowerpot.push_back(new Flowerpot(objectData.find("Flowerpot")->second, i));
+				tmpObject.push_back(new Flowerpot(objectData.find("Flowerpot")->second, i));
+				//mObject.insert({"Door", new Door(objectData.find("Door")->second, i)}); //pair로 만들기
 			}
 		}
+		mObject.insert({ "Flowerpot", tmpObject }); //pair로 만들기
+
+		tmpObject.clear();
+
+
+		//for (int i = 0; i < objectData.find("Door")->second.objectCount; i++)
+		//{
+		//	//해당 맵에 배치된 Object 인지 판별
+		//	if (mapIndex == objectData.find("Door")->second.eachObject[i].objectIndex.mapIndex)
+		//	{
+		//		mObject.push_back(new Door(objectData.find("Door")->second, i));
+		//	}
+		//}
+		//for (int i = 0; i < objectData.find("Window")->second.objectCount; i++)
+		//{
+		//	if (mapIndex == objectData.find("Window")->second.eachObject[i].objectIndex.mapIndex)
+		//	{
+		//		window.push_back(new Window(objectData.find("Window")->second, i));
+		//	}
+		//}
+		//for (int i = 0; i < objectData.find("Drawer")->second.objectCount; i++)
+		//{
+		//	if (mapIndex == objectData.find("Drawer")->second.eachObject[i].objectIndex.mapIndex)
+		//	{
+		//		drawer.push_back(new Drawer(objectData.find("Drawer")->second, i));
+		//	}
+		//}
+		//for (int i = 0; i < objectData.find("Flowerpot")->second.objectCount; i++)
+		//{
+		//	if (mapIndex == objectData.find("Flowerpot")->second.eachObject[i].objectIndex.mapIndex)
+		//	{
+		//		flowerpot.push_back(new Flowerpot(objectData.find("Flowerpot")->second, i));
+		//	}
+		//}
 		//window = new Window(objectData.find("Window")->second, 0);
 	}
 
+
+
 	//void ObjectManager::ChangeActiveState(Object** eachObjectindexs, int interactive_Count)
-	void ObjectManager::ChangeActiveState(Object* selectObject)
+	void ObjectManager::ChangeActiveState(Object selectObject)
 	{
-		EachObjectIndex select = selectObject->GetEachObjectIndex();
+		EachObjectIndex select = selectObject.GetEachObjectIndex();
 		//TODO::해당 오브젝트만 수정 가능하게
 		//TODO::낀다, 끈다, 닫다의 개념. 현재 상태 판단도 필요하다.
 		//00을 00하다
 		//for (int i = 0; i < interactive_Count; i++)
 		//{
-			if (select.name == "문")
-			{
-				//해당 Object 이면
-				if (select.eachObjectIndex == objectData.find("Door")->second.eachObject->obejctIndex.eachObjectIndex)
-					door[select.eachObjectIndex]->ChangeActiveState(); //door와 window에는 <현재 맵>에 있는 오브젝트만 카운트 한다.
-			}
-			else if (select.name == "창문")
-			{
-				if (select.eachObjectIndex == objectData.find("Window")->second.eachObject->obejctIndex.eachObjectIndex)
-					window[select.eachObjectIndex]->ChangeActiveState();
-			}
-			else if (select.name == "서랍")
-			{
-				if (select.eachObjectIndex == objectData.find("Drawer")->second.eachObject->obejctIndex.eachObjectIndex)
-					drawer[select.eachObjectIndex]->ChangeActiveState();
-			}
-			else if (select.name == "화분")
-			{
-				if (select.eachObjectIndex == objectData.find("Flowerpot")->second.eachObject->obejctIndex.eachObjectIndex)
-					flowerpot[select.eachObjectIndex]->ChangeActiveState();
-			}
-		//}
+		if (select.name == "문")
+		{
+			//해당 Object 이면
+			if (select.eachObjectIndex == objectData.find("Door")->second.eachObject->objectIndex.eachObjectIndex)
+				mObject.find("Door")->second[select.eachObjectIndex]->ChangeActiveState(); //door와 window에는 <현재 맵>에 있는 오브젝트만 카운트 한다.
+		}
+		else if (select.name == "창문")
+		{
+			if (select.eachObjectIndex == objectData.find("Window")->second.eachObject->objectIndex.eachObjectIndex)
+				mObject.find("Window")->second[select.eachObjectIndex]->ChangeActiveState();
+		}
+		else if (select.name == "서랍")
+		{
+			if (select.eachObjectIndex == objectData.find("Drawer")->second.eachObject->objectIndex.eachObjectIndex)
+				mObject.find("Drawer")->second[select.eachObjectIndex]->ChangeActiveState();
+		}
+		else if (select.name == "화분")
+		{
+			if (select.eachObjectIndex == objectData.find("Flowerpot")->second.eachObject->objectIndex.eachObjectIndex)
+				mObject.find("Flowerpot")->second[select.eachObjectIndex]->ChangeActiveState();
+		}
 	}
 
 	void ObjectManager::Draw()
 	{//맵 인덱스 따라 그리도록
+
+		for (int i = 0; i < mObject.find("Door")->second.size(); i++)
+			mObject.find("Door")->second[i]->Draw();
+
+		for (int i = 0; i < mObject.find("Window")->second.size(); i++)
+			mObject.find("Window")->second[i]->Draw();
+
+		for (int i = 0; i < mObject.find("Drawer")->second.size(); i++)
+			mObject.find("Drawer")->second[i]->Draw();
+
+		for (int i = 0; i < mObject.find("Flowerpot")->second.size(); i++)
+			mObject.find("Flowerpot")->second[i]->Draw();
+
 		//for (auto index : door)
 		//{
 		//	index.Draw();
@@ -128,7 +216,7 @@ namespace ENGINE
 		//{
 		//	index.Draw();
 		//}
-		for (int i = 0;i < door.size(); i++)
+		/*for (int i = 0;i < door.size(); i++)
 		{
 			door[i]->Draw();
 		}
@@ -143,7 +231,7 @@ namespace ENGINE
 		for (int i = 0;i < flowerpot.size(); i++)
 		{
 			flowerpot[i]->Draw();
-		}
+		}*/
 		//TODO::해당 맵의 object count를 알아야 한다.
 		//for (int i = 0; i < objectData.find("Door")->second.objectCount; i++)
 		//{
@@ -155,9 +243,25 @@ namespace ENGINE
 		//}
 	}
 
+
+
+
 	void ObjectManager::Update(const FLOAT& deltaTime)
 	{//LATER::필요에 따라 Map별 업데이트 설정
 
+		for (int i = 0; i < mObject.find("Door")->second.size(); i++)
+			mObject.find("Door")->second[i]->Update(deltaTime);
+
+		for (int i = 0; i < mObject.find("Window")->second.size(); i++)
+			mObject.find("Window")->second[i]->Update(deltaTime);
+
+		for (int i = 0; i < mObject.find("Drawer")->second.size(); i++)
+			mObject.find("Drawer")->second[i]->Update(deltaTime);
+
+		for (int i = 0; i < mObject.find("Flowerpot")->second.size(); i++)
+			mObject.find("Flowerpot")->second[i]->Update(deltaTime);
+
+		/*
 		for (int i = 0;i < door.size(); i++)
 		{
 			door[i]->Update(deltaTime);
@@ -173,106 +277,55 @@ namespace ENGINE
 		for (int i = 0;i < flowerpot.size(); i++)
 		{
 			flowerpot[i]->Update(deltaTime);
-		}
-		//for (auto index : door)
-		//{
-		//	index.Update(deltaTime);
-		//}
-		//for (auto index : window)
-		//{
-		//	index.Update(deltaTime);
-		//}
+		}*/
 	}
 
-	int ObjectManager::InteractiveCheck_toPlayer(Object** interObject, const RECT characterRect)
-	{ //TODO::현재 맵의 인덱스에 속하는 모든 Object를 검사해야 한다.
-		LPRECT lprcDst = NULL;
-		//Object* interactArray[INTERACTIVE_MAX] = { nullptr };
+	void ObjectManager::SerachInterObject(std::vector<Object*> vObject, std::vector<Object>& interObject, const RECT characterRect)
+	{
 		RECT objectRect;
-		int count = 0;
+		EachObjectIndex eachObject_in_Map;
 
-		//전체 해당 오브젝트의 전체 개수를 가지고 있는것
-		for (int i = 0; i < objectData.find("Door")->second.objectCount; i++)
+		//for (int i = 0; i < objectData.find(objectName)->second.objectCount; i++)
+		for (int i = 0; i < vObject.size(); i++)
 		{
+			eachObject_in_Map = objectData.find(vObject[i]->GetObjectName())->second.eachObject[i].objectIndex;
+
 			//해당 맵에 배치된 Object 인지 판별
-			if (mapIndex == objectData.find("Door")->second.eachObject[i].obejctIndex.mapIndex)
+			if (mapIndex == eachObject_in_Map.mapIndex)
 			{
-				objectRect = door[i]->GetRect();
+				objectRect = vObject[eachObject_in_Map.eachObjectIndex]->GetRect();
 
 				//가로폭 영역이 겹치는지 확인
 				if ((characterRect.right >= objectRect.left) && (objectRect.right >= characterRect.left))
 				{
-					count++;
-					//interactArray[i] = &objectData.find("Door")->second.eachObject[i].obejctIndex;
-					interObject[i] = new Object(objectData.find("Door")->second, i); //i는 파일내에서의 몇번째 오브젝트 사용인지 판단
+					//interObject[count++] = new Object(objectData.find("Door")->second, i); //i는 파일내에서의 몇번째 오브젝트 사용인지 판단
+
+
+					//TODO::맵 번호와 개별 인덱스 번호로 기존 Object들 백터에서 리턴해주는(얕은 복사) 함수 만들기.
+					//interObject[interCount++] = *dynamic_cast<Object*>(door[eachObject_in_Map.objectIndex.eachObjectIndex]);
+					//interObject[interCount] = *new Object();
+					//interObject[interCount++] = *vObject[eachObject_in_Map.objectIndex.eachObjectIndex];
+					//interObject[interCount] = *vObject[eachObject_in_Map.eachObjectIndex];
+
+					//interObject.push_back(*vObject[eachObject_in_Map.eachObjectIndex]);
+					//복사 생성자를 이용하여 깊은 복사. > 얕은 복사를 하면 복사되면서 Component의 소멸자가 자동 호출되어 renderer가 쓰레기 값이 된다.
+					interObject.push_back(Object(*vObject[eachObject_in_Map.eachObjectIndex]));
 				}
 			}
 		}
+		//return interObject;
+	}
 
-		for (int i = 0; i < objectData.find("Window")->second.objectCount; i++)
-		{
-			if (mapIndex == objectData.find("Window")->second.eachObject[i].obejctIndex.mapIndex)
-			{
-				objectRect = window[i]->GetRect();
+	void ObjectManager::InteractiveCheck_toPlayer(std::vector<Object>& interObject, const RECT characterRect)
+	{ //현재 맵의 인덱스에 속하는 모든 Object를 검사해야 한다.
+		//int interCount = 0;
 
-				if ((characterRect.right >= objectRect.left) && (objectRect.right >= characterRect.left))
-				{
-					count++;
-					//interactArray[i] = &objectData.find("Window")->second.eachObject[i].obejctIndex;
-					interObject[i] = new Object(objectData.find("Window")->second, 0);
-				}
-			}
-		}
-		for (int i = 0; i < objectData.find("Drawer")->second.objectCount; i++)
-		{
-			if (mapIndex == objectData.find("Drawer")->second.eachObject[i].obejctIndex.mapIndex)
-			{
-				objectRect = drawer[i]->GetRect();
-
-				if ((characterRect.right >= objectRect.left) && (objectRect.right >= characterRect.left))
-				{
-					count++;
-					//interactArray[i] = &objectData.find("Window")->second.eachObject[i].obejctIndex;
-					interObject[i] = new Object(objectData.find("Drawer")->second, 0);
-				}
-			}
-		}
-		for (int i = 0; i < objectData.find("Flowerpot")->second.objectCount; i++)
-		{
-			if (mapIndex == objectData.find("Flowerpot")->second.eachObject[i].obejctIndex.mapIndex)
-			{
-				objectRect = flowerpot[i]->GetRect();
-
-				if ((characterRect.right >= objectRect.left) && (objectRect.right >= characterRect.left))
-				{
-					count++;
-					//interactArray[i] = &objectData.find("Window")->second.eachObject[i].obejctIndex;
-					interObject[i] = new Object(objectData.find("Flowerpot")->second, 0);
-				}
-			}
-		}
+		SerachInterObject(mObject.find("Door")->second, interObject, characterRect);
+		SerachInterObject(mObject.find("Window")->second, interObject, characterRect);
+		SerachInterObject(mObject.find("Drawer")->second, interObject, characterRect);
+		SerachInterObject(mObject.find("Flowerpot")->second, interObject, characterRect);
 		
-
-		// 동적으로 메모리를 할당하여 배열을 생성
-		//for (int i = 0; i <= ; i++)
-		//{
-		//	*objectIndexs = new Object();
-		//}
-		
-		// interactArray의 값을 resultArray로 복사
-		//for (int i = 0; i < count; i++)
-		//{
-			//*objectIndexs[i] =
-		//}
-		//EachObjectIndex* resultArray = new EachObjectIndex[INTERACTIVE_MAX];
-		//// interactArray의 값을 resultArray로 복사
-		//for (int i = 0; i < count; i++)
-		//{
-		//	resultArray[i] = *interactArray[i];
-		//}
-
-
-		return count;
+		//return interCount;
 	}
 
 
@@ -288,11 +341,10 @@ namespace ENGINE
 
 			// 읽어올 데이터가 있는지 확인
 			if (std::getline(load, line)) {
-				//이름
-				//tmpObjectData.eachObject->obejctIndex.name = line;
+				//오브젝트 명칭(파일명과 동일)
+				tmpObjectData.objectName = file;
 
 				// 사용 타입
-				//std::getline(load, line);
 				std::istringstream typeStream(line);
 
 				std::string typeCheckValue;
@@ -326,12 +378,12 @@ namespace ENGINE
 					EachObject tmpEachObject; //가구 한 종류 안에서 객체들 관리
 
 					//이름
-					objStream >> tmpEachObject.obejctIndex.name;
+					objStream >> tmpEachObject.objectIndex.name;
 
 					// 사용 맵의 인덱스
-					objStream >> tmpEachObject.obejctIndex.mapIndex;
+					objStream >> tmpEachObject.objectIndex.mapIndex;
 					//맵마다 해당 오브젝트가 몇번째 번호인지
-					objStream >> tmpEachObject.obejctIndex.eachObjectIndex;
+					objStream >> tmpEachObject.objectIndex.eachObjectIndex;
 
 					// 현재 상태
 					bool bTmp;
