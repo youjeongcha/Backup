@@ -18,7 +18,7 @@ namespace ENGINE
 	public:
 		UILabel() : color(0), font(NULL), oldFont(NULL) { uiType = UIType::LABEL; }
 
-		VOID Initialize(CONST std::string& text, COLORREF color = RGB(0, 0, 0), HFONT font = NULL);
+		VOID Initialize(CONST std::string& text, COLORREF color = RGB(255, 255, 255), HFONT font = NULL);
 		VOID SetColor(COLORREF color) { this->color = color; }
 		VOID SetText(CONST std::string& text);
 		VOID SetFont(HFONT font);

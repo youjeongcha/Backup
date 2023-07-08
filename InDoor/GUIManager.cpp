@@ -6,7 +6,13 @@ namespace ENGINE
 {
 	GUIManager::GUIManager()
 	{
-
+		font[FONT_GAMENAME] = CreateFont(FONTSIZE_GAMENAME, 0, 0, 0, FW_THIN, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"Times New Roman");
+		font[FONT_START_EXIT] = CreateFont(FONTSIZE_START_EXIT, 0, 0, 0, FW_SEMIBOLD, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"Times New Roman");
+		font[FONT_STORY] = CreateFont(FONTSIZE_STORY, 0, 0, 0, FW_THIN, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"Times New Roman");
+		font[FONT_SELECT] = CreateFont(FONTSIZE_SELECT, 0, 0, 0, FW_THIN, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"Times New Roman");
+		font[FONT_NEXT] = CreateFont(FONTSIZE_NEXT, 0, 0, 0, FW_THIN, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"Times New Roman");
+		font[FONT_CLOCK] = CreateFont(FONTSIZE_CLOCK, 0, 0, 0, FW_THIN, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"Times New Roman");
+		font[FONT_GAMECLEAR] = CreateFont(FONTSIZE_GAMECLEAR, 0, 0, 0, FW_BOLD, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"궁서");
 	}
 
 
@@ -86,19 +92,26 @@ namespace ENGINE
 			//select_UI->Initialize("base_panel.bmp", DrawType::Transparent);
 			//>
 			//select_UI->SetPosition(SceneMgr->GetWidth() * 0.5f, SceneMgr->GetHeight() * 0.5f + 50, TRUE);
-			select_UI->SetPosition(UI_SELECT_X - 60, UI_SELECT_Y - 40, TRUE);
+			select_UI->SetPosition(UI_SELECT_X, UI_SELECT_Y, false);
 
 			selectBtn_X = select_UI->GetSize().cx * 0.5f;
-			selectBtn_Y = select_UI->GetSize().cy * 0.5f - 25;
+			selectBtn_Y = 17;
+			//selectBtn_Y = select_UI->GetSize().cy * 0.25f;
 
 
 			for (i = 0; i < interCount; i++)
 			{
 				//UIButton* btn_select = UIMgr->AddUI<UIButton>("Optional " + std::to_string(i) + " Btn", select_UI);
+				//버튼-선택지
 				UIButton* btn_select = UIMgr->AddUI<UIButton>("Optional " + interObject[i].GetObjectName() + " Btn", select_UI); //파일 이름으로 구분 ex.Home_Flowerpot.bmp
 				btn_select->Initialize("Select_Btn_Normal.bmp", "Select_Btn_Pressed.bmp", "", "", DrawType::Transparent);
 				btn_select->SetLocalPosition(selectBtn_X, selectBtn_Y, true);
-				btn_select->SetListener(std::bind(&GUIManager::SelectBtnClickHandler, this, &interObject[i], i));
+				btn_select->SetListener(std::bind(&GUIManager::SelectBtnClickHandler, this, interObject[i]));
+
+				//선택지 문구
+				UILabel* btn_txt = UIMgr->AddUI<UILabel>(interObject[i].GetObjectName() + "Txt", btn_select);
+				btn_txt->SetLocalPosition(FONT_SELECT_X, FONT_SELECT_Y, true);
+				btn_txt->Initialize(interObject[i].GetEachObjectIndex().name, RGB(255, 255, 255), font[FONT_SELECT]);
 
 				selectBtn_Y += 25;
 				//btn_select->SetListener(std::bind(&GUIManager::SelectBtnClickHandler, this, i));
@@ -108,24 +121,32 @@ namespace ENGINE
 
 			///
 
-			UIButton* btn_Cancel = UIMgr->AddUI<UIButton>("Cancel Btn", select_UI);
+			UIButton* btn_Cancel = UIMgr->AddUI<UIButton>("CancelBtn_Panel_" + std::to_string(i + 1), select_UI);
 			btn_Cancel->Initialize("Select_Btn_Normal.bmp", "Select_Btn_Pressed.bmp", "", "", DrawType::Transparent);
 			//btn_Cancel->Initialize("pause_normal.bmp", "pause_normal.bmp", "", "", DrawType::Transparent);
 			btn_Cancel->SetLocalPosition(selectBtn_X, selectBtn_Y, true);
 			btn_Cancel->SetListener(std::bind(&GUIManager::CancelBtnClickHandler, this));
 
+			//선택지 문구
+			UILabel* btnCancel_txt = UIMgr->AddUI<UILabel>("Cancel_Txt" + std::to_string(i + 1), btn_Cancel);
+			btnCancel_txt->SetLocalPosition(FONT_SELECT_X, FONT_SELECT_Y, true);
+			btnCancel_txt->Initialize("취소", RGB(255, 255, 255), font[FONT_SELECT]);
+			//btnCancel_txt->SetText("취소");
+
 			//select_UI->SetEnable(FALSE);
 		}
+
 	}
 
 
 
-	void GUIManager::SelectBtnClickHandler(Object* objectIndexs, int select)
+	void GUIManager::SelectBtnClickHandler(Object& objectIndexs)
 	{
-		//objectIndexs[select].
-		ObjectMgr->ChangeActiveState(objectIndexs[select]);
+		ObjectMgr->ChangeActiveState(objectIndexs);
+
+		//TODO::상세 선택지 쪽으로 이사가야함
+		select_UI->SetEnable(FALSE);
 		isPause = FALSE;
-		//PostQuitMessage(0);
 	}
 
 	void GUIManager::CancelBtnClickHandler()

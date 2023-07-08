@@ -307,9 +307,9 @@ namespace ENGINE
 					//interObject[interCount++] = *vObject[eachObject_in_Map.objectIndex.eachObjectIndex];
 					//interObject[interCount] = *vObject[eachObject_in_Map.eachObjectIndex];
 
-					//interObject.push_back(*vObject[eachObject_in_Map.eachObjectIndex]);
+					interObject.push_back(*vObject[eachObject_in_Map.eachObjectIndex]);
 					//복사 생성자를 이용하여 깊은 복사. > 얕은 복사를 하면 복사되면서 Component의 소멸자가 자동 호출되어 renderer가 쓰레기 값이 된다.
-					interObject.push_back(Object(*vObject[eachObject_in_Map.eachObjectIndex]));
+					//interObject.push_back(Object(*vObject[eachObject_in_Map.eachObjectIndex]));
 				}
 			}
 		}
