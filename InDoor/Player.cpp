@@ -78,11 +78,11 @@ VOID Player::Update(const FLOAT& deltaTime)
             interObject.clear(); // 변수를 비워줍니다.
 
             //int inter_Count = ENGINE::ObjectMgr->InteractiveCheck_toPlayer(interObject, tmpRect);
-            ENGINE::ObjectMgr->InteractiveCheck_toPlayer(interObject, renderer->GetRect()); //상호작용이 가능한 object의 인덱스
+            ENGINE::ObjectMgr->InteractiveCheck_toPlayer(&interObject, renderer->GetRect()); //상호작용이 가능한 object의 인덱스
 
             if (interObject.size())
             {
-                ENGINE::GUIMgr->SelectOptional(interObject);
+                ENGINE::GUIMgr->SelectOptional(&interObject);
                 //GUIMgr SelectOptional()에서 상호작용할 Object의 인덱스를 선별
                 //상호작용이 가능한 object의 상태를 변환시킨다
                 //ENGINE::ObjectMgr->ChangeActiveState(&interObject[ENGINE::GUIMgr->SelectOptional(&interObject, inter_Count)]);

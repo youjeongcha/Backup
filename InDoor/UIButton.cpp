@@ -59,14 +59,10 @@ namespace ENGINE
 					state = ButtonState::PRESSED;
 				break;
 			case ButtonState::PRESSED:
-				image = pressed;
 				if (isUp && clickListener)
 					clickListener();
 				break;
-			default:
-				break;
 			}
-
 
 		}
 		else if (ButtonState::PRESSED != state)
@@ -82,6 +78,9 @@ namespace ENGINE
 			break;
 		case ButtonState::PRESSED:
 			image = pressed;
+			if (isUp) state = ButtonState::NONE;
+			if (pressedListener)
+				pressedListener();
 			break;
 		}
 	}

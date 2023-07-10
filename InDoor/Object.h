@@ -1,6 +1,5 @@
 #pragma once
 #include <iostream>
-#include <vector>
 #include "EngineMecro.h"
 #include "Component.h"
 #include "Components/SpriteRenderer.h"
@@ -33,7 +32,10 @@ struct EachObject
 
 struct ObjectData
 {
-    //std::string name;
+    //objectData(Door)안에 해당 모든 eachObject들의 데이터들을 가지고 있다
+    EachObject* eachObject;
+
+
     std::map<OBJECT_TYPE, bool> typeCheck;
     int spritesX, spritesY;
 
@@ -42,8 +44,10 @@ struct ObjectData
 
     int objectCount; //해당 오브젝트의 총 수량
 
-    //objectData(Door)안에 해당 모든 eachObject들의 데이터들을 가지고 있다
-    EachObject* eachObject;
+
+    //---상세 상호작용 관련---
+    int detailSelectCount; //상세 선택지 개수(취소 버튼은 미포함하여 카운트)
+    std::vector<std::string> sDetailSelect;
 };
 
 
@@ -54,7 +58,8 @@ struct ObjectData
 //2.이동 가능 오브젝트
 //3.애니메이션 있는 오브젝트
 //4.상태 전환 있는 오브젝트(커튼,등불)
-class Object : public ENGINE::GameObject
+ //class Object abstract : public ENGINE::GameObject
+ class Object : public ENGINE::GameObject
 {
 protected:
     //std::string name;
@@ -62,7 +67,7 @@ protected:
     EachObjectIndex eachObjectIndex;
 
     //명칭
-    std::string objectname;
+    std::string objectName;
     //파일명
     std::string fileName;
 
@@ -86,11 +91,16 @@ protected:
     int moveSpeed;
 
 
+    //---상세 상호작용 관련---
+    int detailSelectCount; //상세 선택지 개수(취소 버튼은 미포함하여 카운트)
+    ENGINE::UIImage* detailSelect_UI;
+    std::vector<std::string> sDetailSelect;
+
 public:
     Object(const Object& other) {
         // 멤버 변수들을 깊은 복사
         eachObjectIndex = other.eachObjectIndex;
-        objectname = other.objectname;
+        objectName = other.objectName;
         fileName = other.fileName;
         SpritesX = other.SpritesX;
         SpritesY = other.SpritesY;
@@ -101,6 +111,9 @@ public:
         typeCheck = other.typeCheck;
         dir = other.dir;
         moveSpeed = other.moveSpeed;
+        //상세 선택지
+        detailSelectCount = other.detailSelectCount;
+        sDetailSelect = other.sDetailSelect;
 
         // renderer를 깊은 복사
         renderer = new ENGINE::SpriteRenderer(*other.renderer);
@@ -148,23 +161,23 @@ public:
 	Object(const ObjectData& dataSet, int index); //파일기준 인덱스(파일에서 객체들 정보 순서대로 있는 것)//객체 하나만 정보 줘야한다.
 	~Object();
 
-   // virtual VOID Initialize() abstract;
     virtual VOID Initialize();
-    //virtual VOID Update(const FLOAT& deltaTime) abstract;
     VOID Update(const FLOAT& deltaTime);
     virtual VOID Move(const FLOAT& deltaTime);
-   // virtual VOID Move(const FLOAT& deltaTime) abstract;
     VOID Draw();
     VOID Release();
 
     //컴포넌트 겹칩 판단
     RECT GetRect() { return renderer->GetRect(); } //반환형에 const 한정자 지정
     EachObjectIndex GetEachObjectIndex() { return eachObjectIndex; }
-    std::string GetObjectName() { return objectname; }
+    std::string GetObjectName() { return objectName; }
 
+    //---선택지 관련----
+    void DetailSelectForm(); //세부 선택지 양식 틀
+    virtual void DetailSelect(int selectNum) abstract; //양식 틀로 만든 구체적 함수 //선택지 순서대로 DetailSelectForm 쪽에 작동 리스너를 넣기 위한 함수
     //상태 변경
     void ChangeActiveState(); //TODO::낀다, 끈다, 닫다의 개념. 현재 상태 판단도 필요하다.
-
+    void CancelBtnClickHandler();
 
 
     //ENGINE::RECT* GetRect() { return &renderer->GetRect(); }

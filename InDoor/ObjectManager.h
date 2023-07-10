@@ -53,13 +53,13 @@ namespace ENGINE
 		//상호작용이 가능한 object의 인덱스를 리턴
 
 		//int SerachInterObject(std::vector<Object*> vObject, Object* interObject, const RECT characterRect, int interCount); //Player와 겹치는 Object를 interObject에 저장(각 Object 세분화를 함수화)
-		void SerachInterObject(std::vector<Object*> vObject, std::vector<Object>& interObject, const RECT characterRect); //Player와 겹치는 Object를 interObject에 저장(각 Object 세분화를 함수화)
+		void SerachInterObject(std::vector<Object*> vObject, std::vector<Object*>* interObject, const RECT characterRect); //Player와 겹치는 Object를 interObject에 저장(각 Object 세분화를 함수화)
 		//int InteractiveCheck_toPlayer(Object* interObject, const RECT characterRect); //플레이어와 겹치는 Obejct를 가져온다.(메인)
-		void InteractiveCheck_toPlayer(std::vector<Object>& interObject, const RECT characterRect); //플레이어와 겹치는 Obejct를 가져온다.(메인)
+		void InteractiveCheck_toPlayer(std::vector<Object*>* interObject, const RECT characterRect); //플레이어와 겹치는 Obejct를 가져온다.(메인)
 
 
 		//void ChangeActiveState(Object** eachObjectindexs, int interactive_Count); //활성화 상태 전환 //TODO::낀다, 끈다, 닫다의 개념. 현재 상태 판단도 필요하다.
-		void ChangeActiveState(Object eachObjectindexs); //굳이 int 쓴다면 ex.바람이 불어서 모든 촛불이 꺼진다.
+		void ChangeActiveState(Object* eachObjectindexs); //굳이 int 쓴다면 ex.바람이 불어서 모든 촛불이 꺼진다.
 
 		//EachObjectIndex* InteractiveCheck_toPlayer( const RECT characterRect);
 		//bool InteractiveCheck_toPlayer(const RECT characterRect);

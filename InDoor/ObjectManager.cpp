@@ -162,9 +162,9 @@ namespace ENGINE
 
 
 	//void ObjectManager::ChangeActiveState(Object** eachObjectindexs, int interactive_Count)
-	void ObjectManager::ChangeActiveState(Object selectObject)
+	void ObjectManager::ChangeActiveState(Object* selectObject)
 	{
-		EachObjectIndex select = selectObject.GetEachObjectIndex();
+		EachObjectIndex select = selectObject->GetEachObjectIndex();
 		//TODO::해당 오브젝트만 수정 가능하게
 		//TODO::낀다, 끈다, 닫다의 개념. 현재 상태 판단도 필요하다.
 		//00을 00하다
@@ -280,7 +280,7 @@ namespace ENGINE
 		}*/
 	}
 
-	void ObjectManager::SerachInterObject(std::vector<Object*> vObject, std::vector<Object>& interObject, const RECT characterRect)
+	void ObjectManager::SerachInterObject(std::vector<Object*> vObject, std::vector<Object*>* interObject, const RECT characterRect)
 	{
 		RECT objectRect;
 		EachObjectIndex eachObject_in_Map;
@@ -307,7 +307,7 @@ namespace ENGINE
 					//interObject[interCount++] = *vObject[eachObject_in_Map.objectIndex.eachObjectIndex];
 					//interObject[interCount] = *vObject[eachObject_in_Map.eachObjectIndex];
 
-					interObject.push_back(*vObject[eachObject_in_Map.eachObjectIndex]);
+					interObject->push_back(vObject[eachObject_in_Map.eachObjectIndex]);
 					//복사 생성자를 이용하여 깊은 복사. > 얕은 복사를 하면 복사되면서 Component의 소멸자가 자동 호출되어 renderer가 쓰레기 값이 된다.
 					//interObject.push_back(Object(*vObject[eachObject_in_Map.eachObjectIndex]));
 				}
@@ -316,7 +316,7 @@ namespace ENGINE
 		//return interObject;
 	}
 
-	void ObjectManager::InteractiveCheck_toPlayer(std::vector<Object>& interObject, const RECT characterRect)
+	void ObjectManager::InteractiveCheck_toPlayer(std::vector<Object*>* interObject, const RECT characterRect)
 	{ //현재 맵의 인덱스에 속하는 모든 Object를 검사해야 한다.
 		//int interCount = 0;
 
@@ -365,6 +365,18 @@ namespace ENGINE
 				// 이미지 파일
 				std::getline(load, line);
 				tmpObjectData.fileName = line;
+
+				//상세 선택지
+				std::string sTmp;
+				std::getline(load, line);
+				std::istringstream selectStream(line);
+				selectStream >> tmpObjectData.detailSelectCount;
+				for (int i = 0; i < tmpObjectData.detailSelectCount; i++)
+				{
+					selectStream >> sTmp;
+					tmpObjectData.sDetailSelect.push_back(sTmp);
+				}
+
 
 				// 총 수량
 				std::getline(load, line);

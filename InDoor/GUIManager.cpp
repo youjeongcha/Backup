@@ -1,6 +1,6 @@
 #include "GUIManager.h"
 #include "ObjectManager.h"
-#include "UIManager.h"
+//#include "UIManager.h"
 
 namespace ENGINE
 {
@@ -40,7 +40,7 @@ namespace ENGINE
 	}
 
 	//TODO::void로 변경
-	void GUIManager::SelectOptional(std::vector<Object>& interObject)
+	void GUIManager::SelectOptional(std::vector<Object*>* interObject)
 	{
 		OptionalForm(interObject);
 		select_UI->SetEnable(TRUE);
@@ -51,43 +51,32 @@ namespace ENGINE
 	}
 
 
-	void GUIManager::OptionalForm(std::vector<Object>& interObject)
+	void GUIManager::OptionalForm(std::vector<Object*>* interObject)
 	{
-		///-----------------------------추가 진행중인------------------------------------------
-		int interCount = interObject.size();
+		//std::vector<Object*>* interObject 포인터를 역참조한 후에 멤버 함수에 접근
+		int interCount = (*interObject).size();
 
 		switch (interCount)
 		{
 		case 1:
 			select_UI = UIMgr->AddUI<UIImage>("Optional Form_2");
+			select_UI->Initialize("Select_Panel_2.bmp", DrawType::Transparent);
 			break;
 		case 2:
 			select_UI = UIMgr->AddUI<UIImage>("Optional Form_3");
+			select_UI->Initialize("Select_Panel_3.bmp", DrawType::Transparent);
 			break;
 		case 3:
 			select_UI = UIMgr->AddUI<UIImage>("Optional Form_4");
+			select_UI->Initialize("Select_Panel_4.bmp", DrawType::Transparent);
 			break;
 		}
 
 
-		 
 		if (select_UI)
 		{
 			int i, selectBtn_X, selectBtn_Y;
 			isPause = TRUE;
-
-			switch (interCount)
-			{
-			case 1:
-				select_UI->Initialize("Select_Panel_2.bmp", DrawType::Transparent);
-				break;
-			case 2:
-				select_UI->Initialize("Select_Panel_3.bmp", DrawType::Transparent);
-				break;
-			case 3:
-				select_UI->Initialize("Select_Panel_4.bmp", DrawType::Transparent);
-				break;
-			}
 
 			//select_UI->Initialize("base_panel.bmp", DrawType::Transparent);
 			//>
@@ -101,17 +90,17 @@ namespace ENGINE
 
 			for (i = 0; i < interCount; i++)
 			{
-				//UIButton* btn_select = UIMgr->AddUI<UIButton>("Optional " + std::to_string(i) + " Btn", select_UI);
 				//버튼-선택지
-				UIButton* btn_select = UIMgr->AddUI<UIButton>("Optional " + interObject[i].GetObjectName() + " Btn", select_UI); //파일 이름으로 구분 ex.Home_Flowerpot.bmp
+				UIButton* btn_select = UIMgr->AddUI<UIButton>("Optional " + (*interObject)[i]->GetObjectName() + " Btn", select_UI); //파일 이름으로 구분 ex.Home_Flowerpot.bmp
+				//UIButton* btn_select = UIMgr->AddUI<UIButton>("Optional " + interObject[i]->GetObjectName() + " Btn", select_UI); //파일 이름으로 구분 ex.Home_Flowerpot.bmp
 				btn_select->Initialize("Select_Btn_Normal.bmp", "Select_Btn_Pressed.bmp", "", "", DrawType::Transparent);
 				btn_select->SetLocalPosition(selectBtn_X, selectBtn_Y, true);
-				btn_select->SetListener(std::bind(&GUIManager::SelectBtnClickHandler, this, interObject[i]));
+				btn_select->SetListener(std::bind(&GUIManager::SelectBtnClickHandler, this, (*interObject)[i]));
 
 				//선택지 문구
-				UILabel* btn_txt = UIMgr->AddUI<UILabel>(interObject[i].GetObjectName() + "Txt", btn_select);
+				UILabel* btn_txt = UIMgr->AddUI<UILabel>((*interObject)[i]->GetObjectName() + "Txt", btn_select);
 				btn_txt->SetLocalPosition(FONT_SELECT_X, FONT_SELECT_Y, true);
-				btn_txt->Initialize(interObject[i].GetEachObjectIndex().name, RGB(255, 255, 255), font[FONT_SELECT]);
+				btn_txt->Initialize((*interObject)[i]->GetEachObjectIndex().name, RGB(255, 255, 255), font[FONT_SELECT]);
 
 				selectBtn_Y += 25;
 				//btn_select->SetListener(std::bind(&GUIManager::SelectBtnClickHandler, this, i));
@@ -135,18 +124,18 @@ namespace ENGINE
 
 			//select_UI->SetEnable(FALSE);
 		}
-
 	}
 
 
 
-	void GUIManager::SelectBtnClickHandler(Object& objectIndexs)
+	void GUIManager::SelectBtnClickHandler(Object* interObject)
 	{
-		ObjectMgr->ChangeActiveState(objectIndexs);
+		//ObjectMgr->ChangeActiveState(interObject);
+		interObject->DetailSelectForm();
 
-		//TODO::상세 선택지 쪽으로 이사가야함
+		//TODO::상세 선택지 쪽으로 이사가야함? 아닐 것으로 봄
 		select_UI->SetEnable(FALSE);
-		isPause = FALSE;
+		//isPause = FALSE;
 	}
 
 	void GUIManager::CancelBtnClickHandler()

@@ -1,5 +1,6 @@
 false false false false
 1 2
 Home_Drawer.bmp
+1 열기
 1
-서랍 0 0 true false false false 440 90 0 0 0
+서랍 0 0 true false false false 220 90 0 0 0

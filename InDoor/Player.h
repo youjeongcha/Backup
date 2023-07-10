@@ -6,7 +6,7 @@
 class Player : public Character {
 private:
     bool isSpace; //스페이스바 누른지 체크 //플레이어만 하면 되는데
-    std::vector<Object> interObject; //현재 상호작용 가능한 가구들을 담는다.
+    std::vector<Object*> interObject; //현재 상호작용 가능한 가구들을 담는다.
 
 public:
     Player();

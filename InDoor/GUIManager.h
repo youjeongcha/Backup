@@ -25,7 +25,6 @@ enum FONT_XY
 {
 	FONT_SELECT_X = 40,
 	FONT_SELECT_Y = 11,
-
 };
 
 enum FONTSIZE
@@ -42,17 +41,16 @@ enum FONTSIZE
 
 namespace ENGINE
 {
-
-
 	class GUIManager : public Singleton<GUIManager>
 	{
 	private:
 		BOOL isPause;
 		UIImage* select_UI;
-		HFONT font[FONT_COUNT]; //글자 크기 변경
 
 		GUIManager();
 	public:
+		HFONT font[FONT_COUNT]; //글자 크기 변경
+
 		~GUIManager();
 		void Initialize();
 		void Clear();
@@ -62,13 +60,14 @@ namespace ENGINE
 
 		//TODO::추가 진행중인 코드
 		//플레이어와 겹치는 object 선택
-		void SelectOptional(std::vector<Object>& interObject);
+		void SelectOptional(std::vector<Object*>* interObject);
 		//플레이어와 겹치는 가로축 object의 index를 선택하는 양식
-		void OptionalForm(std::vector<Object>& interObject);
+		void OptionalForm(std::vector<Object*>* interObject);
 
-		void SelectBtnClickHandler(Object& objectIndexs);
+		void SelectBtnClickHandler(Object* interObject);
 		void CancelBtnClickHandler();
 
+		void Set_IsPause(bool pauseSet) { isPause = pauseSet; }
 		bool Get_IsPause() { return isPause; }
 		friend Singleton;
 
