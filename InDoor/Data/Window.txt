@@ -1,6 +1,7 @@
-false false false true
+true false false true
 1 2
 Home_Window.bmp
 1 보기
-1
-창문 0 0 true fasle false true 225 28 0 0 0
+2
+창문 0 0 true fasle false true 215 28 0 0 0
+창문 2 0 true fasle false true 155 28 0 0 0

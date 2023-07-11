@@ -1,33 +1,31 @@
-#include "Window.h"
+#include "Table_Vertical.h"
 #include "ResourceManager.h"
-#include "FSM.h"
-//#include "SceneManager.h"
 
-Window::Window()
+Table_Vertical::Table_Vertical()
 {
 }
 
-Window::Window(const ObjectData& dataSet, int index) : Object(dataSet, index)
+Table_Vertical::Table_Vertical(const ObjectData& dataSet, int index) : Object(dataSet, index)
 {
     //FSM* fsm;
     //m_nID = fsm->Get_NextVaildID();
 }
 
-Window::~Window()
+Table_Vertical::~Table_Vertical()
 {
 }
 
-VOID Window::Initialize()
-{
-    return VOID();
-}
-
-VOID Window::Move(const FLOAT& deltaTime)
+VOID Table_Vertical::Initialize()
 {
     return VOID();
 }
 
-void Window::DetailSelect(int selectNum)
+VOID Table_Vertical::Move(const FLOAT& deltaTime)
+{
+    return VOID();
+}
+
+void Table_Vertical::DetailSelect(int selectNum)
 {//0~선택지 개수-1의 리스너를 바인딩하기 위해 리턴한다. 
 
     //취소 제외 최대 선택지 개수는 3개로 제한

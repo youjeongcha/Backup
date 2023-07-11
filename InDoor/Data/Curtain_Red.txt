@@ -1,0 +1,6 @@
+true false false false
+1 2
+Home_Curtain_Red.bmp
+1 열기/닫기
+1
+커튼 2 0 true false false false 152 25 0 0 0

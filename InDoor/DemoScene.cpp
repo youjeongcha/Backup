@@ -8,6 +8,9 @@
 
 VOID DemoScene::Initialize()
 {
+    nowScene = SCENE_BEDROOM;
+    ObjectMgr->InitSetting(nowScene);
+
     //-------------추가된 것--------------
     ResourceMgr->Load("background.bmp"); 
     ResourceMgr->Load("Select_Panel_2.bmp");
@@ -89,8 +92,9 @@ VOID DemoScene::Update(const FLOAT& deltaTime)
 
     player->Update(deltaTime);
 
-    //player가 상호작용할 object를 선택
+    //Player의 위치가 
 
+    //player가 상호작용할 object를 선택
     ObjectMgr->Update(deltaTime);
 
     if (0 > playerTr->position.x) 
@@ -134,6 +138,12 @@ VOID DemoScene::ContinueBtnClickHandler()
 VOID DemoScene::QuitBtnClickHandler()
 {
     PostQuitMessage(0);
+}
+
+void DemoScene::ChangeScene(SCENE changeScene)
+{
+    nowScene = changeScene;
+    ObjectMgr->InitSetting(nowScene);
 }
 
 

@@ -10,7 +10,7 @@ Object::Object()
 
 Object::Object(const ObjectData& dataSet, int index)
 {
-    eachObjectIndex.name = dataSet.eachObject[index].objectIndex.name;
+    eachObjectIndex.name = dataSet.eachObject[index]->objectIndex.name;
     //오브젝트 타입 설정
     typeCheck = dataSet.typeCheck;
     //리소스
@@ -23,23 +23,25 @@ Object::Object(const ObjectData& dataSet, int index)
     fileName = dataSet.fileName;
 
     //Objeect 개별
-    eachObjectIndex.mapIndex = dataSet.eachObject[index].objectIndex.mapIndex;
-    eachObjectIndex.eachObjectIndex = dataSet.eachObject[index].objectIndex.eachObjectIndex;
+    eachObjectIndex.mapIndex = dataSet.eachObject[index]->objectIndex.mapIndex;
+    eachObjectIndex.eachObjectIndex = dataSet.eachObject[index]->objectIndex.eachObjectIndex;
 
-    Available = dataSet.eachObject[index].Available;
-    isMove = dataSet.eachObject[index].isMove;
-    isAnim = dataSet.eachObject[index].isAnim;
-    isActive = dataSet.eachObject[index].isActive;
+    Available = dataSet.eachObject[index]->Available;
+    isMove = dataSet.eachObject[index]->isMove;
+    isAnim = dataSet.eachObject[index]->isAnim;
+    isActive = dataSet.eachObject[index]->isActive;
 
     ENGINE::ResourceMgr->Load(dataSet.fileName);
 
     renderer = new ENGINE::SpriteRenderer(dataSet.fileName.c_str(), SpritesX, SpritesY);
-    renderer->SetPos(dataSet.eachObject->x, dataSet.eachObject->y);
+    renderer->SetPos(dataSet.eachObject[index]->x, dataSet.eachObject[index]->y);
     renderer->SetPivot(ENGINE::Pivot::Left | ENGINE::Pivot::Top);
     renderer->SetScale(transform->scale.x, transform->scale.y);
     if (isActive) //작동 여부에 따라 이미지 다르게
         renderer->SetSrc(0, 1);
     AddComponent(renderer);
+
+    renderer->SetRect(); //좌표 이동에 따라 Rect 변화
 
     //Anim 관련
     if (isAnim) //TODO::애니메이션 속도 조절 부분은 AnimationComponent
@@ -48,9 +50,9 @@ Object::Object(const ObjectData& dataSet, int index)
         anim = NULL;
 
     //Move 관련
-    dir = (Direction)dataSet.eachObject[index].move_X; //TODO::이거 
+    dir = (Direction)dataSet.eachObject[index]->move_X; //TODO::이거 
     //dir = (Direction)dataSet.eachObject[index].move_Y; //move_Y 부분도 해당 되게
-    moveSpeed = dataSet.eachObject[index].move_Speed;
+    moveSpeed = dataSet.eachObject[index]->move_Speed;
 
 
     //상세 선택지
@@ -85,7 +87,6 @@ VOID Object::Update(const FLOAT& deltaTime)
     //else
     //    renderer->SetSrc(0, 0);
 
-    renderer->SetRect(); //좌표 이동에 따라 Rect 변화
 }
 
 VOID Object::Move(const FLOAT& deltaTime)
@@ -130,7 +131,7 @@ void Object::DetailSelectForm()
 
 
     //선택지가 존재하면
-	if (detailSelect_UI)
+	if (detailSelect_UI) //Available이면 수가 0 이상이므로 bool값으로 판정하지 않았다.
 	{
 		int i, selectBtn_X, selectBtn_Y;
 

@@ -3,4 +3,4 @@ false false false true
 Home_Door.bmp
 2 열기 노크
 1
-문 0 0 false false false false 325 55 0 0 0
+문 0 0 false false false false 310 55 0 0 0

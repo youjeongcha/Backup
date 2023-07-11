@@ -83,6 +83,9 @@ namespace ENGINE
 	}
 	void SceneManager::Update()
 	{
+		//상태기계 작동
+		int iClock = clock() % 60; //임시
+
 		GUIMgr->Update();
 		currScene->Update(TimeMgr->DeltaTime());
 	}

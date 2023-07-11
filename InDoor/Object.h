@@ -33,7 +33,7 @@ struct EachObject
 struct ObjectData
 {
     //objectData(Door)안에 해당 모든 eachObject들의 데이터들을 가지고 있다
-    EachObject* eachObject;
+    std::vector<EachObject*> eachObject;
 
 
     std::map<OBJECT_TYPE, bool> typeCheck;
@@ -50,6 +50,17 @@ struct ObjectData
     std::vector<std::string> sDetailSelect;
 };
 
+class Object;
+//상태기계 관련
+class State
+{
+public:
+    virtual ~State() {}
+
+    virtual void Enter(Object*) abstract;
+    virtual void Excute(Object*) abstract;
+    virtual void Exit(Object*) abstract;
+};
 
 
 

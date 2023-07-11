@@ -12,33 +12,18 @@
 
 using namespace ENGINE;
 
-//class Player : public GameObject
-//{
-//	enum Data { SpritesX = 4, SpritesY = 2, Speed = 200 };
-//	enum class State { Idle, Move };
-//	enum class Direction { Right, Left };
-//
-//	State state;
-//	Direction dir;
-//
-//	SpriteRenderer* renderer;
-//	AnimationComponent* anim;
-//public:
-//	Player();
-//
-//	// GameObject을(를) 통해 상속됨
-//	virtual VOID SetScale(CONST Vector2& scale) override;
-//
-//	VOID Initialize();
-//	VOID Release();
-//	VOID Update(const FLOAT& deltaTime);
-//	VOID Draw();
-//private:
-//	VOID Move(const FLOAT& deltaTime);
-//};
+enum SCENE
+{
+	SCENE_DOOR,
+	SCENE_KITCHEN,
+	SCENE_BEDROOM,
+	SCENE_COUNT,
+};
 
 class DemoScene : public Scene
 {
+	SCENE nowScene; //현재 맵이 어떤 맵인지
+
 	BOOL isPause;
 	INT bounds;
 
@@ -66,7 +51,8 @@ public:
 	VOID ContinueBtnClickHandler();
 	VOID QuitBtnClickHandler();
 
-
+	//씬 전환
+	void ChangeScene(SCENE changeScene);
 
 };
 
