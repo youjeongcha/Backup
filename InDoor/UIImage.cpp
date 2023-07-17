@@ -19,6 +19,7 @@ namespace ENGINE
 
 	VOID UIImage::Initialize(const std::string& ImageName, DrawType type)
 	{
+	//	name = ImageName; //Ãß°¡
 		image = ResourceMgr->GetBitmap(ImageName);
 		this->type = type;
 		SetRect(pivotCenter);

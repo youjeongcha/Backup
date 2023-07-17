@@ -190,7 +190,8 @@ public:
     void ChangeActiveState(); //TODO::³¤´Ù, ²ö´Ù, ´Ý´ÙÀÇ °³³ä. ÇöÀç »óÅÂ ÆÇ´Üµµ ÇÊ¿äÇÏ´Ù.
     void CancelBtnClickHandler();
 
-
+    //¹ã³· ¼¼ÆÃ
+    void TimeChangeBitmap(bool isDrak);
     //ENGINE::RECT* GetRect() { return &renderer->GetRect(); }
     //Vector2 GetPos() { return renderer->GetPos(); }
     //SIZE GetSize() { return renderer->GetDrawSize(); }

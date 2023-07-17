@@ -18,6 +18,7 @@ public:
 	//---선택지 관련----
 	void DetailSelect(int selectNum) override;
 
+
 	//상태기계관련 : 처리 부분 질문 필요 TODO::!
 //private:
 //	int m_nID;

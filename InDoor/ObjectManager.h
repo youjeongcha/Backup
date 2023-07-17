@@ -10,6 +10,8 @@
 #include "Shelf_Book.h"
 #include "Table_Vertical.h"
 #include "Curtain_Red.h"
+#include "Closet.h"
+#include "Table_Red.h"
 
 
 
@@ -56,7 +58,7 @@ namespace ENGINE
 		void FileRead(const std::string& file);
 		//map 변경될때마다 객체 설정 다시 하기
 		void Delete_mObject();
-		void InitSetting(int _mapIndex);
+		void InitSetting(int _mapIndex, bool isDrak);
 
 		void Draw();
 		void Update(const FLOAT& deltaTime);
@@ -69,8 +71,8 @@ namespace ENGINE
 		void InteractiveCheck_toPlayer(std::vector<Object*>* interObject, const RECT characterRect); //플레이어와 겹치는 Obejct를 가져온다.(메인)
 
 
-		//void ChangeActiveState(Object** eachObjectindexs, int interactive_Count); //활성화 상태 전환 //TODO::낀다, 끈다, 닫다의 개념. 현재 상태 판단도 필요하다.
-		void ChangeActiveState(Object* selectObject); //굳이 int 쓴다면 ex.바람이 불어서 모든 촛불이 꺼진다.
+		//시간의 흐름에 따라 변화하는 Bitmap을 전환한다. ex)창밖의 이미지
+		void TimeChangeBitmap(bool isDrak); //굳이 int 쓴다면 ex.바람이 불어서 모든 촛불이 꺼진다.
 
 		//EachObjectIndex* InteractiveCheck_toPlayer( const RECT characterRect);
 		//bool InteractiveCheck_toPlayer(const RECT characterRect);

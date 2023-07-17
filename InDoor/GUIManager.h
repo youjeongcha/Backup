@@ -46,10 +46,10 @@ namespace ENGINE
 	private:
 		BOOL isPause;
 		UIImage* select_UI;
+		HFONT font[FONT_COUNT]; //글자 크기 변경
 
 		GUIManager();
 	public:
-		HFONT font[FONT_COUNT]; //글자 크기 변경
 
 		~GUIManager();
 		void Initialize();
@@ -69,6 +69,7 @@ namespace ENGINE
 
 		void Set_IsPause(bool pauseSet) { isPause = pauseSet; }
 		bool Get_IsPause() { return isPause; }
+		HFONT Get_Font(FONT fontStyle) { return font[fontStyle]; }
 		friend Singleton;
 
 	#define GUIMgr GUIManager::GetInstance()

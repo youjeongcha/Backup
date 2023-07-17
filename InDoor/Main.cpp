@@ -14,6 +14,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevINstance
 	//TODO:: 여기에 새로운 씬 등록 및 코드
 	SceneMgr->RegisterScene("test", new DemoScene);
 	SceneMgr->LoadScene("test");
-	
+
 	return engine.Run(); //Run()에서 해당 루프를 돌고. WM_DESTROY가 되면 return이 되어 나온다.
 }

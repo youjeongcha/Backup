@@ -6,11 +6,11 @@
 
 namespace ENGINE
 {
-	struct Location
-	{
-		Vector2 pos;
-		SIZE size;
-	};
+	//struct Location
+	//{
+	//	Vector2 pos;
+	//	SIZE size;
+	//};
 
 	class SpriteRenderer : public GrahpicComponent
 	{
@@ -19,7 +19,7 @@ namespace ENGINE
 		SIZE localSize, size;
 		Vector2 pos, divide;
 		//Location location; //
-		RECT rect; //범위 체크 위해 추가
+		RECT rect; //범위 체크 위해 추가 pos에다가 이미지 크기 계속 하는 것보다 나을 것으로 판단
 
 	private:
 		SpriteRenderer();
@@ -29,7 +29,11 @@ namespace ENGINE
 
 		VOID SetPivot(INT pivot) { if (sprites) sprites->SetPivot(pivot); }
 		VOID SetSrc(UINT cx, UINT cy);
-		void SetPos(float x, float y) { pos.x = x; pos.y = y; }
+		void SetPos(float x, float y)
+		{ 
+			pos.x = x; pos.y = y; 
+			SetRect();
+		}
 		//void SetLocation() { location.pos = pos; location.size = size; }
 		void SetRect() 
 		{

@@ -43,11 +43,13 @@ public:
     virtual VOID SetScale(CONST Vector2& scale) override;
 
     //---------------------------------------------------
-    VOID Initialize();
+    virtual void Initialize();
     VOID Release();
     virtual VOID Update(const FLOAT& deltaTime);
     VOID Draw();
 
     //ÄÄÆ÷³ÍÆ® °ãÄ¨ ÆÇ´Ü
     RECT GetRect() { return renderer->GetRect(); }
+    //void SetPos(float _x, float _y) { renderer->SetPos(_x, _y); }
+    void SetPos(float _x, float _y) { transform->position = { _x,  _y }; }
 };

@@ -1,0 +1,6 @@
+true false false false
+1 1
+Home_Closet.bmp
+1 ø≠±‚
+1
+ø ¿Â 2 0 true false false false 320 58 0 0 0

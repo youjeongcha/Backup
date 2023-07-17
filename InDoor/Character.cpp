@@ -51,6 +51,7 @@ VOID Character::SetScale(const Vector2& scale)
 
 VOID Character::Initialize()
 {
+   // transform->position = { ENGINE::ClientSize_Width / 2,  ENGINE::ClientSize_Height };
     transform->position = { ENGINE::ClientSize_Width / 2,  ENGINE::ClientSize_Height };
 }
 
@@ -60,7 +61,6 @@ VOID Character::Release()
 
 VOID Character::Update(const FLOAT& deltaTime)
 {
-    renderer->SetRect(); //좌표 이동에 따라 Rect 변화
     //Operate(this);
 
     ////key를 떼면 state가 idle 상태로 벼한다. -> 스프라이트도 idle 상태로 변경되어야 한다.
@@ -114,6 +114,8 @@ VOID Character::Move(const FLOAT& deltaTime)
         transform->position.x -= Speed * deltaTime;
         break;
     }
+
+    renderer->SetRect(); //좌표 이동에 따라 Rect 변화
 }
 
 void Character::CheckInventory(int itemID) const

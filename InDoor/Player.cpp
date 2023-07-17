@@ -57,6 +57,11 @@ Player::~Player()
 {
 }
 
+VOID Player::Initialize()
+{
+    transform->position = { PLAYER_RESPON_BED,  ENGINE::ClientSize_Height };
+}
+
 VOID Player::Update(const FLOAT& deltaTime)
 {
     Operate(this);
@@ -86,8 +91,9 @@ VOID Player::Update(const FLOAT& deltaTime)
                 //GUIMgr SelectOptional()에서 상호작용할 Object의 인덱스를 선별
                 //상호작용이 가능한 object의 상태를 변환시킨다
                 //ENGINE::ObjectMgr->ChangeActiveState(&interObject[ENGINE::GUIMgr->SelectOptional(&interObject, inter_Count)]);
+                isSpace = false;
             }
-            isSpace = false;
+            //isSpace = false;
         }
         break;
     }

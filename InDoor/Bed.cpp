@@ -1,5 +1,6 @@
 #include "Bed.h"
 #include "ResourceManager.h"
+#include "GameTimeManager.h"
 
 Bed::Bed()
 {
@@ -31,12 +32,17 @@ void Bed::DetailSelect(int selectNum)
     //취소 제외 최대 선택지 개수는 3개로 제한
     switch (selectNum)
     {
-    case 0: //문 열기(Active) //TODO::수정 필요
-        //ChangeActiveState();
-        //return std::bind(&Door::ChangeActiveState, this);
-    case 1: //노크 //TODO:: 하단창 뜨고 ... 혹은 NPC 대면
+    case 0: 
+        Sleep();
         break;
     }
 
     //return nullptr; // 예외 처리: 적절한 리스너를 찾지 못한 경우
 }
+
+void Bed::Sleep()
+{
+    GameTimeMgr->SetPlusHour(TimeSleep);
+}
+
+

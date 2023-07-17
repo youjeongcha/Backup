@@ -60,7 +60,7 @@ namespace ENGINE
 				break;
 			case ButtonState::PRESSED:
 				if (isUp && clickListener)
-					clickListener();
+ 					clickListener();
 				break;
 			}
 

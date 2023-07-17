@@ -6,6 +6,7 @@
 #include "Player.h"
 #include "Door.h"
 #include "Window.h"
+//#include "Singleton.h"
 
 #ifndef DEMO_SCENE_H
 #define DEMO_SCENE_H
@@ -20,18 +21,44 @@ enum SCENE
 	SCENE_COUNT,
 };
 
+//struct Clock
+//{
+//	int hour;
+//	int min;
+//	int sec;
+//};
+
+//enum TimeLine
+//{
+//	TimeLine_Start = 8, //게임 시작 시간
+//	TimeLine_MORING = 6,
+//	TimeLine_NIGHT = 20,
+//	TimeLine_ONEDAY = 24,
+//};
+
 class DemoScene : public Scene
+//class DemoScene : public Singleton<DemoScene>
 {
 	SCENE nowScene; //현재 맵이 어떤 맵인지
 
 	BOOL isPause;
 	INT bounds;
 
+	////시간 흐름
+	//Clock m_Clock;
+	//float accumulatedSec; //시간 누적 카운트(deltaTime이용)
+	//bool isMoring;
+	//TimeLine nowTimeLine, oldTimeLine; //시간이 바뀐 순간을 감지하기 위해서
+	//float m_Sec;
+	//UILabel* timeLabel;
+	//bool isDrak; //밤 어둠 깔기 확인
+
 	//가구 추가
 	//Door door;
 	//Window window;
 
 	Bitmap* background = nullptr;
+	Bitmap* night = nullptr;
 	//Bitmap* door = nullptr; //
 	Player* player = nullptr;
 	Transform* playerTr = nullptr;
@@ -47,13 +74,20 @@ public:
 	virtual VOID Update(const FLOAT& deltaTime) override;
 	virtual VOID Draw() override;
 
+
 	VOID PauseBtnClickHandler();
 	VOID ContinueBtnClickHandler();
 	VOID QuitBtnClickHandler();
 
 	//씬 전환
-	void ChangeScene(SCENE changeScene);
+	void ChangeScene(); //좌우 이동 끝단으로 가면 씬이 전환된다.
+	////시간 전달
+	//Clock GetClock() { return m_Clock; }
+	//void SetPlusHour(int plusHour); //시간 추가
 
+//	friend Singleton;
+
+//#define GameMgr DemoScene::GetInstance()
 };
 
 #endif // !DEMO_SCENE_H

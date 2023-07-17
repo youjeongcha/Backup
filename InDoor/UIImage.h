@@ -23,11 +23,13 @@ namespace ENGINE
 	protected:
 		Bitmap* image;
 		DrawType type;
+	//	std::string name; //판넬2,3,4 추가 삭제 위해 추가함
 
 	public:
 		UIImage() : image(nullptr), type(DrawType::Normal) { uiType = UIType::IMAGE; }
 		VOID Initialize(CONST std::string& ImageName, DrawType type = DrawType::Normal);
 		virtual VOID Draw() override;
+//		std::string GetName() { return name; };
 
 	protected:
 		virtual VOID SetRect(BOOL pivotCenter) override;

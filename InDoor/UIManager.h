@@ -41,8 +41,18 @@ namespace ENGINE
 
 		auto iter = map_UI.find(name); // 이미 같은 이름의 UI가 있을 경우 추가 실패.
 
-		if (map_UI.end() != iter) 
-			return dynamic_cast<T*>((*iter).second); //존재하면 이미 있는 UI를 리턴한다. 
+		if (map_UI.end() != iter)
+		{
+			// 이미 같은 이름의 UI가 존재하는 경우 처리
+			T* existingUI = dynamic_cast<T*>(iter->second);
+			if (existingUI)
+			{
+				if (parent)
+					parent->AddChildUI(existingUI);
+				return existingUI;
+			}
+		}
+			//return dynamic_cast<T*>((*iter).second); //존재하면 이미 있는 UI를 리턴한다. 
 		//dynamic_cast는 C++에서 타입 간의 명시적인 형변환런타임에 타입 검사를 수행하고, 다운캐스팅이 가능한지 여부를 확인
 
 		T* ui = new T;

@@ -56,17 +56,30 @@ namespace ENGINE
 		//std::vector<Object*>* interObject 포인터를 역참조한 후에 멤버 함수에 접근
 		int interCount = (*interObject).size();
 
+		// 기존의 선택지 UI 삭제
+		//if (select_UI)
+		//{
+		//	UIMgr->Remove(select_UI->GetName());
+		//	select_UI = nullptr;
+		//}
+
 		switch (interCount)
 		{
 		case 1:
+			UIMgr->Remove("Optional Form_2");
+			select_UI = nullptr;
 			select_UI = UIMgr->AddUI<UIImage>("Optional Form_2");
 			select_UI->Initialize("Select_Panel_2.bmp", DrawType::Transparent);
 			break;
 		case 2:
+			UIMgr->Remove("Optional Form_3");
+			select_UI = nullptr;
 			select_UI = UIMgr->AddUI<UIImage>("Optional Form_3");
 			select_UI->Initialize("Select_Panel_3.bmp", DrawType::Transparent);
 			break;
 		case 3:
+			UIMgr->Remove("Optional Form_4");
+			select_UI = nullptr;
 			select_UI = UIMgr->AddUI<UIImage>("Optional Form_4");
 			select_UI->Initialize("Select_Panel_4.bmp", DrawType::Transparent);
 			break;
@@ -91,10 +104,13 @@ namespace ENGINE
 			for (i = 0; i < interCount; i++)
 			{
 				//버튼-선택지
-				UIButton* btn_select = UIMgr->AddUI<UIButton>("Optional " + (*interObject)[i]->GetObjectName() + " Btn", select_UI); //파일 이름으로 구분 ex.Home_Flowerpot.bmp
+				UIButton* btn_select = UIMgr->AddUI<UIButton>("Optional " + std::to_string(i + 1) + "_" + (*interObject)[i]->GetObjectName() + " Btn", select_UI); //파일 이름으로 구분 ex.Home_Flowerpot.bmp
 				//UIButton* btn_select = UIMgr->AddUI<UIButton>("Optional " + interObject[i]->GetObjectName() + " Btn", select_UI); //파일 이름으로 구분 ex.Home_Flowerpot.bmp
 				btn_select->Initialize("Select_Btn_Normal.bmp", "Select_Btn_Pressed.bmp", "", "", DrawType::Transparent);
 				btn_select->SetLocalPosition(selectBtn_X, selectBtn_Y, true);
+				/*btn_select->SetListener([this, interObject, i]() {
+					SelectBtnClickHandler((*interObject)[i]);
+					});*/
 				btn_select->SetListener(std::bind(&GUIManager::SelectBtnClickHandler, this, (*interObject)[i]));
 
 				//선택지 문구
@@ -144,5 +160,4 @@ namespace ENGINE
 		//pauseBtn->SetInteracterble(TRUE);
 		isPause = FALSE;
 	}
-
 }

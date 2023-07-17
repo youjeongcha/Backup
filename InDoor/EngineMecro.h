@@ -35,6 +35,7 @@ namespace ENGINE
 		ClientSize_Width = 400,
 		//ClientSize_Height = 600,
 		ClientSize_Height = 140,
+		//Client_Per_X = 50,
 		Client_Per_X = 50,
 		Client_Per_Y = 50, /*0 ~ 100%*/
 		FPS = 120/*초당 프레임*/

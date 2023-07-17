@@ -41,7 +41,7 @@ Object::Object(const ObjectData& dataSet, int index)
         renderer->SetSrc(0, 1);
     AddComponent(renderer);
 
-    renderer->SetRect(); //좌표 이동에 따라 Rect 변화
+    //renderer->SetRect(); //좌표 이동에 따라 Rect 변화
 
     //Anim 관련
     if (isAnim) //TODO::애니메이션 속도 조절 부분은 AnimationComponent
@@ -114,14 +114,20 @@ void Object::DetailSelectForm()
 	switch (detailSelectCount)
 	{
 	case 1:
+        ENGINE::UIMgr->Remove("Detail Optional Form_2");
+        detailSelect_UI = nullptr;
         detailSelect_UI = ENGINE::UIMgr->AddUI<ENGINE::UIImage>("Detail Optional Form_2");
         detailSelect_UI->Initialize("Select_Panel_2.bmp", ENGINE::DrawType::Transparent);
 		break;
 	case 2:
+        ENGINE::UIMgr->Remove("Detail Optional Form_3");
+        detailSelect_UI = nullptr;
         detailSelect_UI = ENGINE::UIMgr->AddUI<ENGINE::UIImage>("Detail Optional Form_3");
         detailSelect_UI->Initialize("Select_Panel_3.bmp", ENGINE::DrawType::Transparent);
 		break;
 	case 3:
+        ENGINE::UIMgr->Remove("Detail Optional Form_4");
+        detailSelect_UI = nullptr;
         detailSelect_UI = ENGINE::UIMgr->AddUI<ENGINE::UIImage>("Detail Optional Form_4");
         detailSelect_UI->Initialize("Select_Panel_4.bmp", ENGINE::DrawType::Transparent);
 		break;
@@ -153,7 +159,7 @@ void Object::DetailSelectForm()
 			//상세 선택지 문구
             ENGINE::UILabel* btn_txt = ENGINE::UIMgr->AddUI<ENGINE::UILabel>(objectName + sDetailSelect[i] + "Detail Optional Txt", btn_select);
 			btn_txt->SetLocalPosition(FONT_SELECT_X, FONT_SELECT_Y, true);
-			btn_txt->Initialize(sDetailSelect[i], RGB(255, 255, 255), ENGINE::GUIMgr->font[FONT_SELECT]);
+			btn_txt->Initialize(sDetailSelect[i], RGB(255, 255, 255), ENGINE::GUIMgr->Get_Font(FONT_SELECT));
 
 			selectBtn_Y += 25;
 		}
@@ -167,7 +173,7 @@ void Object::DetailSelectForm()
 		//선택지 문구
         ENGINE::UILabel* btnCancel_txt = ENGINE::UIMgr->AddUI<ENGINE::UILabel>("Detail_Cancel_Txt" + std::to_string(i + 1), btn_Cancel);
 		btnCancel_txt->SetLocalPosition(FONT_SELECT_X, FONT_SELECT_Y, true);
-		btnCancel_txt->Initialize("취소", RGB(255, 255, 255), ENGINE::GUIMgr->font[FONT_SELECT]);
+		btnCancel_txt->Initialize("취소", RGB(255, 255, 255), ENGINE::GUIMgr->Get_Font(FONT_SELECT));
 	}
     detailSelect_UI->SetEnable(TRUE);
 }
@@ -198,6 +204,20 @@ void Object::ChangeActiveState()
         renderer->SetSrc(0, 0);
 
     //return isActive;
+}
+
+
+void Object::TimeChangeBitmap(bool isDrak)
+{
+    if (isDrak)
+        isActive = false;
+    else
+        isActive = true;
+
+    if (isActive) //작동 여부에 따라 이미지 다르게
+        renderer->SetSrc(0, 1);
+    else
+        renderer->SetSrc(0, 0);
 }
 
 VOID Object::Release()
