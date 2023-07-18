@@ -31,7 +31,8 @@ namespace ENGINE
 	private:
 		//SCENE mapIndex; //현재 맵이 어떤 맵인지
 		//가구 Load 저장 데이터
-		std::map <std::string, ObjectData> objectData;
+		//std::map <std::string, ObjectData> objectData;
+		//std::map <std::string, ObjectData> saveObjectData;
 
 		//가구 객체 보관
 		//std::map <EachObjectIndex, Object> map0_Objects;
@@ -53,12 +54,12 @@ namespace ENGINE
 	public:
 		~ObjectManager();
 
-		//txt에서 정보 받아오기
-		void LoadData();
-		void FileRead(const std::string& file);
+
+
 		//map 변경될때마다 객체 설정 다시 하기
 		void Delete_mObject();
-		void InitSetting(int _mapIndex, bool isDrak);
+		//void Delete_mObject(int _mapIndex);
+		void InitSetting(int now_MapIndex, int change_MapIndex, bool isDrak);
 
 		void Draw();
 		void Update(const FLOAT& deltaTime);

@@ -1,6 +1,7 @@
 #include "Bed.h"
 #include "ResourceManager.h"
-#include "GameTimeManager.h"
+#include "GameManager.h"
+#include "Player.h"
 
 Bed::Bed()
 {
@@ -42,7 +43,7 @@ void Bed::DetailSelect(int selectNum)
 
 void Bed::Sleep()
 {
-    GameTimeMgr->SetPlusHour(TimeSleep);
+    GameMgr->PlayerSleep();
 }
 
 

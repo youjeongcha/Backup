@@ -6,11 +6,12 @@ namespace ENGINE
 {
 	GUIManager::GUIManager()
 	{
-		font[FONT_GAMENAME] = CreateFont(FONTSIZE_GAMENAME, 0, 0, 0, FW_THIN, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"Times New Roman");
+		/*font[FONT_GAMENAME] = CreateFont(FONTSIZE_GAMENAME, 0, 0, 0, FW_THIN, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"Times New Roman");
 		font[FONT_START_EXIT] = CreateFont(FONTSIZE_START_EXIT, 0, 0, 0, FW_SEMIBOLD, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"Times New Roman");
-		font[FONT_STORY] = CreateFont(FONTSIZE_STORY, 0, 0, 0, FW_THIN, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"Times New Roman");
+		font[FONT_STORY] = CreateFont(FONTSIZE_STORY, 0, 0, 0, FW_THIN, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"Times New Roman");*/
 		font[FONT_SELECT] = CreateFont(FONTSIZE_SELECT, 0, 0, 0, FW_THIN, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"Times New Roman");
-		font[FONT_NEXT] = CreateFont(FONTSIZE_NEXT, 0, 0, 0, FW_THIN, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"Times New Roman");
+		font[FONT_STATE] = CreateFont(FONTSIZE_STATE, 0, 0, 0, FW_THIN, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"Times New Roman");
+		//font[FONT_NEXT] = CreateFont(FONTSIZE_NEXT, 0, 0, 0, FW_THIN, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"Times New Roman");
 		font[FONT_CLOCK] = CreateFont(FONTSIZE_CLOCK, 0, 0, 0, FW_THIN, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"Times New Roman");
 		font[FONT_GAMECLEAR] = CreateFont(FONTSIZE_GAMECLEAR, 0, 0, 0, FW_BOLD, 0, 0, 0, HANGEUL_CHARSET, 0, 0, PROOF_QUALITY, 0, L"궁서");
 	}
@@ -116,7 +117,7 @@ namespace ENGINE
 				//선택지 문구
 				UILabel* btn_txt = UIMgr->AddUI<UILabel>((*interObject)[i]->GetObjectName() + "Txt", btn_select);
 				btn_txt->SetLocalPosition(FONT_SELECT_X, FONT_SELECT_Y, true);
-				btn_txt->Initialize((*interObject)[i]->GetEachObjectIndex().name, RGB(255, 255, 255), font[FONT_SELECT]);
+				btn_txt->Initialize((*interObject)[i]->GetEachObjectIndex().name, RGB(255, 255, 205), font[FONT_SELECT]);
 
 				selectBtn_Y += 25;
 				//btn_select->SetListener(std::bind(&GUIManager::SelectBtnClickHandler, this, i));

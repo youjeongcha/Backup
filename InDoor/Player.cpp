@@ -1,8 +1,9 @@
 #include "Player.h"
-#include "ResourceManager.h"
-#include "SceneManager.h"
-#include "ObjectManager.h"
-#include "GUIManager.h"
+//#include "ResourceManager.h"
+//#include "SceneManager.h"
+//#include "ObjectManager.h"
+//#include "GUIManager.h"
+#include "GameManager.h"
 
 Player::Player()
 {
@@ -66,6 +67,8 @@ VOID Player::Update(const FLOAT& deltaTime)
 {
     Operate(this);
 
+
+
     //key를 떼면 state가 idle 상태로 벼한다. -> 스프라이트도 idle 상태로 변경되어야 한다.
     //renderer->ChangeSpritese(vResources[0]); //idle
 
@@ -114,6 +117,8 @@ VOID Player::Update(const FLOAT& deltaTime)
 
     prevState = state;
 }
+
+
 
 
 void Player::Inventory()

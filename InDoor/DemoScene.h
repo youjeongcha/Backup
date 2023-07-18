@@ -6,6 +6,7 @@
 #include "Player.h"
 #include "Door.h"
 #include "Window.h"
+#include "GameManager.h"
 //#include "Singleton.h"
 
 #ifndef DEMO_SCENE_H
@@ -13,13 +14,7 @@
 
 using namespace ENGINE;
 
-enum SCENE
-{
-	SCENE_DOOR,
-	SCENE_KITCHEN,
-	SCENE_BEDROOM,
-	SCENE_COUNT,
-};
+
 
 //struct Clock
 //{
@@ -53,13 +48,9 @@ class DemoScene : public Scene
 	//UILabel* timeLabel;
 	//bool isDrak; //¹ã ¾îµÒ ±ò±â È®ÀÎ
 
-	//°¡±¸ Ãß°¡
-	//Door door;
-	//Window window;
 
 	Bitmap* background = nullptr;
 	Bitmap* night = nullptr;
-	//Bitmap* door = nullptr; //
 	Player* player = nullptr;
 	Transform* playerTr = nullptr;
 	SpriteRenderer* playerSr = nullptr;

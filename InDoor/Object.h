@@ -134,6 +134,35 @@ public:
         //else
         //    anim = nullptr;
     }
+
+    //Object& Object::operator=(const Object& other)
+    //{
+    //    if (this == &other)
+    //        return *this;
+
+    //    // 멤버 변수들을 깊은 복사
+    //    eachObjectIndex = other.eachObjectIndex;
+    //    objectName = other.objectName;
+    //    fileName = other.fileName;
+    //    SpritesX = other.SpritesX;
+    //    SpritesY = other.SpritesY;
+    //    Available = other.Available;
+    //    isMove = other.isMove;
+    //    isAnim = other.isAnim;
+    //    isActive = other.isActive;
+    //    typeCheck = other.typeCheck;
+    //    dir = other.dir;
+    //    moveSpeed = other.moveSpeed;
+
+    //    // renderer를 깊은 복사
+    //    delete renderer;
+    //    renderer = new ENGINE::SpriteRenderer(*other.renderer);
+
+    //    delete anim;
+    //    anim = other.anim ? new ENGINE::AnimationComponent(*other.anim) : nullptr;
+
+    //    return *this;
+    //}
     /*
     Object& operator=(const Object& other) {
         // 할당 연산자의 동작을 정의합니다
