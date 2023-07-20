@@ -34,6 +34,8 @@ struct Clock
 	int sec;
 };
 
+
+
 class GameManager : public Singleton<GameManager>
 {
 private:
@@ -46,7 +48,14 @@ private:
 	//침실 Object 수정 데이터
 	std::map <std::string, std::vector<Object*>> mBedRoomObject;
 
-	//Bitmap* night = nullptr;
+	ENGINE::Bitmap* night = nullptr;
+	ENGINE::Bitmap* gameOver = nullptr;
+	ENGINE::Bitmap* underSection = nullptr;
+	ENGINE::UIImage* select_Restart = nullptr;
+	int gameOver_X, gameOver_Y;
+
+	//게임오버 or 게임클리어(문열기 가능)
+	bool isGameOver, isGameClear;
 
 
 	//시간 흐름
@@ -56,17 +65,21 @@ private:
 	TimeLine nowTimeLine, oldTimeLine; //시간이 바뀐 순간을 감지하기 위해서
 
 	ENGINE::UILabel* timeLabel;
-	bool isDrak; //밤 어둠 깔기 확인
+	ENGINE::UILabel* txtLabel;
+	//ENGINE::UIImage* underTxt_UI;
+	//ENGINE::UIImage* underTxt_UI;
+	bool isDark; //밤 어둠 깔기 확인
 
 	//플레이어 관련
 	//플레이어 상태
 	int m_health, m_hunger, m_thirst, m_fatigue;
-	bool m_isAnyStatOver90; // 90 이상인 수치가 있는지 여부
+	//bool m_isAnyStatOver90; // 90 이상인 수치가 있는지 여부
 
 
 	GameManager();
 public:
 	~GameManager();
+	
 	//txt에서 정보 받아오기
 	void LoadData();
 	void FileRead(const std::string& file);
@@ -74,6 +87,7 @@ public:
 	//초기 데이터 설정 (처음 시작 데이터 and 이어하기 데이터 가능 변수에 담긴거에 따라)
 	//로드해온 Object 데이터 각 Scene마다 Object 관리하는 변수에 세팅
 	void Initialize();
+	void Delete_SceneObject();
 	void InitSceneData(int _mapIndex, std::map <std::string, std::vector<Object*>>& _Object);
 	
 	//씬 전환될때 Object의 데이터를 알맞은 씬의 변수에 세이브
@@ -84,19 +98,22 @@ public:
 	std::map <std::string, std::vector<Object*>> ApplySceneData(SCENE applyScene);
 
 	//시간 전달
-	//Clock GetClock() { return m_Clock; }
+	Clock GetClock() { return m_Clock; }
 	void SetPlusHour(int plusHour); //시간 추가
 
 	void Update(const FLOAT& deltaTime);
+	void Draw();
+
+	//재시작
+	void Restart();
+	bool GetIsGameOver() { return isGameOver; }
 
 
-
-
-	Clock GetClock() { return m_Clock; }
+	//Clock GetClock() { return m_Clock; }
 	//SCENE GetNowScene() { return nowScene; }
 	TimeLine GetNowTimeLine() { return nowTimeLine; }
 	TimeLine GetOldTimeLine() { return oldTimeLine; }
-	bool GetIsDark() { return isDrak; }
+	bool GetIsDark() { return isDark; }
 	ENGINE::UILabel* GetTimeLabel() { return timeLabel; }
 
 	void SetClock(Clock _Clock) { m_Clock = _Clock; }

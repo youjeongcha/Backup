@@ -1,5 +1,5 @@
 #include "Curtain_Red.h"
-#include "ResourceManager.h"
+#include "GameManager.h"
 
 Curtain_Red::Curtain_Red()
 {
@@ -38,5 +38,6 @@ void Curtain_Red::DetailSelect(int selectNum)
         break;
     }
 
-    //return nullptr; // 예외 처리: 적절한 리스너를 찾지 못한 경우
+    detailSelect_UI->SetEnable(FALSE);
+    ENGINE::GUIMgr->Set_IsPause(false);
 }

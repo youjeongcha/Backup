@@ -1,42 +1,150 @@
 #include "GameManager.h"
-#include "ObjectManager.h"
-//#include "GUIManager.h"
-#include "UIManager.h"
 
 GameManager::GameManager()
 {
+	//TXT 파일 읽어오기
+	LoadData();
+
+
+	//Night and GameOver and Sleep
+	ENGINE::ResourceMgr->Load("Black.bmp");
+	night = ENGINE::ResourceMgr->GetBitmap("Black.bmp");
+	night->SetDrawSize(ENGINE::SceneMgr->GetWidth(), ENGINE::SceneMgr->GetHeight());
+
+	ENGINE::ResourceMgr->Load("UnderSection.bmp");
+	underSection = ENGINE::ResourceMgr->GetBitmap("UnderSection.bmp");
+	underSection->SetDrawSize(ENGINE::SceneMgr->GetWidth(), 30);
+
+	//시간 체크
+	timeLabel = ENGINE::UIMgr->AddUI<ENGINE::UILabel>("Time Label");
+	timeLabel->Initialize("", RGB(255, 255, 255), ENGINE::GUIMgr->Get_Font(FONT_STATE));
+	timeLabel->SetPosition(10, 10); // 원하는 위치로 설정
+
+	////하단 텍스트
+	//ENGINE::UIMgr->Remove("UnderTxt Form");
+	//underTxt_UI = ENGINE::UIMgr->AddUI<ENGINE::UIImage>("UnderTxt Form");
+	//underTxt_UI->Initialize("Black.bmp", ENGINE::DrawType::Transparent);
+
+	//하단 텍스트 문구
+	txtLabel = ENGINE::UIMgr->AddUI<ENGINE::UILabel>("Txt Label");
+	txtLabel->Initialize("", RGB(255, 255, 255), ENGINE::GUIMgr->Get_Font(FONT_UNDERTXT));
+	txtLabel->SetPosition(ENGINE::SceneMgr->GetWidth() / 3, ENGINE::SceneMgr->GetHeight() - 20); // 원하는 위치로 설정
+
+
+	//GameOver
+	ENGINE::ResourceMgr->Load("GameOver.bmp");
+	gameOver = ENGINE::ResourceMgr->GetBitmap("GameOver.bmp");
+	//좌표
+	gameOver_X = ENGINE::SceneMgr->GetWidth() - gameOver->GetSize().cx * 1.55;
+	gameOver_Y = ENGINE::SceneMgr->GetHeight() / 2 - gameOver->GetSize().cy;
+	
+
+	//게임 오버 선택지
+	ENGINE::ResourceMgr->Load("Select_Panel.bmp");
+	ENGINE::UIMgr->Remove("Optional Form_1");
+	select_Restart = ENGINE::UIMgr->AddUI<ENGINE::UIImage>("Optional Form_1");
+	select_Restart->Initialize("Select_Panel.bmp", ENGINE::DrawType::Transparent);
+	select_Restart->SetLocalPosition(ENGINE::SceneMgr->GetWidth() - select_Restart->GetSize().cx * 1.95, gameOver_Y + 55, true);
+
+	int selectBtn_X, selectBtn_Y;
+	selectBtn_X = select_Restart->GetSize().cx * 0.5f;
+	selectBtn_Y = 13;
+	
+	//재시작 - 버튼
+	ENGINE::ResourceMgr->Load("Select_Btn_Normal.bmp");
+	ENGINE::ResourceMgr->Load("Select_Btn_Pressed.bmp");
+	ENGINE::UIButton* btn_Restart = ENGINE::UIMgr->AddUI<ENGINE::UIButton>("Optional Restart Btn", select_Restart);
+	btn_Restart->Initialize("Select_Btn_Normal.bmp", "Select_Btn_Pressed.bmp", "", "", ENGINE::DrawType::Transparent);
+	btn_Restart->SetLocalPosition(selectBtn_X, selectBtn_Y, true);
+	btn_Restart->SetListener(std::bind(&GameManager::Restart, this));
+
+	//재시작 - 선택지 문구
+	ENGINE::UILabel* btn_txt = ENGINE::UIMgr->AddUI<ENGINE::UILabel>("Restart Txt", btn_Restart);
+	btn_txt->SetLocalPosition(FONT_SELECT_X, FONT_SELECT_Y, true);
+	btn_txt->Initialize("재시작", RGB(255, 255, 205), ENGINE::GUIMgr->Get_Font(FONT_SELECT));
+
+
+	//---------------------
+	//로드해온 Object 데이터 각 Scene마다 Object 관리하는 변수에 세팅
+	Restart();
+}
+GameManager::~GameManager()
+{
+}
+
+void GameManager::Delete_SceneObject()
+{
+	if (mDoorObject.size() > 0)
+	{
+		for (std::map<std::string, std::vector<Object*>>::iterator iter = mDoorObject.begin(); iter != mDoorObject.end(); iter++)
+		{
+			//for (Object* obj : iter->second)
+			//{
+			//	delete obj;
+			//}
+			iter->second.clear();
+		}
+	}
+	mDoorObject.clear();
+
+	if (mKitchenObject.size() > 0)
+	{
+		for (std::map<std::string, std::vector<Object*>>::iterator iter = mKitchenObject.begin(); iter != mKitchenObject.end(); iter++)
+		{
+			//for (Object* obj : iter->second)
+			//{
+			//	delete obj;
+			//}
+			iter->second.clear();
+		}
+	}
+	mKitchenObject.clear();
+
+	if (mBedRoomObject.size() > 0)
+	{
+		for (std::map<std::string, std::vector<Object*>>::iterator iter = mBedRoomObject.begin(); iter != mBedRoomObject.end(); iter++)
+		{
+			//for (Object* obj : iter->second)
+			//{
+			//	delete obj;
+			//}
+			iter->second.clear();
+		}
+	}
+	mBedRoomObject.clear();
+}
+
+void GameManager::Restart()
+{
+	isGameOver = false;
+	isGameClear = false;
+
+	isDark = false;
+	
+	timeLabel->SetEnable(true);
+	select_Restart->SetEnable(false);
+
 	//수치 상태
-	m_health = 20;
-	m_hunger = 5;
+	m_health = 10;
+	m_hunger = 50;
 	//m_hunger = 50;
 	m_thirst = 5;
 	//m_thirst = 50;
 	m_fatigue = 20;
-	m_isAnyStatOver90 = false;
 
 	//경과 시간
 	m_elapsedSec = 0;
 	m_elapsedMin = 0;
 
-	//TXT 파일 읽어오기
-	LoadData();
+	//시간 체크
+	m_elapsedSec = 0.0f;
+	nowTimeLine = TimeLine_MORING; oldTimeLine = TimeLine_MORING;
+	m_Clock.hour = TimeLine_NIGHT - 1;
+	m_Clock.min = 50;
 
 	//로드해온 Object 데이터 각 Scene마다 Object 관리하는 변수에 세팅
+	Delete_SceneObject();
 	Initialize();
-
-
-    //시간 체크
-	m_elapsedSec = 0.0f;
-    nowTimeLine = TimeLine_MORING; oldTimeLine = TimeLine_MORING;
-    m_Clock.hour = TimeLine_NIGHT - 1;
-    m_Clock.min = 57;
-
-    timeLabel = ENGINE::UIMgr->AddUI<ENGINE::UILabel>("Time Label");
-    timeLabel->Initialize("", RGB(255, 255, 255), ENGINE::GUIMgr->Get_Font(FONT_STATE));
-    timeLabel->SetPosition(10, 10); // 원하는 위치로 설정
-}
-GameManager::~GameManager()
-{
 }
 
 void GameManager::Initialize()
@@ -47,24 +155,160 @@ void GameManager::Initialize()
 	InitSceneData(SCENE_BEDROOM, mBedRoomObject);
 }
 
+void GameManager::Draw()
+{
+	if (isGameOver)
+	{
+		gameOver->StretchBlt(gameOver_X, gameOver_Y);
+		select_Restart->Draw();
+		return;
+	}
+
+	//하단 텍스트창
+	//underSection->AlphaBlendBlt(ENGINE::SceneMgr->GetWidth() / 3, ENGINE::SceneMgr->GetHeight() - 25, 10);
+	underSection->AlphaBlendBlt(0, ENGINE::SceneMgr->GetHeight() - 30, 155);// 원하는 값(0 ~ 255)
+
+	//하단 텍스트 표시
+	char timeStr[100];
+	//sprintf_s(timeStr, "%02d:%02d:%02d", m_Clock.hour, m_Clock.min, m_Clock.sec);
+	sprintf_s(timeStr, sizeof(timeStr), "하단 텍스트를 띄운다.");
+	txtLabel->SetText(timeStr);
+
+	if (isDark)
+	{
+		night->AlphaBlendBlt(0, 0, ENGINE::SceneMgr->GetHeight() - 30);
+	}
+}
+
+
+
+
+void GameManager::Update(const FLOAT&  deltaTime)
+{
+
+
+
+	//underTxt_UI->SetEnable(false);
+
+	//txtLabel->SetEnable(true);
+
+
+    //시간 경과 카운트
+	//경과 시간 업데이트(1초가 게임상 1분)
+	m_elapsedSec += deltaTime;
+    if (m_elapsedSec >= 1.0f)
+    {
+        m_elapsedSec -= 1.0f;
+		m_elapsedMin += 1.0f;
+        m_Clock.min += 1;
+
+        if (m_Clock.min >= 60)
+        {
+            m_Clock.min -= 60;
+            m_Clock.hour += 1;
+        }
+
+		//----------플레이어 관련--------------
+		// 피로, 허기, 갈증이 100이 되면 > 건강이 1초마다 1씩 깎인다.
+		if ((m_fatigue == 100) || (m_thirst == 100) || (m_hunger == 100))
+		{
+			m_health -= 1;
+
+			//최소치 고정
+			if (m_health < 0)
+				m_health = 0;
+		}
+    }
+
+
+    //24시간 경과 갱신
+    if (m_Clock.hour >= TimeLine_ONEDAY)
+        m_Clock.hour -= TimeLine_ONEDAY;
+
+
+    //시간대 기록(낮 밤)
+    if ((m_Clock.hour >= TimeLine_MORING) && (m_Clock.hour < TimeLine_NIGHT))
+        nowTimeLine = TimeLine_MORING;
+    else
+        nowTimeLine = TimeLine_NIGHT;
+
+
+    //시간에 따라 달라지는 요소들 처리(Object, NPC등)
+
+    //낮밤 전환에 따라 단순 BitpMap 바뀌는 요소들
+    if ((nowTimeLine == TimeLine_NIGHT) && (oldTimeLine == TimeLine_MORING))
+    {//낮 > 밤
+		isDark = true;
+        ENGINE::ObjectMgr->TimeChangeBitmap(isDark);
+    }
+    else if ((nowTimeLine == TimeLine_MORING) && (oldTimeLine == TimeLine_NIGHT))
+    {//밤 > 낮
+		isDark = false;
+		ENGINE::ObjectMgr->TimeChangeBitmap(isDark);
+    }
+
+
+
+	//----------플레이어 관련--------------
+
+	//30분마다 피로, 갈증, 허기 증가
+	if (m_elapsedMin >= 30) {
+		m_elapsedMin = 0; //경과 시간 초기화
+
+		//피로, 갈증, 허기 증가
+		m_fatigue += 5;
+		m_thirst += 5;
+		m_hunger += 5;
+
+		//피로, 허기, 갈증이 90 이상이 되면 > 건강이 30초마다 5씩 깎인다.
+		if ((m_fatigue <= 90) || (m_thirst <= 90) || (m_hunger <= 90))
+			m_health -= 5;
+
+		//수치가 최대 최소가 되지 않도록 조정
+		if (m_health < 0)
+			m_health = 0;
+		if (m_fatigue > 100)
+			m_fatigue = 100;
+		if (m_thirst > 100)
+			m_thirst = 100;
+		if (m_hunger > 100)
+			m_hunger = 100;
+	}
+
+	//-------GameOver   or   GameClear(문 열기 가능 체크)-------
+	if (m_health == 0)
+	{
+		isGameOver = true;
+		//상단 상태창 삭제
+		select_Restart->SetEnable(true);
+		timeLabel->SetEnable(false);
+		//TODO::하단 창 띄우기
+		//TODO::하단 창 텍스트
+		
+		//게임 오버 화면
+		//게임 오버 화면 - 텍스트
+	}
+	else if (m_health == 100)
+	{
+		isGameClear = true;
+	}
+
+    oldTimeLine = nowTimeLine;
+}
+
+
 void GameManager::RenewalSceneData(SCENE saveScene, const std::map<std::string, std::vector<Object*>>& nowSceneObject)
 {
 	switch (saveScene)
 	{
 	case SCENE_DOOR:
-		//ClearSceneData(mDoorObject); // 기존의 mDoorObject 해제
-		//mDoorObject = nowSceneObject;
 		DeepCopyMap(mDoorObject, nowSceneObject); // 깊은 복사 수행
 		break;
 	case SCENE_KITCHEN:
-		//ClearSceneData(mKitchenObject); // 기존의 mKitchenObject 해제
-		//mKitchenObject = nowSceneObject;
 		DeepCopyMap(mKitchenObject, nowSceneObject); // 깊은 복사 수행
 		break;
 	case SCENE_BEDROOM:
-		//ClearSceneData(mBedRoomObject); // 기존의 mBedRoomObject 해제
 		DeepCopyMap(mBedRoomObject, nowSceneObject); // 깊은 복사 수행
-		//mBedRoomObject = nowSceneObject;
 		break;
 	}
 }
@@ -140,35 +384,6 @@ void GameManager::DeepCopyMap(std::map<std::string, std::vector<Object*>>& dest,
 	}
 }
 
-//void GameManager::ClearSceneData(std::map<std::string, std::vector<Object*>>& sceneData)
-//{
-//	for (auto& pair : sceneData)
-//	{
-//		//for (Object* obj : pair.second)
-//		//{
-//		//	delete obj;
-//		//}
-//		pair.second.clear();
-//	}
-//	sceneData.clear();
-//}
-
-
-//void GameManager::RenewalSceneData(SCENE saveScene, const std::map <std::string, std::vector<Object*>>& nowSceneObject)
-//{
-//	switch (saveScene)
-//	{
-//	case SCENE_DOOR:
-//		mDoorObject = nowSceneObject;
-//		break;
-//	case SCENE_KITCHEN:
-//		mKitchenObject = nowSceneObject;
-//		break;
-//	case SCENE_BEDROOM:
-//		mBedRoomObject = nowSceneObject;
-//		break;
-//	}
-//}
 
 std::map<std::string, std::vector<Object*>> GameManager::ApplySceneData(SCENE applyScene)
 {
@@ -187,102 +402,9 @@ std::map<std::string, std::vector<Object*>> GameManager::ApplySceneData(SCENE ap
 
 
 
-void GameManager::Update(const FLOAT&  deltaTime)
-{
-    //시간 경과 카운트
-	//경과 시간 업데이트(1초가 게임상 1분)
-	m_elapsedSec += deltaTime;
-    if (m_elapsedSec >= 1.0f)
-    {
-        m_elapsedSec -= 1.0f;
-		m_elapsedMin += 1.0f;
-        m_Clock.min += 1;
 
-        if (m_Clock.min >= 60)
-        {
-            m_Clock.min -= 60;
-            m_Clock.hour += 1;
-        }
+//------파일 입출력 관련--------
 
-		//----------플레이어 관련--------------
-		// 피로, 허기, 갈증이 100이 되면 > 건강이 1초마다 1씩 깎인다.
-		if ((m_fatigue == 100) || (m_thirst == 100) || (m_hunger == 100))
-		{
-			m_health -= 1;
-
-			//최소치 고정
-			if (m_health < 0)
-				m_health = 0;
-		}
-    }
-
-
-    //24시간 경과 갱신
-    if (m_Clock.hour >= TimeLine_ONEDAY)
-        m_Clock.hour -= TimeLine_ONEDAY;
-
-
-    //시간대 기록(낮 밤)
-    if ((m_Clock.hour >= TimeLine_MORING) && (m_Clock.hour < TimeLine_NIGHT))
-        nowTimeLine = TimeLine_MORING;
-    else
-        nowTimeLine = TimeLine_NIGHT;
-
-
-    //시간에 따라 달라지는 요소들 처리(Object, NPC등)
-
-    //낮밤 전환에 따라 단순 BitpMap 바뀌는 요소들
-    if ((nowTimeLine == TimeLine_NIGHT) && (oldTimeLine == TimeLine_MORING))
-    {//낮 > 밤
-        isDrak = true;
-        ENGINE::ObjectMgr->TimeChangeBitmap(isDrak);
-    }
-    else if ((nowTimeLine == TimeLine_MORING) && (oldTimeLine == TimeLine_NIGHT))
-    {//밤 > 낮
-        isDrak = false;
-		ENGINE::ObjectMgr->TimeChangeBitmap(isDrak);
-    }
-
-
-
-	//----------플레이어 관련--------------
-
-	//30분마다 피로, 갈증, 허기 증가
-	if (m_elapsedMin >= 30) {
-		m_elapsedMin = 0; //경과 시간 초기화
-
-		//피로, 갈증, 허기 증가
-		m_fatigue += 5;
-		m_thirst += 5;
-		m_hunger += 5;
-
-		//피로, 허기, 갈증이 90 이상이 되면 > 건강이 30초마다 5씩 깎인다.
-		if ((m_fatigue <= 90) || (m_thirst <= 90) || (m_hunger <= 90))
-			m_health -= 5;
-
-		//수치가 최대 최소가 되지 않도록 조정
-		if (m_health < 0)
-			m_health = 0;
-		if (m_fatigue > 100)
-			m_fatigue = 100;
-		if (m_thirst > 100)
-			m_thirst = 100;
-		if (m_hunger > 100)
-			m_hunger = 100;
-	}
-
-	//-------GameOver   or   GameClear(문 열기 가능 체크)-------
-	if (m_health == 0)
-	{
-		//TODO::하단 창 띄우기
-		//TODO::하단 창 텍스트
-		
-		//게임 오버 화면
-		//게임 오버 화면 - 텍스트
-	}
-
-    oldTimeLine = nowTimeLine;
-}
 
 void GameManager::LoadData()
 {
@@ -425,122 +547,117 @@ void GameManager::FileRead(const std::string& file) {
 void GameManager::InitSceneData(int _mapIndex, std::map <std::string, std::vector<Object*>>& _Object)
 { //로드해온 Object 데이터 각 Scene마다 Object 관리하는 변수에 세팅
 
-	//for (int _mapIndex = 0; _mapIndex < SCENE_COUNT; _mapIndex++)
+			//Door
+	std::vector<Object*> tmpObject;
+	for (int i = 0; i < objectData.find("Door")->second.objectCount; i++)
 	{
-		//std::map <std::string, std::vector<Object*>> _Object;
-
-		//Door
-		std::vector<Object*> tmpObject;
-		for (int i = 0; i < objectData.find("Door")->second.objectCount; i++)
-		{
-			//해당 맵에 배치된 Object 인지 판별
-			if (_mapIndex == objectData.find("Door")->second.eachObject[i]->objectIndex.mapIndex)
-				tmpObject.push_back(new Door(objectData.find("Door")->second, i));
-		}
-		_Object.insert({ "Door", tmpObject }); //pair로 만들기
-
-		tmpObject.clear();
-
-		//Window
-		for (int i = 0; i < objectData.find("Window")->second.objectCount; i++)
-		{
-			//해당 맵에 배치된 Object 인지 판별
-			if (_mapIndex == objectData.find("Window")->second.eachObject[i]->objectIndex.mapIndex)
-				tmpObject.push_back(new Window(objectData.find("Window")->second, i));
-		}
-		_Object.insert({ "Window", tmpObject }); //pair로 만들기
-
-		tmpObject.clear();
-
-		//Drawer
-		for (int i = 0; i < objectData.find("Drawer")->second.objectCount; i++)
-		{
-			//해당 맵에 배치된 Object 인지 판별
-			if (_mapIndex == objectData.find("Drawer")->second.eachObject[i]->objectIndex.mapIndex)
-				tmpObject.push_back(new Drawer(objectData.find("Drawer")->second, i));
-		}
-		_Object.insert({ "Drawer", tmpObject }); //pair로 만들기
-
-		tmpObject.clear();
-
-
-		//Flowerpot
-		for (int i = 0; i < objectData.find("Flowerpot")->second.objectCount; i++)
-		{
-			//해당 맵에 배치된 Object 인지 판별
-			if (_mapIndex == objectData.find("Flowerpot")->second.eachObject[i]->objectIndex.mapIndex)
-				tmpObject.push_back(new Flowerpot(objectData.find("Flowerpot")->second, i));
-		}
-		_Object.insert({ "Flowerpot", tmpObject }); //pair로 만들기
-
-		tmpObject.clear();
-
-		//Bed
-		for (int i = 0; i < objectData.find("Bed")->second.objectCount; i++)
-		{
-			//해당 맵에 배치된 Object 인지 판별
-			if (_mapIndex == objectData.find("Bed")->second.eachObject[i]->objectIndex.mapIndex)
-				tmpObject.push_back(new Bed(objectData.find("Bed")->second, i));
-		}
-		_Object.insert({ "Bed", tmpObject }); //pair로 만들기
-
-		tmpObject.clear();
-
-		//Shelf_Book
-		for (int i = 0; i < objectData.find("Shelf_Book")->second.objectCount; i++)
-		{
-			//해당 맵에 배치된 Object 인지 판별
-			if (_mapIndex == objectData.find("Shelf_Book")->second.eachObject[i]->objectIndex.mapIndex)
-				tmpObject.push_back(new Shelf_Book(objectData.find("Shelf_Book")->second, i));
-		}
-		_Object.insert({ "Shelf_Book", tmpObject }); //pair로 만들기
-
-		tmpObject.clear();
-
-		//Table_Vertical
-		for (int i = 0; i < objectData.find("Table_Vertical")->second.objectCount; i++)
-		{
-			//해당 맵에 배치된 Object 인지 판별
-			if (_mapIndex == objectData.find("Table_Vertical")->second.eachObject[i]->objectIndex.mapIndex)
-				tmpObject.push_back(new Table_Vertical(objectData.find("Table_Vertical")->second, i));
-		}
-		_Object.insert({ "Table_Vertical", tmpObject }); //pair로 만들기
-
-		tmpObject.clear();
-
-		//Curtain_Red
-		for (int i = 0; i < objectData.find("Curtain_Red")->second.objectCount; i++)
-		{
-			//해당 맵에 배치된 Object 인지 판별
-			if (_mapIndex == objectData.find("Curtain_Red")->second.eachObject[i]->objectIndex.mapIndex)
-				tmpObject.push_back(new Curtain_Red(objectData.find("Curtain_Red")->second, i));
-		}
-		_Object.insert({ "Curtain_Red", tmpObject }); //pair로 만들기
-
-		tmpObject.clear();
-
-		//Closet
-		for (int i = 0; i < objectData.find("Closet")->second.objectCount; i++)
-		{
-			//해당 맵에 배치된 Object 인지 판별
-			if (_mapIndex == objectData.find("Closet")->second.eachObject[i]->objectIndex.mapIndex)
-				tmpObject.push_back(new Closet(objectData.find("Closet")->second, i));
-		}
-		_Object.insert({ "Closet", tmpObject }); //pair로 만들기
-
-		tmpObject.clear();
-
-		//Table_Red
-		for (int i = 0; i < objectData.find("Table_Red")->second.objectCount; i++)
-		{
-			//해당 맵에 배치된 Object 인지 판별
-			if (_mapIndex == objectData.find("Table_Red")->second.eachObject[i]->objectIndex.mapIndex)
-				tmpObject.push_back(new Table_Red(objectData.find("Table_Red")->second, i));
-		}
-		_Object.insert({ "Table_Red", tmpObject }); //pair로 만들기
-
-		tmpObject.clear();
+		//해당 맵에 배치된 Object 인지 판별
+		if (_mapIndex == objectData.find("Door")->second.eachObject[i]->objectIndex.mapIndex)
+			tmpObject.push_back(new Door(objectData.find("Door")->second, i));
 	}
+	_Object.insert({ "Door", tmpObject }); //pair로 만들기
+
+	tmpObject.clear();
+
+	//Window
+	for (int i = 0; i < objectData.find("Window")->second.objectCount; i++)
+	{
+		//해당 맵에 배치된 Object 인지 판별
+		if (_mapIndex == objectData.find("Window")->second.eachObject[i]->objectIndex.mapIndex)
+			tmpObject.push_back(new Window(objectData.find("Window")->second, i));
+	}
+	_Object.insert({ "Window", tmpObject }); //pair로 만들기
+
+	tmpObject.clear();
+
+	//Drawer
+	for (int i = 0; i < objectData.find("Drawer")->second.objectCount; i++)
+	{
+		//해당 맵에 배치된 Object 인지 판별
+		if (_mapIndex == objectData.find("Drawer")->second.eachObject[i]->objectIndex.mapIndex)
+			tmpObject.push_back(new Drawer(objectData.find("Drawer")->second, i));
+	}
+	_Object.insert({ "Drawer", tmpObject }); //pair로 만들기
+
+	tmpObject.clear();
+
+
+	//Flowerpot
+	for (int i = 0; i < objectData.find("Flowerpot")->second.objectCount; i++)
+	{
+		//해당 맵에 배치된 Object 인지 판별
+		if (_mapIndex == objectData.find("Flowerpot")->second.eachObject[i]->objectIndex.mapIndex)
+			tmpObject.push_back(new Flowerpot(objectData.find("Flowerpot")->second, i));
+	}
+	_Object.insert({ "Flowerpot", tmpObject }); //pair로 만들기
+
+	tmpObject.clear();
+
+	//Bed
+	for (int i = 0; i < objectData.find("Bed")->second.objectCount; i++)
+	{
+		//해당 맵에 배치된 Object 인지 판별
+		if (_mapIndex == objectData.find("Bed")->second.eachObject[i]->objectIndex.mapIndex)
+			tmpObject.push_back(new Bed(objectData.find("Bed")->second, i));
+	}
+	_Object.insert({ "Bed", tmpObject }); //pair로 만들기
+
+	tmpObject.clear();
+
+	//Shelf_Book
+	for (int i = 0; i < objectData.find("Shelf_Book")->second.objectCount; i++)
+	{
+		//해당 맵에 배치된 Object 인지 판별
+		if (_mapIndex == objectData.find("Shelf_Book")->second.eachObject[i]->objectIndex.mapIndex)
+			tmpObject.push_back(new Shelf_Book(objectData.find("Shelf_Book")->second, i));
+	}
+	_Object.insert({ "Shelf_Book", tmpObject }); //pair로 만들기
+
+	tmpObject.clear();
+
+	//Table_Vertical
+	for (int i = 0; i < objectData.find("Table_Vertical")->second.objectCount; i++)
+	{
+		//해당 맵에 배치된 Object 인지 판별
+		if (_mapIndex == objectData.find("Table_Vertical")->second.eachObject[i]->objectIndex.mapIndex)
+			tmpObject.push_back(new Table_Vertical(objectData.find("Table_Vertical")->second, i));
+	}
+	_Object.insert({ "Table_Vertical", tmpObject }); //pair로 만들기
+
+	tmpObject.clear();
+
+	//Curtain_Red
+	for (int i = 0; i < objectData.find("Curtain_Red")->second.objectCount; i++)
+	{
+		//해당 맵에 배치된 Object 인지 판별
+		if (_mapIndex == objectData.find("Curtain_Red")->second.eachObject[i]->objectIndex.mapIndex)
+			tmpObject.push_back(new Curtain_Red(objectData.find("Curtain_Red")->second, i));
+	}
+	_Object.insert({ "Curtain_Red", tmpObject }); //pair로 만들기
+
+	tmpObject.clear();
+
+	//Closet
+	for (int i = 0; i < objectData.find("Closet")->second.objectCount; i++)
+	{
+		//해당 맵에 배치된 Object 인지 판별
+		if (_mapIndex == objectData.find("Closet")->second.eachObject[i]->objectIndex.mapIndex)
+			tmpObject.push_back(new Closet(objectData.find("Closet")->second, i));
+	}
+	_Object.insert({ "Closet", tmpObject }); //pair로 만들기
+
+	tmpObject.clear();
+
+	//Table_Red
+	for (int i = 0; i < objectData.find("Table_Red")->second.objectCount; i++)
+	{
+		//해당 맵에 배치된 Object 인지 판별
+		if (_mapIndex == objectData.find("Table_Red")->second.eachObject[i]->objectIndex.mapIndex)
+			tmpObject.push_back(new Table_Red(objectData.find("Table_Red")->second, i));
+	}
+	_Object.insert({ "Table_Red", tmpObject }); //pair로 만들기
+
+	tmpObject.clear();
 }
 
 void GameManager::SetPlusHour(int plusHour)
@@ -552,11 +669,15 @@ void GameManager::SetPlusHour(int plusHour)
 		m_Clock.hour -= TimeLine_ONEDAY;
 
 	//시간의 흐름에 따라 밤낮 전환(밤이 되는시간부터(20:00~24:00), 아침이 되는시간 전(0:00~5:99)까지)
-	isDrak = ((m_Clock.hour >= TimeLine_NIGHT) || (m_Clock.hour < TimeLine_MORING)) ? true : false;
+	isDark = ((m_Clock.hour >= TimeLine_NIGHT) || (m_Clock.hour < TimeLine_MORING)) ? true : false;
 }
 
 
-//----플레이어 관련
+
+
+
+
+//----플레이어 관련--------
 
 void GameManager::PlayerSleep()
 {

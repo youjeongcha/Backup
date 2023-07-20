@@ -55,7 +55,8 @@ namespace ENGINE
 		~ObjectManager();
 
 
-
+		//재시작
+		//void Restrat();
 		//map 변경될때마다 객체 설정 다시 하기
 		void Delete_mObject();
 		//void Delete_mObject(int _mapIndex);

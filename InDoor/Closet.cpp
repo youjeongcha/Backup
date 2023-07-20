@@ -1,5 +1,5 @@
 #include "Closet.h"
-#include "ResourceManager.h"
+#include "GameManager.h"
 
 Closet::Closet()
 {
@@ -38,5 +38,6 @@ void Closet::DetailSelect(int selectNum)
         break;
     }
 
-    //return nullptr; // 예외 처리: 적절한 리스너를 찾지 못한 경우
+    detailSelect_UI->SetEnable(FALSE);
+    ENGINE::GUIMgr->Set_IsPause(false);
 }

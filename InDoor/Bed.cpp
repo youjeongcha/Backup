@@ -1,7 +1,5 @@
 #include "Bed.h"
-#include "ResourceManager.h"
 #include "GameManager.h"
-#include "Player.h"
 
 Bed::Bed()
 {
@@ -38,7 +36,11 @@ void Bed::DetailSelect(int selectNum)
         break;
     }
 
-    //return nullptr; // 예외 처리: 적절한 리스너를 찾지 못한 경우
+    detailSelect_UI->SetEnable(FALSE);
+    ENGINE::GUIMgr->Set_IsPause(false);
+
+    detailSelect_UI->SetEnable(FALSE);
+    ENGINE::GUIMgr->Set_IsPause(false);
 }
 
 void Bed::Sleep()

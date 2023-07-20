@@ -1,8 +1,5 @@
 #include "Door.h"
-#include "ResourceManager.h"
-//#include "SceneManager.h"
-#include "UIManager.h"
-#include "GUIManager.h"
+#include "GameManager.h"
 
 
 //TODO::생성자에서 인자를 받아서 Object의 상세값을 설정하는 쪽으로 바꾸고자 함
@@ -163,5 +160,6 @@ void Door::DetailSelect(int selectNum)
         break;
     }
 
-    //return nullptr; // 예외 처리: 적절한 리스너를 찾지 못한 경우
+	detailSelect_UI->SetEnable(FALSE);
+	ENGINE::GUIMgr->Set_IsPause(false);
 }

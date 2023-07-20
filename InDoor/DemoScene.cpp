@@ -24,7 +24,7 @@ VOID DemoScene::Initialize()
 
     //-------------Ãß°¡µÈ °Í--------------
     ResourceMgr->Load("background.bmp"); 
-    ResourceMgr->Load("Night.bmp"); 
+    //ResourceMgr->Load("Night.bmp");
     ResourceMgr->Load("Select_Panel_2.bmp");
     ResourceMgr->Load("Select_Panel_3.bmp");
     ResourceMgr->Load("Select_Panel_4.bmp");
@@ -45,8 +45,8 @@ VOID DemoScene::Initialize()
     background = ResourceMgr->GetBitmap("background.bmp");
     background->SetDrawSize(bounds, SceneMgr->GetHeight());
 
-    night = ResourceMgr->GetBitmap("Night.bmp");
-    night->SetDrawSize(bounds, SceneMgr->GetHeight());
+    /*night = ResourceMgr->GetBitmap("Night.bmp");
+    night->SetDrawSize(bounds, SceneMgr->GetHeight());*/
     ///
     //door = ResourceMgr->GetBitmap("Home_Door.bmp");
     //door->SetDrawSize(30, SceneMgr->GetHeight());
@@ -145,17 +145,23 @@ VOID DemoScene::Update(const FLOAT& deltaTime)
 
 VOID DemoScene::Draw()
 {
-    background->StretchBlt(0, 0);
-    
-    ObjectMgr->Draw();
-
-    player->Draw();
-
-    if (GameMgr->GetIsDark())
+    if (!GameMgr->GetIsGameOver())
     {
-        night->AlphaBlendBlt(0, 0, 105);
-        //isDrak = false;
+        background->StretchBlt(0, 0);
+
+        ObjectMgr->Draw();
+
+        player->Draw();
     }
+
+    //¹ãÀº ¸Ç À§¿¡ ±ò¾ÆÁà¾ß ÇÑ´Ù.
+    GameMgr->Draw();
+
+    //if (GameMgr->GetIsDark())
+    //{
+    //    night->AlphaBlendBlt(0, 0, 105);
+    //    //isDrak = false;
+    //}
 }
 
 

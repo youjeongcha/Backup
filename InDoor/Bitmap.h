@@ -47,7 +47,7 @@ namespace ENGINE
 		// 설정한 출력 사이즈로 변경하고 지정 색을 투명 처리하여 출력.
 		BOOL TransparentBlt(INT32 x, INT32 y, UINT transparent = RGB(255, 0, 255));
 		// 출력 이미지 투명화
-		BOOL AlphaBlendBlt(INT32 x, INT32 y, int transparency);
+		BOOL AlphaBlendBlt(INT32 x, INT32 y, int transparency);// 원하는 값(0 ~ 255)
 		// 원본 비트맵의 크기.
 		SIZE GetBitmapSize() CONST { return origin; } 
 		// 화면에 출력되는 이미지의 크기.

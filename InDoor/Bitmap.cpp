@@ -64,7 +64,7 @@ namespace ENGINE
 	{
 		return ::TransparentBlt(SceneMgr->GetBackDC(), pivot.x + x, pivot.y + y, dest.cx, dest.cy, memDC, src.left, src.top, src.right, src.bottom, transparent);
 	}
-	BOOL Bitmap::AlphaBlendBlt(INT32 x, INT32 y, int transparency)
+	BOOL Bitmap::AlphaBlendBlt(INT32 x, INT32 y, int transparency)// 원하는 값(0 ~ 255)
 	{
 		BLENDFUNCTION bf;
 		ZeroMemory(&bf, sizeof(bf));

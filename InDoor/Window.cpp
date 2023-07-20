@@ -1,7 +1,5 @@
 #include "Window.h"
-#include "ResourceManager.h"
-#include "FSM.h"
-//#include "SceneManager.h"
+#include "GameManager.h"
 
 Window::Window()
 {
@@ -40,5 +38,6 @@ void Window::DetailSelect(int selectNum)
         break;
     }
 
-    //return nullptr; // 예외 처리: 적절한 리스너를 찾지 못한 경우
+    detailSelect_UI->SetEnable(FALSE);
+    ENGINE::GUIMgr->Set_IsPause(false);
 }

@@ -29,6 +29,7 @@ namespace ENGINE
 		UIImage() : image(nullptr), type(DrawType::Normal) { uiType = UIType::IMAGE; }
 		VOID Initialize(CONST std::string& ImageName, DrawType type = DrawType::Normal);
 		virtual VOID Draw() override;
+		//void TransparentDraw(int transparent) { image->TransparentBlt(rect.left, rect.top, transparent); };
 //		std::string GetName() { return name; };
 
 	protected:

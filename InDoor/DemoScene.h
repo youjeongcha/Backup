@@ -50,7 +50,7 @@ class DemoScene : public Scene
 
 
 	Bitmap* background = nullptr;
-	Bitmap* night = nullptr;
+	//Bitmap* night = nullptr;
 	Player* player = nullptr;
 	Transform* playerTr = nullptr;
 	SpriteRenderer* playerSr = nullptr;
