@@ -1,7 +1,5 @@
 #include "Object.h"
-#include "ResourceManager.h"
-#include "UIManager.h"
-#include "GUIManager.h"
+#include "GameManager.h"
 #include "Door.h"
 
 Object::Object()
@@ -191,7 +189,7 @@ void Object::CancelBtnClickHandler()
     detailSelect_UI->SetEnable(FALSE);
     //pauseBtn->SetInteracterble(TRUE);
    // isPause = FALSE;
-    ENGINE::GUIMgr->Set_IsPause(false);
+    GameMgr->Set_IsPause(false);
 }
 
 void Object::ChangeActiveState()

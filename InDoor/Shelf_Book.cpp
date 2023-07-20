@@ -39,5 +39,5 @@ void Shelf_Book::DetailSelect(int selectNum)
     //}
 
     detailSelect_UI->SetEnable(FALSE);
-    ENGINE::GUIMgr->Set_IsPause(false);
+    GameMgr->Set_IsPause(false);
 }

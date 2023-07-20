@@ -1,5 +1,5 @@
 #include "GUIManager.h"
-#include "ObjectManager.h"
+#include "GameManager.h"
 //#include "UIManager.h"
 
 namespace ENGINE
@@ -91,7 +91,7 @@ namespace ENGINE
 		if (select_UI)
 		{
 			int i, selectBtn_X, selectBtn_Y;
-			isPause = TRUE;
+			GameMgr->Set_IsPause(true);
 
 			//select_UI->Initialize("base_panel.bmp", DrawType::Transparent);
 			//>
@@ -160,6 +160,7 @@ namespace ENGINE
 	{
 		select_UI->SetEnable(FALSE);
 		//pauseBtn->SetInteracterble(TRUE);
-		isPause = FALSE;
+		GameMgr->Set_IsPause(false);
+		//isPause = FALSE;
 	}
 }

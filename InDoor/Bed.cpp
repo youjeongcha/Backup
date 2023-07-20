@@ -37,10 +37,7 @@ void Bed::DetailSelect(int selectNum)
     }
 
     detailSelect_UI->SetEnable(FALSE);
-    ENGINE::GUIMgr->Set_IsPause(false);
-
-    detailSelect_UI->SetEnable(FALSE);
-    ENGINE::GUIMgr->Set_IsPause(false);
+    //ENGINE::GUIMgr->Set_IsPause(false);
 }
 
 void Bed::Sleep()

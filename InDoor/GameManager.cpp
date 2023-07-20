@@ -4,31 +4,33 @@ GameManager::GameManager()
 {
 	//TXT 파일 읽어오기
 	LoadData();
-
+	LoadUnderTxt();
 
 	//Night and GameOver and Sleep
 	ENGINE::ResourceMgr->Load("Black.bmp");
 	night = ENGINE::ResourceMgr->GetBitmap("Black.bmp");
 	night->SetDrawSize(ENGINE::SceneMgr->GetWidth(), ENGINE::SceneMgr->GetHeight());
 
-	ENGINE::ResourceMgr->Load("UnderSection.bmp");
-	underSection = ENGINE::ResourceMgr->GetBitmap("UnderSection.bmp");
-	underSection->SetDrawSize(ENGINE::SceneMgr->GetWidth(), 30);
+	//ENGINE::ResourceMgr->Load("UnderSection.bmp");
+	//underSection = ENGINE::ResourceMgr->GetBitmap("UnderSection.bmp");
+	//underSection->SetDrawSize(ENGINE::SceneMgr->GetWidth(), 30);
 
 	//시간 체크
 	timeLabel = ENGINE::UIMgr->AddUI<ENGINE::UILabel>("Time Label");
 	timeLabel->Initialize("", RGB(255, 255, 255), ENGINE::GUIMgr->Get_Font(FONT_STATE));
 	timeLabel->SetPosition(10, 10); // 원하는 위치로 설정
 
-	////하단 텍스트
-	//ENGINE::UIMgr->Remove("UnderTxt Form");
-	//underTxt_UI = ENGINE::UIMgr->AddUI<ENGINE::UIImage>("UnderTxt Form");
-	//underTxt_UI->Initialize("Black.bmp", ENGINE::DrawType::Transparent);
+	ENGINE::ResourceMgr->Load("UnderSection.bmp");
+	underTxt_Section = ENGINE::UIMgr->AddUI<ENGINE::UIButton>("Under Btn"); //파일 이름으로 구분
+	underTxt_Section->Initialize("UnderSection.bmp", "UnderSection.bmp", "", "", ENGINE::DrawType::AlphaBlend);
+	underTxt_Section->SetLocalPosition(0, ENGINE::SceneMgr->GetHeight() - underTxt_Section->GetSize().cy, false);
+	underTxt_Section->SetListener(std::bind(&GameManager::NextShowUnderSection, this, false));
 
 	//하단 텍스트 문구
-	txtLabel = ENGINE::UIMgr->AddUI<ENGINE::UILabel>("Txt Label");
+	txtLabel = ENGINE::UIMgr->AddUI<ENGINE::UILabel>("Txt Label", underTxt_Section);
 	txtLabel->Initialize("", RGB(255, 255, 255), ENGINE::GUIMgr->Get_Font(FONT_UNDERTXT));
 	txtLabel->SetPosition(ENGINE::SceneMgr->GetWidth() / 3, ENGINE::SceneMgr->GetHeight() - 20); // 원하는 위치로 설정
+	txtLabel->SetText("테스트용");
 
 
 	//GameOver
@@ -120,13 +122,19 @@ void GameManager::Restart()
 	isGameClear = false;
 
 	isDark = false;
+	isShowUnderTxt = false;
 	
 	timeLabel->SetEnable(true);
 	select_Restart->SetEnable(false);
+	underTxt_Section->SetEnable(false);
+
+	//하단 텍스트 감지 위해 초기 세팅값
+	nowShowUnderTxt = UNDERTXT_NONE;
+	prevShowUnderTxt = UNDERTXT_NONE;
 
 	//수치 상태
 	m_health = 10;
-	m_hunger = 50;
+	m_hunger = 100;
 	//m_hunger = 50;
 	m_thirst = 5;
 	//m_thirst = 50;
@@ -147,6 +155,7 @@ void GameManager::Restart()
 	Initialize();
 }
 
+
 void GameManager::Initialize()
 {
 	//멤버 변수 세팅
@@ -164,15 +173,8 @@ void GameManager::Draw()
 		return;
 	}
 
-	//하단 텍스트창
-	//underSection->AlphaBlendBlt(ENGINE::SceneMgr->GetWidth() / 3, ENGINE::SceneMgr->GetHeight() - 25, 10);
-	underSection->AlphaBlendBlt(0, ENGINE::SceneMgr->GetHeight() - 30, 155);// 원하는 값(0 ~ 255)
-
-	//하단 텍스트 표시
-	char timeStr[100];
-	//sprintf_s(timeStr, "%02d:%02d:%02d", m_Clock.hour, m_Clock.min, m_Clock.sec);
-	sprintf_s(timeStr, sizeof(timeStr), "하단 텍스트를 띄운다.");
-	txtLabel->SetText(timeStr);
+	if (isShowUnderTxt)
+		ShowUnderSectionTxt(nowShowUnderTxt); //선택지를 선택하면 해당 함수에서 세팅을 하고 이쪽으로 들어온다.
 
 	if (isDark)
 	{
@@ -185,9 +187,6 @@ void GameManager::Draw()
 
 void GameManager::Update(const FLOAT&  deltaTime)
 {
-
-
-
 	//underTxt_UI->SetEnable(false);
 
 	//txtLabel->SetEnable(true);
@@ -294,6 +293,93 @@ void GameManager::Update(const FLOAT&  deltaTime)
 	}
 
     oldTimeLine = nowTimeLine;
+}
+
+void GameManager::LoadUnderTxt()
+{
+	// 파일 스트림 열기
+	std::ifstream load("Data/UnderTxt.txt");
+
+	//오브젝트 객체 하나당 데이터 설정값
+	ObjectData tmpObjectData; //하나의 가구 종류
+
+	// 파일이 성공적으로 열렸는지 확인
+	if (load.is_open()) {
+
+		// 줄 단위로 텍스트 읽어서 mUnderTxt에 저장
+		std::string line;
+		int i = UNDERTXT_START;
+
+		while (std::getline(load, line) && i < UNDERTXT_COUNT) {
+			mUnderTxt[static_cast<UNDERTXT>(i)] = line;
+			i++;
+		}
+
+		// 파일 스트림 닫기
+		load.close();
+	}
+}
+
+void GameManager::ShowUnderSectionTxt(UNDERTXT showTxt)
+{ //첫번째 텍스트 뜰때 무조건 거쳐가게 된다.
+
+	//이전 prevShowUnderTxt값과 nowShowUnderTxt 값이 다르면 출력 텍스트가 변화한것이다. 인덱스 카운트 위해 초기 세팅 필요
+	if (prevShowUnderTxt != nowShowUnderTxt)
+	{
+		//이전 값과 현재 값이 달라지는 처음의 순간만 필요
+		prevShowUnderTxt = nowShowUnderTxt;
+
+		//출력 시작하는 텍스트 유형과 인덱스
+		nowShowUnderTxt = showTxt;
+		indexShowUnderTxt = 0;
+	}
+	//텍스트 사이즈와 현재 출력 인덱스를 비교해서 세팅 해준다. TODO::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+	//한줄로 끝내는 텍스트 아니면 이어서 출력하도록 재세팅이 필요하다.
+	underTxt_Section->SetListener(std::bind(&GameManager::NextShowUnderSection, this, true));
+	//마지막 줄일 경우
+	underTxt_Section->SetListener(std::bind(&GameManager::NextShowUnderSection, this, false));
+
+
+
+	//텍스트창을 누르기 전까지 창과 텍스트 유지
+
+	//하단 텍스트창
+	underTxt_Section->SetEnable(true);
+
+	underTxt_Section->Set_Transparency(UNDER_SECTION_TRANSPARENCY); //투명화 원하는 값(0 ~ 255)
+	underTxt_Section->Draw();
+
+	//하단 텍스트 표시
+	txtLabel->SetEnable(true);
+
+	char timeStr[100];
+	//sprintf_s(timeStr, sizeof(timeStr), "하단 텍스트를 띄운다.");
+	sprintf_s(timeStr, sizeof(timeStr), mUnderTxt.find(showTxt)->second.c_str());
+	txtLabel->SetText(timeStr);
+}
+
+//void GameManager::DisableUnderSection()
+void GameManager::NextShowUnderSection(bool isNextTxt)
+{ //하단창(버튼)을 누르게 되면 들어오게 되는함수. 한줄 > isNextTxt false / 여러줄 > isNextText true로
+	//다음 텍스트 없음 - Object 하단 창
+	if (!isNextTxt)
+	{
+		isShowUnderTxt = false;
+		underTxt_Section->SetEnable(false);
+		txtLabel->SetEnable(false);
+		Set_IsPause(false);
+	}
+	else //다음 텍스트 있음 - NPC 하단 창
+	{
+		//하단창 텍스트 출력 > 첫번째 인덱스 출력하고 다음 인덱스 출력해야할때 해당 함수에 들어온다
+		indexShowUnderTxt++;
+
+		char timeStr[100];
+		//해당 텍스트 순서 기억해두고 출력해야 한다. indexShowUnderTxt로 인덱스 관리한다 TODO::::::::::::::::::::::::::::::::::::::
+		sprintf_s(timeStr, sizeof(timeStr), mUnderTxt.find(nowShowUnderTxt)->second.c_str());
+		txtLabel->SetText(timeStr);
+	}
 }
 
 
@@ -681,10 +767,14 @@ void GameManager::SetPlusHour(int plusHour)
 
 void GameManager::PlayerSleep()
 {
+	//하단 텍스트가 떠야하는 선택지 작동 함수
+	isShowUnderTxt = true;
+
 	//잠자기는 허기와 갈증이 30 미만에 가능하다
-	if ((m_hunger >= 30) && (m_thirst >= 30))
+	if ((m_hunger >= 30) || (m_thirst >= 30))
 	{
-		//TODO::화면 출력
+		//하단창 텍스트 출력
+		nowShowUnderTxt = BED_SLEEP_X;
 		return;
 	}
 
@@ -696,8 +786,16 @@ void GameManager::PlayerSleep()
 		m_health += 10;
 
 		if (m_health > 100)
+		{
 			m_health = 100;
+			nowShowUnderTxt = BED_SLEEP_O_HEALTH_GAMECLEAR; //건강 +10 문 열고 나갈 수 있다.
+		}
+		else //건강 +10
+			nowShowUnderTxt = BED_SLEEP_O_HEALTH;
 	}
+	else //일반적으로 잠든경우
+		nowShowUnderTxt = BED_SLEEP_O;
+
 
 	//수치 조정
 	m_fatigue -= 50;

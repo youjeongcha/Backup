@@ -1,6 +1,6 @@
 false false false false
 3 2
 Home_Flowerpot.bmp
-3 씨앗심기 물주기 뽑기
+3 씨앗심기 물주기 수확
 1
 화분 0 0 true false false false 225 65 0 0 0

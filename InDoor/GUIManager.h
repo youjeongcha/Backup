@@ -36,7 +36,7 @@ enum FONTSIZE
 	FONTSIZE_STORY = 14,*/
 	FONTSIZE_SELECT = 12,
 	FONTSIZE_STATE = 11,
-	FONTSIZE_UNDERTXT = 13,
+	FONTSIZE_UNDERTXT = 12,
 	/*FONTSIZE_NEXT = 15,
 	FONTSIZE_CLOCK = 25,
 	FONTSIZE_GAMECLEAR = 25,*/
@@ -48,7 +48,7 @@ namespace ENGINE
 	class GUIManager : public Singleton<GUIManager>
 	{
 	private:
-		BOOL isPause;
+		//BOOL isPause;
 		UIImage* select_UI;
 		HFONT font[FONT_COUNT]; //글자 크기 변경
 
@@ -71,8 +71,8 @@ namespace ENGINE
 		void SelectBtnClickHandler(Object* interObject);
 		void CancelBtnClickHandler();
 
-		void Set_IsPause(bool pauseSet) { isPause = pauseSet; }
-		bool Get_IsPause() { return isPause; }
+		/*void Set_IsPause(bool pauseSet) { isPause = pauseSet; }
+		bool Get_IsPause() { return isPause; }*/
 		HFONT Get_Font(FONT fontStyle) { return font[fontStyle]; }
 		friend Singleton;
 

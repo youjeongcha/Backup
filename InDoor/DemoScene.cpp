@@ -110,7 +110,7 @@ VOID DemoScene::Update(const FLOAT& deltaTime)
 
 
     // 일시정지
-    isPause = GUIMgr->Get_IsPause();
+    isPause = GameMgr->Get_IsPause();
 
     if (isPause)
         return;

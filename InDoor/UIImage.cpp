@@ -37,6 +37,9 @@ namespace ENGINE
 			case ENGINE::DrawType::Transparent:
 				image->TransparentBlt(rect.left, rect.top);
 				break;
+			case ENGINE::DrawType::AlphaBlend:
+				image->AlphaBlendBlt(rect.left, rect.top, transparency); //°ª 0~ 255
+				break;
 			default:
 				image->BitBlt(rect.left, rect.top);
 				break;

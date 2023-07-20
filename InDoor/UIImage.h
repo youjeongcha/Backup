@@ -14,7 +14,8 @@ namespace ENGINE
 	enum class DrawType 
 	{
 		Normal, 
-		Transparent 
+		Transparent,
+		AlphaBlend,
 	};
 
 
@@ -23,12 +24,14 @@ namespace ENGINE
 	protected:
 		Bitmap* image;
 		DrawType type;
+		int transparency; //AlphaBlend에 사용
 	//	std::string name; //판넬2,3,4 추가 삭제 위해 추가함
 
 	public:
 		UIImage() : image(nullptr), type(DrawType::Normal) { uiType = UIType::IMAGE; }
 		VOID Initialize(CONST std::string& ImageName, DrawType type = DrawType::Normal);
 		virtual VOID Draw() override;
+		void Set_Transparency(int _transparency) { transparency = _transparency; }
 		//void TransparentDraw(int transparent) { image->TransparentBlt(rect.left, rect.top, transparent); };
 //		std::string GetName() { return name; };
 
