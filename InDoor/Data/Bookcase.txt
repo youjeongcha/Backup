@@ -1,0 +1,6 @@
+true false false false
+1 1
+Home_Bookcase.bmp
+1 √•
+1
+√•¿Â 2 0 true false false false 273 58 0 0 0

@@ -51,7 +51,7 @@ enum UNDERTXT
 	CURTAIN_CLOSE,
 
 	//문
-	//DOOR_OPEN_O,
+	DOOR_OPEN_O,
 	DOOR_OPEN_X,
 	DOOR_KNOCK_O,
 	DOOR_KNOCK_X,
@@ -69,8 +69,8 @@ enum UNDERTXT
 	FLOWERPOT_HARVEST,
 
 	//창문 //실행 즉시 + 실행 불가면 선택지 막기
-	//WINDOW_SHOW_O,
-	//WINDOW_SHOW_X, //커튼에 가려있으면
+	WINDOW_SHOW_O,
+	WINDOW_SHOW_X, //커튼에 가려있으면
 
 	//책장(책)
 	BOOK_0,
@@ -108,9 +108,12 @@ private:
 
 	//게임오버 or 게임클리어(문열기 가능)
 	bool isGameOver, isGameClear;
+	bool isReset_OneTime; //게임오버되고 게임 리셋 함수(맵, 플레이어 위치) 1회 실행
+
 
 	//하단창 txt
-	std::map<UNDERTXT, std::string> mUnderTxt;
+	//std::map<UNDERTXT, std::string> mUnderTxt;
+	std::map<UNDERTXT, std::vector<std::string>> mUnderTxt;
 	UNDERTXT prevShowUnderTxt, nowShowUnderTxt; //하단창 텍스트 변화를 감지해야지 인덱스 세팅이 가능하다.
 	bool isShowUnderTxt; //하단창 보여주기
 	int indexShowUnderTxt;
@@ -161,9 +164,12 @@ public:
 	
 	//하단 텍스트창
 	void LoadUnderTxt();
-	void ShowUnderSectionTxt(UNDERTXT showTxt);
+	void ShowUnderSectionTxt();
+	//void ShowUnderSectionTxt(UNDERTXT showTxt);
 	//void DisableUnderSection(); //하단 창 누르면 > 일시정지 해제, 하단창 비활성 or 다음 txt넘김, txt비활성(???????
 	void NextShowUnderSection(bool isNextTxt); //하단 창 누르면 > 일시정지 해제, 하단창 비활성 or 다음 txt넘김, txt비활성(???????
+	void SetShowUnder(UNDERTXT _nowShowUnderTxt) { isShowUnderTxt = true; nowShowUnderTxt = _nowShowUnderTxt; } //하단 텍스트가 떠야하는 선택지 작동 함수
+		
 
 	//일시정지 조정
 	//void SetPause(bool isPause) { ENGINE::GUIMgr->Set_IsPause(isPause); }
@@ -180,6 +186,12 @@ public:
 	//재시작
 	void Restart();
 	bool GetIsGameOver() { return isGameOver; }
+
+	//게임 클리어 > 문 열기 가능
+	bool GetIsGameClear() { return isGameClear; }
+	//게임 재시작할때 리셋 함수 한번만 실행 관리 위해
+	bool GetisReset_OneTime() { return isReset_OneTime; }
+	void SetisReset_OneTime(bool isReset) { isReset_OneTime = isReset; }
 
 
 	//Clock GetClock() { return m_Clock; }
@@ -210,4 +222,3 @@ public:
 	friend Singleton;
 #define GameMgr GameManager::GetInstance()
 };
-

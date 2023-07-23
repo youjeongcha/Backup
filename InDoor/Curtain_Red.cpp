@@ -31,10 +31,15 @@ void Curtain_Red::DetailSelect(int selectNum)
     //취소 제외 최대 선택지 개수는 3개로 제한
     switch (selectNum)
     {
-    case 0: //문 열기(Active) //TODO::수정 필요
+    case 0: //문 열기(Active)
         ChangeActiveState();
-        //return std::bind(&Door::ChangeActiveState, this);
-    case 1: //노크 //TODO:: 하단창 뜨고 ... 혹은 NPC 대면
+
+        //현재 상태에 따라 열고 닫고
+        if (isActive)
+            GameMgr->SetShowUnder(CURTAIN_OPEN);
+        else
+            GameMgr->SetShowUnder(CURTAIN_CLOSE);
+    defualt:
         break;
     }
 

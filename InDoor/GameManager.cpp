@@ -30,7 +30,6 @@ GameManager::GameManager()
 	txtLabel = ENGINE::UIMgr->AddUI<ENGINE::UILabel>("Txt Label", underTxt_Section);
 	txtLabel->Initialize("", RGB(255, 255, 255), ENGINE::GUIMgr->Get_Font(FONT_UNDERTXT));
 	txtLabel->SetPosition(ENGINE::SceneMgr->GetWidth() / 3, ENGINE::SceneMgr->GetHeight() - 20); // 원하는 위치로 설정
-	txtLabel->SetText("테스트용");
 
 
 	//GameOver
@@ -53,17 +52,17 @@ GameManager::GameManager()
 	selectBtn_Y = 13;
 	
 	//재시작 - 버튼
-	ENGINE::ResourceMgr->Load("Select_Btn_Normal.bmp");
-	ENGINE::ResourceMgr->Load("Select_Btn_Pressed.bmp");
+	ENGINE::ResourceMgr->Load("Btn_Restart_Normal.bmp");
+	ENGINE::ResourceMgr->Load("Btn_Restart_Pressed.bmp");
 	ENGINE::UIButton* btn_Restart = ENGINE::UIMgr->AddUI<ENGINE::UIButton>("Optional Restart Btn", select_Restart);
-	btn_Restart->Initialize("Select_Btn_Normal.bmp", "Select_Btn_Pressed.bmp", "", "", ENGINE::DrawType::Transparent);
+	btn_Restart->Initialize("Btn_Restart_Normal.bmp", "Btn_Restart_Pressed.bmp", "", "", ENGINE::DrawType::Transparent);
 	btn_Restart->SetLocalPosition(selectBtn_X, selectBtn_Y, true);
 	btn_Restart->SetListener(std::bind(&GameManager::Restart, this));
 
 	//재시작 - 선택지 문구
 	ENGINE::UILabel* btn_txt = ENGINE::UIMgr->AddUI<ENGINE::UILabel>("Restart Txt", btn_Restart);
 	btn_txt->SetLocalPosition(FONT_SELECT_X, FONT_SELECT_Y, true);
-	btn_txt->Initialize("재시작", RGB(255, 255, 205), ENGINE::GUIMgr->Get_Font(FONT_SELECT));
+	btn_txt->Initialize("재시작", RGB(255, 255, 255), ENGINE::GUIMgr->Get_Font(FONT_SELECT));
 
 
 	//---------------------
@@ -120,6 +119,7 @@ void GameManager::Restart()
 {
 	isGameOver = false;
 	isGameClear = false;
+	isReset_OneTime = false;
 
 	isDark = false;
 	isShowUnderTxt = false;
@@ -133,7 +133,7 @@ void GameManager::Restart()
 	prevShowUnderTxt = UNDERTXT_NONE;
 
 	//수치 상태
-	m_health = 10;
+	m_health = 5;
 	m_hunger = 100;
 	//m_hunger = 50;
 	m_thirst = 5;
@@ -174,7 +174,7 @@ void GameManager::Draw()
 	}
 
 	if (isShowUnderTxt)
-		ShowUnderSectionTxt(nowShowUnderTxt); //선택지를 선택하면 해당 함수에서 세팅을 하고 이쪽으로 들어온다.
+		ShowUnderSectionTxt(); //선택지를 선택하면 해당 함수에서 세팅을 하고 이쪽으로 들어온다.
 
 	if (isDark)
 	{
@@ -187,10 +187,8 @@ void GameManager::Draw()
 
 void GameManager::Update(const FLOAT&  deltaTime)
 {
-	//underTxt_UI->SetEnable(false);
-
-	//txtLabel->SetEnable(true);
-
+	if (isGameOver)
+		return;
 
     //시간 경과 카운트
 	//경과 시간 업데이트(1초가 게임상 1분)
@@ -278,6 +276,7 @@ void GameManager::Update(const FLOAT&  deltaTime)
 	if (m_health == 0)
 	{
 		isGameOver = true;
+		isReset_OneTime = true; //게임오버되고 게임 리셋 함수(맵, 플레이어 위치) 1회 실행
 		//상단 상태창 삭제
 		select_Restart->SetEnable(true);
 		timeLabel->SetEnable(false);
@@ -300,6 +299,33 @@ void GameManager::LoadUnderTxt()
 	// 파일 스트림 열기
 	std::ifstream load("Data/UnderTxt.txt");
 
+	// 파일이 성공적으로 열렸는지 확인
+	if (load.is_open()) {
+		int i = UNDERTXT_START;
+		int lineCount;
+
+		while (load >> lineCount && i < UNDERTXT_COUNT) {
+			std::string line;
+			std::getline(load, line); // 개행 문자 처리
+
+			std::vector<std::string> txt;
+			for (int j = 0; j < lineCount; ++j) {
+				std::getline(load, line);
+				txt.push_back(line);
+			}
+
+			mUnderTxt[static_cast<UNDERTXT>(i)] = txt;
+			i++;
+		}
+
+		// 파일 스트림 닫기
+		load.close();
+	}
+
+	/*
+	// 파일 스트림 열기
+	std::ifstream load("Data/UnderTxt.txt");
+
 	//오브젝트 객체 하나당 데이터 설정값
 	ObjectData tmpObjectData; //하나의 가구 종류
 
@@ -317,10 +343,10 @@ void GameManager::LoadUnderTxt()
 
 		// 파일 스트림 닫기
 		load.close();
-	}
+	}*/
 }
 
-void GameManager::ShowUnderSectionTxt(UNDERTXT showTxt)
+void GameManager::ShowUnderSectionTxt()
 { //첫번째 텍스트 뜰때 무조건 거쳐가게 된다.
 
 	//이전 prevShowUnderTxt값과 nowShowUnderTxt 값이 다르면 출력 텍스트가 변화한것이다. 인덱스 카운트 위해 초기 세팅 필요
@@ -330,15 +356,17 @@ void GameManager::ShowUnderSectionTxt(UNDERTXT showTxt)
 		prevShowUnderTxt = nowShowUnderTxt;
 
 		//출력 시작하는 텍스트 유형과 인덱스
-		nowShowUnderTxt = showTxt;
 		indexShowUnderTxt = 0;
 	}
-	//텍스트 사이즈와 현재 출력 인덱스를 비교해서 세팅 해준다. TODO::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+	
 
-	//한줄로 끝내는 텍스트 아니면 이어서 출력하도록 재세팅이 필요하다.
-	underTxt_Section->SetListener(std::bind(&GameManager::NextShowUnderSection, this, true));
-	//마지막 줄일 경우
-	underTxt_Section->SetListener(std::bind(&GameManager::NextShowUnderSection, this, false));
+	//텍스트 사이즈와 현재 출력 인덱스를 비교해서 세팅 해준다.
+		//마지막 텍스트 출력
+	if (mUnderTxt.find(nowShowUnderTxt)->second.size() == (indexShowUnderTxt + 1)) //size는 1부터 시작 indexShowUnderTxt는 0부터 시작이므로
+		underTxt_Section->SetListener(std::bind(&GameManager::NextShowUnderSection, this, false));
+	else
+		//한줄로 끝내는 텍스트 아니면 이어서 출력하도록 재세팅이 필요하다.
+		underTxt_Section->SetListener(std::bind(&GameManager::NextShowUnderSection, this, true));
 
 
 
@@ -355,7 +383,7 @@ void GameManager::ShowUnderSectionTxt(UNDERTXT showTxt)
 
 	char timeStr[100];
 	//sprintf_s(timeStr, sizeof(timeStr), "하단 텍스트를 띄운다.");
-	sprintf_s(timeStr, sizeof(timeStr), mUnderTxt.find(showTxt)->second.c_str());
+	sprintf_s(timeStr, sizeof(timeStr), mUnderTxt.find(nowShowUnderTxt)->second[indexShowUnderTxt].c_str());
 	txtLabel->SetText(timeStr);
 }
 
@@ -365,6 +393,7 @@ void GameManager::NextShowUnderSection(bool isNextTxt)
 	//다음 텍스트 없음 - Object 하단 창
 	if (!isNextTxt)
 	{
+		indexShowUnderTxt = 0;
 		isShowUnderTxt = false;
 		underTxt_Section->SetEnable(false);
 		txtLabel->SetEnable(false);
@@ -377,7 +406,7 @@ void GameManager::NextShowUnderSection(bool isNextTxt)
 
 		char timeStr[100];
 		//해당 텍스트 순서 기억해두고 출력해야 한다. indexShowUnderTxt로 인덱스 관리한다 TODO::::::::::::::::::::::::::::::::::::::
-		sprintf_s(timeStr, sizeof(timeStr), mUnderTxt.find(nowShowUnderTxt)->second.c_str());
+		sprintf_s(timeStr, sizeof(timeStr), mUnderTxt.find(nowShowUnderTxt)->second[indexShowUnderTxt].c_str());
 		txtLabel->SetText(timeStr);
 	}
 }
@@ -504,7 +533,7 @@ void GameManager::LoadData()
 	FileRead("Curtain_Red");
 	FileRead("Closet");
 	FileRead("Table_Red");
-	//FileRead("Bookcase");
+	FileRead("Bookcase");
 
 }
 
@@ -742,6 +771,17 @@ void GameManager::InitSceneData(int _mapIndex, std::map <std::string, std::vecto
 			tmpObject.push_back(new Table_Red(objectData.find("Table_Red")->second, i));
 	}
 	_Object.insert({ "Table_Red", tmpObject }); //pair로 만들기
+
+	tmpObject.clear();	
+	
+	//Bookcase
+	for (int i = 0; i < objectData.find("Bookcase")->second.objectCount; i++)
+	{
+		//해당 맵에 배치된 Object 인지 판별
+		if (_mapIndex == objectData.find("Bookcase")->second.eachObject[i]->objectIndex.mapIndex)
+			tmpObject.push_back(new Bookcase(objectData.find("Bookcase")->second, i));
+	}
+	_Object.insert({ "Bookcase", tmpObject }); //pair로 만들기
 
 	tmpObject.clear();
 }

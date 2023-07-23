@@ -3,21 +3,9 @@
 #include "SceneManager.h"
 #include "ObjectManager.h"
 #include "GUIManager.h"
-//#include "GameManager.h"
-// 
 
 VOID DemoScene::Initialize()
 {
-    ////시간 체크
-    //nowTimeLine = TimeLine_MORING; oldTimeLine = TimeLine_MORING;
-    //m_Clock.hour = TimeLine_NIGHT - 1;
-    //m_Clock.min = 50;
-    /*accumulatedSec = 0.0f;*/
-
-    //timeLabel = UIMgr->AddUI<UILabel>("Time Label");
-    //timeLabel->Initialize("", RGB(255, 255, 255), GUIMgr->Get_Font(FONT_SELECT));
-    //timeLabel->SetPosition(10, 10); // 원하는 위치로 설정
-
     nowScene = SCENE_BEDROOM;
     //씬의 오브젝트 재구성(현재 씬, 이동할 씬)인데 초기 화면 세팅은 nowScene으로 둘다 세팅한다.
     ENGINE::ObjectMgr->InitSetting(nowScene, nowScene, GameMgr->GetIsDark()); //게임은 아침을 배겨으로 시작
@@ -45,51 +33,12 @@ VOID DemoScene::Initialize()
     background = ResourceMgr->GetBitmap("background.bmp");
     background->SetDrawSize(bounds, SceneMgr->GetHeight());
 
-    /*night = ResourceMgr->GetBitmap("Night.bmp");
-    night->SetDrawSize(bounds, SceneMgr->GetHeight());*/
-    ///
-    //door = ResourceMgr->GetBitmap("Home_Door.bmp");
-    //door->SetDrawSize(30, SceneMgr->GetHeight());
-
-
-    //TODO::GameManager로 이동
+    //TODO::GameManager로 이동?
     player = new Player;
     player->Initialize();
     playerTr = player->GetTransform();
     playerSr = static_cast<SpriteRenderer*>(player->GetComponent(ComponentType::Graphic));
 
-
-
-
-    ///-----------------------------------------------------------------------
-    /*
-    pauseBtn = UIMgr->AddUI<UIButton>("Pause Btn");
-    pauseBtn->Initialize("pause_normal.bmp", "pause_pressed.bmp", "", "", DrawType::Transparent);
-    pauseBtn->SetPosition(bounds - pauseBtn->GetSize().cx - 22, 10);
-    pauseBtn->SetListener(std::bind(&DemoScene::PauseBtnClickHandler, this));    
-
-    pauseWindow = UIMgr->AddUI<UIImage>("PauseWindow Canvas");
-    if (pauseWindow)
-    {
-        pauseWindow->Initialize("base_panel.bmp", DrawType::Transparent);
-        pauseWindow->SetPosition(bounds * 0.5f, SceneMgr->GetHeight() * 0.5f, TRUE);
-
-        UIButton* continueBtn = UIMgr->AddUI<UIButton>("Continue Btn", pauseWindow);
-        continueBtn->Initialize("continue_normal.bmp", "continue_pressed.bmp", "", "", DrawType::Transparent);
-        continueBtn->SetLocalPosition(pauseWindow->GetSize().cx * 0.5f, pauseWindow->GetSize().cy * 0.5f - 100, true);
-        continueBtn->SetListener(std::bind(&DemoScene::ContinueBtnClickHandler, this));
-
-        UIButton* quitBtn = UIMgr->AddUI<UIButton>("Quit Btn", pauseWindow);
-        quitBtn->Initialize("quit_normal.bmp", "quit_pressed.bmp", "", "", DrawType::Transparent);
-        quitBtn->SetLocalPosition(pauseWindow->GetSize().cx * 0.5f, pauseWindow->GetSize().cy * 0.5f + 50, true);
-        quitBtn->SetListener(std::bind(&DemoScene::QuitBtnClickHandler, this));
-
-        pauseWindow->SetEnable(FALSE);
-    }
-
-    bounds -= playerSr->GetDrawSize().cx;
-
-    isPause = FALSE;*/
 }
 
 
@@ -100,6 +49,16 @@ VOID DemoScene::Release()
 
 VOID DemoScene::Update(const FLOAT& deltaTime)
 {
+
+    if (GameMgr->GetIsGameOver() && GameMgr->GetisReset_OneTime()) //게임오버되고 게임 리셋 함수(맵, 플레이어 위치) 1회 실행
+    {
+        //씬의 오브젝트 재구성(현재 씬, 이동할 씬)
+        ObjectMgr->InitSetting(nowScene, SCENE_BEDROOM, GameMgr->GetIsDark());
+        player->Initialize();
+        GameMgr->SetisReset_OneTime(false);
+        return;
+    }
+
     Clock _Clock = GameMgr->GetClock();
 
     // 시간 표시
