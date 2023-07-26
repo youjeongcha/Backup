@@ -1,0 +1,333 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{24c32d21-d3b7-4d79-b511-f4b7c334a251}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Default">
+      <UniqueIdentifier>{b5da17cc-dd51-42fe-8488-064a9ddcd7ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Mgr">
+      <UniqueIdentifier>{72f8c9d1-c298-4a15-8bd5-ccbadd2b5383}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\UI">
+      <UniqueIdentifier>{235b217f-fc65-4d3b-bc4f-7ff2dcb8aac9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Character">
+      <UniqueIdentifier>{1a922c05-2ec6-46e7-ab8a-db00fcf303f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object">
+      <UniqueIdentifier>{e9a4d5da-654a-450f-b799-076904e791c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\IMG">
+      <UniqueIdentifier>{63b4ebf5-0ba4-4f40-b371-568ab4258707}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Furniture">
+      <UniqueIdentifier>{afe79b0a-0148-4145-88ff-391ba6a10cbb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Character\Player">
+      <UniqueIdentifier>{1813804e-a55d-489d-a210-9e3ee3e576de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Character\NPC">
+      <UniqueIdentifier>{7e9128be-9960-4135-9d87-fd34d145976e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FSM">
+      <UniqueIdentifier>{1ea83a3f-0272-4753-9a64-6037714b971a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Furniture\BedRoom">
+      <UniqueIdentifier>{16df6442-6de8-4787-aa70-e5f41e39062c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Furniture\Kitchen">
+      <UniqueIdentifier>{c7fb9a30-db77-49a3-9111-d7a826f25946}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Furniture\Door">
+      <UniqueIdentifier>{06eac769-3e5d-4e9b-927c-39244fd4bc5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Item">
+      <UniqueIdentifier>{e78b2945-c53c-4ba1-91cb-1c9d63814b49}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="WinApiEngine.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Math.cpp">
+      <Filter>Default</Filter>
+    </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>Engine\Mgr</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>Engine\Mgr</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>Engine\Mgr</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeManager.cpp">
+      <Filter>Engine\Mgr</Filter>
+    </ClCompile>
+    <ClCompile Include="UIPanel.cpp">
+      <Filter>Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UILabel.cpp">
+      <Filter>Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIButton.cpp">
+      <Filter>Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIImage.cpp">
+      <Filter>Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="DemoScene.cpp" />
+    <ClCompile Include="Character.cpp">
+      <Filter>Character</Filter>
+    </ClCompile>
+    <ClCompile Include="Bitmap.cpp">
+      <Filter>Engine\IMG</Filter>
+    </ClCompile>
+    <ClCompile Include="Components\InputComponent.cpp">
+      <Filter>Engine\IMG</Filter>
+    </ClCompile>
+    <ClCompile Include="Components\SpriteAnimation.cpp">
+      <Filter>Engine\IMG</Filter>
+    </ClCompile>
+    <ClCompile Include="Components\SpriteRenderer.cpp">
+      <Filter>Engine\IMG</Filter>
+    </ClCompile>
+    <ClCompile Include="Object.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Character\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="NPC.cpp">
+      <Filter>Character\NPC</Filter>
+    </ClCompile>
+    <ClCompile Include="Component.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>Object\Furniture</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectManager.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="UIManager.cpp">
+      <Filter>Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIManager.cpp">
+      <Filter>Engine\Mgr</Filter>
+    </ClCompile>
+    <ClCompile Include="FSM.cpp">
+      <Filter>FSM</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseEntity.cpp">
+      <Filter>FSM</Filter>
+    </ClCompile>
+    <ClCompile Include="Bed.cpp">
+      <Filter>Object\Furniture\BedRoom</Filter>
+    </ClCompile>
+    <ClCompile Include="Closet.cpp">
+      <Filter>Object\Furniture\BedRoom</Filter>
+    </ClCompile>
+    <ClCompile Include="Curtain_Red.cpp">
+      <Filter>Object\Furniture\BedRoom</Filter>
+    </ClCompile>
+    <ClCompile Include="Door.cpp">
+      <Filter>Object\Furniture\Door</Filter>
+    </ClCompile>
+    <ClCompile Include="Drawer.cpp">
+      <Filter>Object\Furniture\Door</Filter>
+    </ClCompile>
+    <ClCompile Include="Flowerpot.cpp">
+      <Filter>Object\Furniture\Door</Filter>
+    </ClCompile>
+    <ClCompile Include="Table_Vertical.cpp">
+      <Filter>Object\Furniture\BedRoom</Filter>
+    </ClCompile>
+    <ClCompile Include="Shelf_Book.cpp">
+      <Filter>Object\Furniture\BedRoom</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="GameManager.cpp" />
+    <ClCompile Include="Table_Red.cpp">
+      <Filter>Object\Furniture\BedRoom</Filter>
+    </ClCompile>
+    <ClCompile Include="Bookcase.cpp">
+      <Filter>Object\Furniture\BedRoom</Filter>
+    </ClCompile>
+    <ClCompile Include="Stove.cpp">
+      <Filter>Object\Furniture\Kitchen</Filter>
+    </ClCompile>
+    <ClCompile Include="KitchenCounter.cpp">
+      <Filter>Object\Furniture\Kitchen</Filter>
+    </ClCompile>
+    <ClCompile Include="FirePot.cpp">
+      <Filter>Object\Furniture\Kitchen</Filter>
+    </ClCompile>
+    <ClCompile Include="Sideboard.cpp">
+      <Filter>Object\Furniture\Kitchen</Filter>
+    </ClCompile>
+    <ClCompile Include="WallHanging.cpp">
+      <Filter>Object\Furniture\Kitchen</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemManager.cpp">
+      <Filter>Item</Filter>
+    </ClCompile>
+    <ClCompile Include="Key.cpp">
+      <Filter>Item</Filter>
+    </ClCompile>
+    <ClCompile Include="Item.cpp">
+      <Filter>Item</Filter>
+    </ClCompile>
+    <ClCompile Include="Water.cpp">
+      <Filter>Item</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="WinApiEngine.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Singleton.h">
+      <Filter>Default</Filter>
+    </ClInclude>
+    <ClInclude Include="Math.h">
+      <Filter>Default</Filter>
+    </ClInclude>
+    <ClInclude Include="InputManager.h">
+      <Filter>Engine\Mgr</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>Engine\Mgr</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>Engine\Mgr</Filter>
+    </ClInclude>
+    <ClInclude Include="TimeManager.h">
+      <Filter>Engine\Mgr</Filter>
+    </ClInclude>
+    <ClInclude Include="UIPanel.h">
+      <Filter>Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UILabel.h">
+      <Filter>Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIImage.h">
+      <Filter>Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIButton.h">
+      <Filter>Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="DemoScene.h" />
+    <ClInclude Include="Character.h">
+      <Filter>Character</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\SpriteRenderer.h">
+      <Filter>Engine\IMG</Filter>
+    </ClInclude>
+    <ClInclude Include="Bitmap.h">
+      <Filter>Engine\IMG</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineMecro.h">
+      <Filter>Engine\IMG</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\InputComponent.h">
+      <Filter>Engine\IMG</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\SpriteAnimation.h">
+      <Filter>Engine\IMG</Filter>
+    </ClInclude>
+    <ClInclude Include="Object.h">
+      <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Character\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="NPC.h">
+      <Filter>Character\NPC</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>Object\Furniture</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectManager.h">
+      <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="UIManager.h">
+      <Filter>Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIManager.h">
+      <Filter>Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="FSM.h">
+      <Filter>FSM</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseEntity.h">
+      <Filter>FSM</Filter>
+    </ClInclude>
+    <ClInclude Include="Closet.h">
+      <Filter>Object\Furniture\BedRoom</Filter>
+    </ClInclude>
+    <ClInclude Include="Bed.h">
+      <Filter>Object\Furniture\BedRoom</Filter>
+    </ClInclude>
+    <ClInclude Include="Curtain_Red.h">
+      <Filter>Object\Furniture\BedRoom</Filter>
+    </ClInclude>
+    <ClInclude Include="Door.h">
+      <Filter>Object\Furniture\Door</Filter>
+    </ClInclude>
+    <ClInclude Include="Drawer.h">
+      <Filter>Object\Furniture\Door</Filter>
+    </ClInclude>
+    <ClInclude Include="Flowerpot.h">
+      <Filter>Object\Furniture\Door</Filter>
+    </ClInclude>
+    <ClInclude Include="Table_Vertical.h">
+      <Filter>Object\Furniture\BedRoom</Filter>
+    </ClInclude>
+    <ClInclude Include="Shelf_Book.h">
+      <Filter>Object\Furniture\BedRoom</Filter>
+    </ClInclude>
+    <ClInclude Include="GameManager.h" />
+    <ClInclude Include="Table_Red.h">
+      <Filter>Object\Furniture\BedRoom</Filter>
+    </ClInclude>
+    <ClInclude Include="Bookcase.h">
+      <Filter>Object\Furniture\BedRoom</Filter>
+    </ClInclude>
+    <ClInclude Include="Stove.h">
+      <Filter>Object\Furniture\Kitchen</Filter>
+    </ClInclude>
+    <ClInclude Include="KitchenCounter.h">
+      <Filter>Object\Furniture\Kitchen</Filter>
+    </ClInclude>
+    <ClInclude Include="FirePot.h">
+      <Filter>Object\Furniture\Kitchen</Filter>
+    </ClInclude>
+    <ClInclude Include="Sideboard.h">
+      <Filter>Object\Furniture\Kitchen</Filter>
+    </ClInclude>
+    <ClInclude Include="WallHanging.h">
+      <Filter>Object\Furniture\Kitchen</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemManager.h">
+      <Filter>Item</Filter>
+    </ClInclude>
+    <ClInclude Include="Key.h">
+      <Filter>Item</Filter>
+    </ClInclude>
+    <ClInclude Include="Item.h">
+      <Filter>Item</Filter>
+    </ClInclude>
+    <ClInclude Include="Water.h">
+      <Filter>Item</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

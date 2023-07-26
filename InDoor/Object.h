@@ -69,8 +69,7 @@ public:
 //2.이동 가능 오브젝트
 //3.애니메이션 있는 오브젝트
 //4.상태 전환 있는 오브젝트(커튼,등불)
- //class Object abstract : public ENGINE::GameObject
- class Object : public ENGINE::GameObject
+ class Object abstract : public ENGINE::GameObject
 {
 protected:
     //std::string name;

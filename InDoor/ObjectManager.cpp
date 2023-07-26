@@ -89,7 +89,25 @@ namespace ENGINE
 
 		for (int i = 0; i < mObject.find("Closet")->second.size(); i++)
 			mObject.find("Closet")->second[i]->Draw();	
+
+		for (int i = 0; i < mObject.find("Bookcase")->second.size(); i++)
+			mObject.find("Bookcase")->second[i]->Draw();	
+				
+		for (int i = 0; i < mObject.find("Stove")->second.size(); i++)
+			mObject.find("Stove")->second[i]->Draw();			
 		
+		for (int i = 0; i < mObject.find("KitchenCounter")->second.size(); i++)
+			mObject.find("KitchenCounter")->second[i]->Draw();
+		
+		for (int i = 0; i < mObject.find("FirePot")->second.size(); i++)
+			mObject.find("FirePot")->second[i]->Draw();			
+		
+		for (int i = 0; i < mObject.find("Sideboard")->second.size(); i++)
+			mObject.find("Sideboard")->second[i]->Draw();
+		
+		for (int i = 0; i < mObject.find("WallHanging")->second.size(); i++)
+			mObject.find("WallHanging")->second[i]->Draw();	
+
 
 	}
 
@@ -120,6 +138,9 @@ namespace ENGINE
 			
 		for (int i = 0; i < mObject.find("Curtain_Red")->second.size(); i++)
 			mObject.find("Curtain_Red")->second[i]->Update(deltaTime);
+		
+		for (int i = 0; i < mObject.find("Sideboard")->second.size(); i++)
+			mObject.find("Sideboard")->second[i]->Update(deltaTime);
 	}
 
 
@@ -166,6 +187,9 @@ namespace ENGINE
 		SerachInterObject(mObject.find("Bed")->second, interObject, characterRect);
 		SerachInterObject(mObject.find("Curtain_Red")->second, interObject, characterRect);
 		SerachInterObject(mObject.find("Closet")->second, interObject, characterRect);
+		SerachInterObject(mObject.find("Bookcase")->second, interObject, characterRect);
+		SerachInterObject(mObject.find("Stove")->second, interObject, characterRect);
+		SerachInterObject(mObject.find("Sideboard")->second, interObject, characterRect);
 	}
 
 	void ObjectManager::SerachInterObject(std::vector<Object*> vObject, std::vector<Object*>* interObject, const RECT characterRect)

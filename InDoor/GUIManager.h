@@ -8,6 +8,12 @@ enum UI_SELECT
 	UI_SELECT_Y = ENGINE::ClientSize_Height - 120,
 };
 
+enum UI_INVENTORY
+{
+	UI_INVENTORY_X = ENGINE::ClientSize_Width / 8,
+	UI_INVENTORY_Y = 25,
+};
+
 enum FONT
 {
 	//FONT_GAMENAME,

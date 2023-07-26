@@ -3,8 +3,8 @@
 #include "ResourceManager.h"
 #include "GUIManager.h"
 #include "ObjectManager.h"
-#include "Window.h"
-//#include "DemoScene.h"
+#include "ItemManager.h"
+#include "Player.h"
 
 enum SCENE
 {
@@ -27,9 +27,10 @@ enum TimeLine
 	TimeLine_ONEDAY = 24,
 };
 
-enum UNDER_SECTION
+enum TRANSPARENCY
 {
-	UNDER_SECTION_TRANSPARENCY = 95
+	UNDER_SECTION_TRANSPARENCY = 95,
+	INVENTORY_TRANSPARENCY = 200
 };
 
 enum UNDERTXT
@@ -75,6 +76,10 @@ enum UNDERTXT
 	//책장(책)
 	BOOK_0,
 
+	//화로(요리)
+	COOK,
+
+
 	UNDERTXT_COUNT,
 	UNDERTXT_NONE //맨 처음 세팅값. 하단 텍스트의 변화를 감지 해야하기 때문에
 };
@@ -102,7 +107,6 @@ private:
 
 	ENGINE::Bitmap* night = nullptr;
 	ENGINE::Bitmap* gameOver = nullptr;
-	//ENGINE::Bitmap* underSection = nullptr; //Draw를 투명화 설정 하기 위해서 Bitmap으로 선언
 	ENGINE::UIImage* select_Restart = nullptr;
 	int gameOver_X, gameOver_Y;
 
@@ -112,7 +116,6 @@ private:
 
 
 	//하단창 txt
-	//std::map<UNDERTXT, std::string> mUnderTxt;
 	std::map<UNDERTXT, std::vector<std::string>> mUnderTxt;
 	UNDERTXT prevShowUnderTxt, nowShowUnderTxt; //하단창 텍스트 변화를 감지해야지 인덱스 세팅이 가능하다.
 	bool isShowUnderTxt; //하단창 보여주기
@@ -122,22 +125,22 @@ private:
 	bool isPause;
 
 	//시간 흐름
-	//float accumulatedSec; //시간 누적 카운트(deltaTime이용)
 	float m_elapsedSec, m_elapsedMin; // 경과 시간 (초, 분 단위)
 	Clock m_Clock;
 	TimeLine nowTimeLine, oldTimeLine; //시간이 바뀐 순간을 감지하기 위해서
 
+	ENGINE::UIImage* Inventory_UI; //인벤토리
 	ENGINE::UILabel* timeLabel;
 	ENGINE::UIButton* underTxt_Section; //투명 버튼으로 누르면 다음 텍스트를 띄우거나 일시정지 해제되도록
-	//ENGINE::UIImage* underTxt_Btn; //투명 버튼으로 누르면 다음 텍스트를 띄우거나 일시정지 해제되도록
 	ENGINE::UILabel* txtLabel;
-	//ENGINE::UIImage* underTxt_UI;//Draw가 투명화가 불가능해서
 	bool isDark; //밤 어둠 깔기 확인
 
 	//플레이어 관련
 	//플레이어 상태
 	int m_health, m_hunger, m_thirst, m_fatigue;
-	//bool m_isAnyStatOver90; // 90 이상인 수치가 있는지 여부
+
+	//인벤토리를 열은 상태인지 체크
+	bool isInventory;
 
 
 	GameManager();
@@ -157,22 +160,22 @@ public:
 	//씬 전환될때 Object의 데이터를 알맞은 씬의 변수에 세이브
 	void RenewalSceneData(SCENE saveScene, const std::map <std::string, std::vector<Object*>>& nowSceneObject);
 	void DeepCopyMap(std::map<std::string, std::vector<Object*>>& dest, const std::map<std::string, std::vector<Object*>>& src);
-	//void ClearSceneData(std::map<std::string, std::vector<Object*>>& sceneData);
 	//DemoScene쪽에서 사용할 현재 씬의 데이터를 전달해주는데 사용
 	std::map <std::string, std::vector<Object*>> ApplySceneData(SCENE applyScene);
 
+	//인벤토리
+	void Inventory(Player& player);
+	void ItemUseBtnClickHandler(Item* useItem);
+	void CancelBtnClickHandler();
 	
 	//하단 텍스트창
 	void LoadUnderTxt();
 	void ShowUnderSectionTxt();
-	//void ShowUnderSectionTxt(UNDERTXT showTxt);
-	//void DisableUnderSection(); //하단 창 누르면 > 일시정지 해제, 하단창 비활성 or 다음 txt넘김, txt비활성(???????
 	void NextShowUnderSection(bool isNextTxt); //하단 창 누르면 > 일시정지 해제, 하단창 비활성 or 다음 txt넘김, txt비활성(???????
 	void SetShowUnder(UNDERTXT _nowShowUnderTxt) { isShowUnderTxt = true; nowShowUnderTxt = _nowShowUnderTxt; } //하단 텍스트가 떠야하는 선택지 작동 함수
 		
 
 	//일시정지 조정
-	//void SetPause(bool isPause) { ENGINE::GUIMgr->Set_IsPause(isPause); }
 	void Set_IsPause(bool pauseSet) { isPause = pauseSet; }
 	bool Get_IsPause() { return isPause; }
 
@@ -214,10 +217,15 @@ public:
 	int GetThirst() const { return m_thirst; }
 	int GetFatigue() const { return m_fatigue; }
 
-	//void SetHealth(int health) { m_health = health; }
-	//void SetHunger(int hunger) { m_hunger = hunger; }
-	//void SetThirst(int thirst) { m_thirst = thirst; }
-	//void SetFatigue(int fatigue) { m_fatigue = fatigue; }
+	void PlusHealth(int health) { m_health = health; }
+	void PlusHunger(int hunger) { m_hunger = hunger; }
+	void PlusThirst(int thirst) { m_thirst = thirst; }
+	void PlusFatigue(int fatigue) { m_fatigue = fatigue; }
+
+	//인벤토리
+	void SetIsInventory(bool _isInventory) { isInventory = _isInventory; }
+	bool GetIsInventory() { return isInventory; }
+
 
 	friend Singleton;
 #define GameMgr GameManager::GetInstance()

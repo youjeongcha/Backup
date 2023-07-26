@@ -12,6 +12,15 @@
 #include "Curtain_Red.h"
 #include "Closet.h"
 #include "Table_Red.h"
+#include "Bookcase.h"
+#include "Stove.h"
+#include "KitchenCounter.h"
+#include "FirePot.h"
+#include "Sideboard.h"
+#include "WallHanging.h"
+//#include "RoundTable.h"
+//#include "WallHanging.h"
+
 
 
 
@@ -83,5 +92,3 @@ namespace ENGINE
 	};
 #define ObjectMgr ObjectManager::GetInstance()
 }
-
-

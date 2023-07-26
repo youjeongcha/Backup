@@ -6,7 +6,8 @@
 
 VOID DemoScene::Initialize()
 {
-    nowScene = SCENE_BEDROOM;
+    //nowScene = SCENE_BEDROOM;
+    nowScene = SCENE_KITCHEN;
     //씬의 오브젝트 재구성(현재 씬, 이동할 씬)인데 초기 화면 세팅은 nowScene으로 둘다 세팅한다.
     ENGINE::ObjectMgr->InitSetting(nowScene, nowScene, GameMgr->GetIsDark()); //게임은 아침을 배겨으로 시작
 
@@ -162,13 +163,9 @@ void DemoScene::ChangeScene()
 
                 nowScene = SCENE(nowScene + 1);
 
-                //ObjectMgr->InitSetting(nowScene, (nowTimeLine == TimeLine_MORING) ? true : false);
                 //플레이어 위치 재배치
                 player->SetPos(PLAYER_RESPON_RIGHT, ENGINE::ClientSize_Height);
-                //player->SetPos(ENGINE::ClientSize_Width / 2, ENGINE::ClientSize_Height);
             }
-            //else 
-            //    nowScene = SCENE(nowScene - 1);
         }
         else if (player->GetRect().right >= ClientSize_Width)
         { //플레이어가 오른쪽으로 갈때
@@ -181,13 +178,15 @@ void DemoScene::ChangeScene()
                 ObjectMgr->InitSetting(nowScene, nowScene - 1, GameMgr->GetIsDark());
 
                 nowScene = SCENE(nowScene - 1);
-                //ObjectMgr->InitSetting(nowScene, (nowTimeLine == TimeLine_MORING) ? true : false);
                 //플레이어 위치 재배치
                 player->SetPos(PLAYER_RESPON_LEFT, ENGINE::ClientSize_Height);
-               // player->SetPos(ENGINE::ClientSize_Width / 2, ENGINE::ClientSize_Height);
             }
         }
         player->SetIsSpace(false);
+    }
+    else if (GameMgr->GetIsInventory())
+    {
+        GameMgr->Inventory(*player);
     }
 }
 

@@ -2,9 +2,15 @@
 
 GameManager::GameManager()
 {
+	Inventory_UI = nullptr;
+
 	//TXT 파일 읽어오기
 	LoadData();
 	LoadUnderTxt();
+
+	//이미지 리소스 로드 : 인벤토리 + 아이템
+	ENGINE::ResourceMgr->Load("Inventory_panel.bmp");
+
 
 	//Night and GameOver and Sleep
 	ENGINE::ResourceMgr->Load("Black.bmp");
@@ -134,9 +140,9 @@ void GameManager::Restart()
 
 	//수치 상태
 	m_health = 5;
-	m_hunger = 100;
-	//m_hunger = 50;
-	m_thirst = 5;
+	//m_hunger = 100;
+	 m_hunger = 30;
+	m_thirst = 40;
 	//m_thirst = 50;
 	m_fatigue = 20;
 
@@ -148,7 +154,7 @@ void GameManager::Restart()
 	m_elapsedSec = 0.0f;
 	nowTimeLine = TimeLine_MORING; oldTimeLine = TimeLine_MORING;
 	m_Clock.hour = TimeLine_NIGHT - 1;
-	m_Clock.min = 50;
+	m_Clock.min = 00;
 
 	//로드해온 Object 데이터 각 Scene마다 Object 관리하는 변수에 세팅
 	Delete_SceneObject();
@@ -258,7 +264,7 @@ void GameManager::Update(const FLOAT&  deltaTime)
 		m_hunger += 5;
 
 		//피로, 허기, 갈증이 90 이상이 되면 > 건강이 30초마다 5씩 깎인다.
-		if ((m_fatigue <= 90) || (m_thirst <= 90) || (m_hunger <= 90))
+		if ((m_fatigue >= 90) || (m_thirst >= 90) || (m_hunger >= 90))
 			m_health -= 5;
 
 		//수치가 최대 최소가 되지 않도록 조정
@@ -493,6 +499,37 @@ void GameManager::DeepCopyMap(std::map<std::string, std::vector<Object*>>& dest,
 				Table_Red* tableRed = new Table_Red(*dynamic_cast<Table_Red*>(srcObject));
 				destObjects.push_back(tableRed);
 			}
+			else if (dynamic_cast<Bookcase*>(srcObject))
+			{
+				Bookcase* bookcase = new Bookcase(*dynamic_cast<Bookcase*>(srcObject));
+				destObjects.push_back(bookcase);
+			}
+			else if (dynamic_cast<Stove*>(srcObject))
+			{
+				Stove* stove = new Stove(*dynamic_cast<Stove*>(srcObject));
+				destObjects.push_back(stove);
+			}
+			else if (dynamic_cast<KitchenCounter*>(srcObject))
+			{
+				KitchenCounter* counter = new KitchenCounter(*dynamic_cast<KitchenCounter*>(srcObject));
+				destObjects.push_back(counter);
+			}			
+			else if (dynamic_cast<FirePot*>(srcObject))
+			{
+				FirePot* firepot = new FirePot(*dynamic_cast<FirePot*>(srcObject));
+				destObjects.push_back(firepot);
+			}
+			else if (dynamic_cast<Sideboard*>(srcObject))
+			{
+				Sideboard* sideboard = new Sideboard(*dynamic_cast<Sideboard*>(srcObject));
+				destObjects.push_back(sideboard);
+			}
+			
+			else if (dynamic_cast<WallHanging*>(srcObject))
+			{
+				WallHanging* sideboard = new WallHanging(*dynamic_cast<WallHanging*>(srcObject));
+				destObjects.push_back(sideboard);
+			}
 		}
 
 		dest[key] = destObjects;
@@ -518,6 +555,8 @@ std::map<std::string, std::vector<Object*>> GameManager::ApplySceneData(SCENE ap
 
 
 
+
+
 //------파일 입출력 관련--------
 
 
@@ -534,6 +573,12 @@ void GameManager::LoadData()
 	FileRead("Closet");
 	FileRead("Table_Red");
 	FileRead("Bookcase");
+	FileRead("Stove");
+	FileRead("KitchenCounter");
+	FileRead("FirePot");
+	FileRead("Sideboard");
+	FileRead("WallHanging");
+
 
 }
 
@@ -662,7 +707,7 @@ void GameManager::FileRead(const std::string& file) {
 void GameManager::InitSceneData(int _mapIndex, std::map <std::string, std::vector<Object*>>& _Object)
 { //로드해온 Object 데이터 각 Scene마다 Object 관리하는 변수에 세팅
 
-			//Door
+	//Door
 	std::vector<Object*> tmpObject;
 	for (int i = 0; i < objectData.find("Door")->second.objectCount; i++)
 	{
@@ -783,6 +828,61 @@ void GameManager::InitSceneData(int _mapIndex, std::map <std::string, std::vecto
 	}
 	_Object.insert({ "Bookcase", tmpObject }); //pair로 만들기
 
+	tmpObject.clear();	
+	
+	//Stove
+	for (int i = 0; i < objectData.find("Stove")->second.objectCount; i++)
+	{
+		//해당 맵에 배치된 Object 인지 판별
+		if (_mapIndex == objectData.find("Stove")->second.eachObject[i]->objectIndex.mapIndex)
+			tmpObject.push_back(new Stove(objectData.find("Stove")->second, i));
+	}
+	_Object.insert({ "Stove", tmpObject }); //pair로 만들기
+
+	tmpObject.clear();
+
+	//KitchenCounter
+	for (int i = 0; i < objectData.find("KitchenCounter")->second.objectCount; i++)
+	{
+		//해당 맵에 배치된 Object 인지 판별
+		if (_mapIndex == objectData.find("KitchenCounter")->second.eachObject[i]->objectIndex.mapIndex)
+			tmpObject.push_back(new KitchenCounter(objectData.find("KitchenCounter")->second, i));
+	}
+	_Object.insert({ "KitchenCounter", tmpObject }); //pair로 만들기
+
+	tmpObject.clear();
+	
+	//FirePot
+	for (int i = 0; i < objectData.find("FirePot")->second.objectCount; i++)
+	{
+		//해당 맵에 배치된 Object 인지 판별
+		if (_mapIndex == objectData.find("FirePot")->second.eachObject[i]->objectIndex.mapIndex)
+			tmpObject.push_back(new FirePot(objectData.find("FirePot")->second, i));
+	}
+	_Object.insert({ "FirePot", tmpObject }); //pair로 만들기
+
+	tmpObject.clear();
+
+	//Sideboard
+	for (int i = 0; i < objectData.find("Sideboard")->second.objectCount; i++)
+	{
+		//해당 맵에 배치된 Object 인지 판별
+		if (_mapIndex == objectData.find("Sideboard")->second.eachObject[i]->objectIndex.mapIndex)
+			tmpObject.push_back(new Sideboard(objectData.find("Sideboard")->second, i));
+	}
+	_Object.insert({ "Sideboard", tmpObject }); //pair로 만들기
+
+	tmpObject.clear();
+	
+	//Sideboard
+	for (int i = 0; i < objectData.find("WallHanging")->second.objectCount; i++)
+	{
+		//해당 맵에 배치된 Object 인지 판별
+		if (_mapIndex == objectData.find("WallHanging")->second.eachObject[i]->objectIndex.mapIndex)
+			tmpObject.push_back(new WallHanging(objectData.find("WallHanging")->second, i));
+	}
+	_Object.insert({ "WallHanging", tmpObject }); //pair로 만들기
+
 	tmpObject.clear();
 }
 
@@ -803,7 +903,7 @@ void GameManager::SetPlusHour(int plusHour)
 
 
 
-//----플레이어 관련--------
+//--------------플레이어 관련-------------------
 
 void GameManager::PlayerSleep()
 {
@@ -848,4 +948,81 @@ void GameManager::PlayerSleep()
 		m_hunger = 100;
 	if (m_thirst > 100)
 		m_thirst = 100;
+}
+
+
+//-------------------인벤토리---------------------
+
+void GameManager::Inventory(Player& player)
+{
+	std::vector<std::pair<ITEM, int>> player_ItemList;
+	ENGINE::UIMgr->Remove("Inventory");
+	Inventory_UI = ENGINE::UIMgr->AddUI<ENGINE::UIImage>("Inventory");
+	Inventory_UI->Initialize("Inventory_panel.bmp", ENGINE::DrawType::AlphaBlend); //투명도 조절 가능하게끔
+	Inventory_UI->Set_Transparency(INVENTORY_TRANSPARENCY); //투명화 원하는 값(0 ~ 255)
+
+
+	if (Inventory_UI)
+	{
+		int i, selectBtn_X, selectBtn_Y;
+		GameMgr->Set_IsPause(true);
+
+		Inventory_UI->SetPosition(UI_INVENTORY_X, UI_INVENTORY_Y, false);
+
+		selectBtn_X = Inventory_UI->GetSize().cx * 0.5f;
+		selectBtn_Y = 17;
+
+
+		//인벤토리에 현재 있는 아이템 수만큼 아이템 칸 생성
+		for (i = 0; i < player.GetItemList().size(); i++)
+		{
+			Item* useItem = ItemMgr->GetItemList().find(player_ItemList[i].first)->second;
+			std::string itemName = useItem->GetName();
+
+			//버튼-선택지
+			ENGINE::UIButton* btn_select = ENGINE::UIMgr->AddUI<ENGINE::UIButton>("Optional " + std::to_string(i + 1) + itemName, Inventory_UI); //파일 이름으로 구분 ex.Home_Flowerpot.bmp
+			//ENGINE::UIButton* btn_select = ENGINE::UIMgr->AddUI<ENGINE::UIButton>("Optional " + std::to_string(i + 1) + "_" + (*interObject)[i]->GetObjectName() + " Btn", Inventory_UI); //파일 이름으로 구분 ex.Home_Flowerpot.bmp
+			btn_select->Initialize("Select_Btn_Normal.bmp", "Select_Btn_Pressed.bmp", "", "", ENGINE::DrawType::Transparent);
+			btn_select->SetLocalPosition(selectBtn_X, selectBtn_Y, true);
+			btn_select->SetListener(std::bind(&GameManager::ItemUseBtnClickHandler, this, useItem));
+
+			//선택지 문구
+			ENGINE::UILabel* btn_txt = ENGINE::UIMgr->AddUI<ENGINE::UILabel>(itemName + "Txt", btn_select);
+			btn_txt->SetLocalPosition(FONT_SELECT_X, FONT_SELECT_Y, true);
+			btn_txt->Initialize(itemName, RGB(255, 255, 205), ENGINE::GUIMgr->Get_Font(FONT_SELECT));
+
+			selectBtn_X += 25;
+
+			//인벤토리 칸 3개 넘으면 다음 줄로 내려서 배치
+			if (selectBtn_X >= 75)
+			{
+				selectBtn_X = 0;
+				selectBtn_Y += 25;
+			}
+		}
+
+
+		ENGINE::UIButton* btn_Cancel = ENGINE::UIMgr->AddUI<ENGINE::UIButton>("CancelBtn_Panel_" + std::to_string(i + 1), Inventory_UI);
+		btn_Cancel->Initialize("Select_Btn_Normal.bmp", "Select_Btn_Pressed.bmp", "", "", ENGINE::DrawType::Transparent);
+		btn_Cancel->SetLocalPosition(selectBtn_X, selectBtn_Y, true);
+		btn_Cancel->SetListener(std::bind(&GameManager::CancelBtnClickHandler, this));
+
+		//선택지 문구
+		ENGINE::UILabel* btnCancel_txt = ENGINE::UIMgr->AddUI<ENGINE::UILabel>("Cancel_Txt" + std::to_string(i + 1), btn_Cancel);
+		btnCancel_txt->SetLocalPosition(FONT_SELECT_X, FONT_SELECT_Y, true);
+		btnCancel_txt->Initialize("취소", RGB(255, 255, 255), ENGINE::GUIMgr->Get_Font(FONT_SELECT));
+	}
+}
+
+void GameManager::ItemUseBtnClickHandler(Item* useItem)
+{
+	useItem->Use();
+	Inventory_UI->SetEnable(FALSE);
+}
+
+void GameManager::CancelBtnClickHandler()
+{
+	Inventory_UI->SetEnable(FALSE);
+	isPause = false;
+	isInventory = false; //인벤토리가 관리된다.(인벤토리 끔)
 }

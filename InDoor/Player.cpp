@@ -22,7 +22,9 @@ Player::Player()
     ENGINE::InputComponent* input = new ENGINE::InputComponent;
     input->AddBinding(VK_LEFT, [&]() { dir = Direction::Left; state = State::Move; }, [&]() { state = State::Idle; });
     input->AddBinding(VK_RIGHT, [&]() { dir = Direction::Right; state = State::Move; }, [&]() { state = State::Idle; });
-    input->AddBinding(VK_SPACE, [&]() {  isSpace = true; state = State::Idle; }, [&]() { isSpace = false; state = State::Idle; }); //
+    input->AddBinding(VK_SPACE, [&]() {  isSpace = true; state = State::Idle; }, [&]() { isSpace = false; state = State::Idle; }); //스페이스
+    input->AddBinding(VK_I, [&]() {  GameMgr->SetIsInventory(true); state = State::Idle; }, [&]() { GameMgr->SetIsInventory(false); state = State::Idle; }); //인벤토리
+
     AddComponent(input);
 
     /*

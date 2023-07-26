@@ -41,15 +41,10 @@ namespace ENGINE
 		UIMgr->Draw();
 	}
 
-	//TODO::void로 변경
 	void GUIManager::SelectOptional(std::vector<Object*>* interObject)
 	{
 		OptionalForm(interObject);
 		select_UI->SetEnable(TRUE);
-
-		//TODO::선택에 따라 리턴값 다르게
-
-		//return 0;
 	}
 
 

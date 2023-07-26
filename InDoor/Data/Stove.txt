@@ -1,0 +1,6 @@
+true false false false
+1 1
+Home_Stove.bmp
+1 요리
+1
+화로 1 0 true false false false 50 60 0 0 0
