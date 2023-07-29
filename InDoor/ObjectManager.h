@@ -18,6 +18,7 @@
 #include "FirePot.h"
 #include "Sideboard.h"
 #include "WallHanging.h"
+#include "WaterCup.h"
 //#include "RoundTable.h"
 //#include "WallHanging.h"
 

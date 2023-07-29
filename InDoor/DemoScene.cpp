@@ -1,15 +1,15 @@
 #include "DemoScene.h"
-#include "ResourceManager.h"
-#include "SceneManager.h"
-#include "ObjectManager.h"
-#include "GUIManager.h"
+//#include "ResourceManager.h"
+//#include "SceneManager.h"
+//#include "ObjectManager.h"
+//#include "GUIManager.h"
 
 VOID DemoScene::Initialize()
 {
     //nowScene = SCENE_BEDROOM;
-    nowScene = SCENE_KITCHEN;
+    nowScene = SCENE_BEDROOM;
     //씬의 오브젝트 재구성(현재 씬, 이동할 씬)인데 초기 화면 세팅은 nowScene으로 둘다 세팅한다.
-    ENGINE::ObjectMgr->InitSetting(nowScene, nowScene, GameMgr->GetIsDark()); //게임은 아침을 배겨으로 시작
+    ENGINE::ObjectMgr->InitSetting(nowScene, nowScene, GameMgr->GetIsDark()); //게임은 아침을 배경으로 시작
 
     //-------------추가된 것--------------
     ResourceMgr->Load("background.bmp"); 
@@ -55,6 +55,7 @@ VOID DemoScene::Update(const FLOAT& deltaTime)
     {
         //씬의 오브젝트 재구성(현재 씬, 이동할 씬)
         ObjectMgr->InitSetting(nowScene, SCENE_BEDROOM, GameMgr->GetIsDark());
+        nowScene = SCENE_BEDROOM;
         player->Initialize();
         GameMgr->SetisReset_OneTime(false);
         return;
@@ -92,8 +93,8 @@ VOID DemoScene::Update(const FLOAT& deltaTime)
     //Player의 위치가 좌우 끝으로 가면 씬 전환 
     ChangeScene();
 
-    //player가 상호작용할 object를 선택
-    ObjectMgr->Update(deltaTime);
+    /////player가 상호작용할 object를 선택
+   // ObjectMgr->Update(deltaTime);
 
 
     if (0 > playerTr->position.x) 

@@ -3,4 +3,4 @@ true false false false
 Home_Sideboard.bmp
 1 꺼내기
 1
-벽걸이 1 0 true false false false 300 62 0 0 0
+찬장 1 0 true false false false 300 62 0 0 0

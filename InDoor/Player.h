@@ -1,7 +1,7 @@
 #pragma once
 #include "Character.h"
 #include "Object.h"
-#include "ItemManager.h"
+//#include "ItemManager.h"
 
 #define VK_I 0x49
 
@@ -20,7 +20,6 @@ private:
    /* bool isInventory;*/
     std::vector<Object*> interObject; //현재 상호작용 가능한 가구들을 담는다.
     //std::vector<ITEM> itemList; 
-    std::vector<std::pair<ITEM, int>> itemList; //플레이어가 지닌 아이템들 + 수량
     
 
 public:
@@ -40,6 +39,6 @@ public:
     //bool GetIsInventory() { return isInventory; }
     //void SetIsInventory(bool _isInventory) { isInventory = _isInventory; }
 
-    std::vector<std::pair<ITEM, int>> GetItemList() { return itemList; }
+   // std::vector<std::pair<ITEM, int>> GetItemList() { return itemList; }
     //RECT Get_Rect() { return renderer->GetRect(); }
 };

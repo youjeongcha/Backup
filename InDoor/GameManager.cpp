@@ -10,6 +10,8 @@ GameManager::GameManager()
 
 	//이미지 리소스 로드 : 인벤토리 + 아이템
 	ENGINE::ResourceMgr->Load("Inventory_panel.bmp");
+	ENGINE::ResourceMgr->Load("Inventory_Btn_Pressed.bmp");
+	ENGINE::ResourceMgr->Load("Inventory_Btn_Normal.bmp");
 
 
 	//Night and GameOver and Sleep
@@ -75,12 +77,52 @@ GameManager::GameManager()
 	//로드해온 Object 데이터 각 Scene마다 Object 관리하는 변수에 세팅
 	Restart();
 }
+
 GameManager::~GameManager()
 {
+	// mDoorObject 해제
+	for (std::map<std::string, std::vector<Object*>>::iterator iter = mDoorObject.begin(); iter != mDoorObject.end(); ++iter)
+	{
+		for (Object* obj : iter->second)
+		{
+			delete obj;
+		}
+		iter->second.clear();
+	}
+	mDoorObject.clear();
+
+	// mKitchenObject 해제
+	for (std::map<std::string, std::vector<Object*>>::iterator iter = mKitchenObject.begin(); iter != mKitchenObject.end(); ++iter)
+	{
+		for (Object* obj : iter->second)
+		{
+			delete obj;
+		}
+		iter->second.clear();
+	}
+	mKitchenObject.clear();
+
+	// mBedRoomObject 해제
+	for (std::map<std::string, std::vector<Object*>>::iterator iter = mBedRoomObject.begin(); iter != mBedRoomObject.end(); ++iter)
+	{
+		for (Object* obj : iter->second)
+		{
+			delete obj;
+		}
+		iter->second.clear();
+	}
+	mBedRoomObject.clear();
+
+	// mUnderTxt 해제
+	mUnderTxt.clear();
+
+	// player_ItemList 해제
+	player_ItemList.clear();
 }
 
-void GameManager::Delete_SceneObject()
+void GameManager::Reset_SceneObject()
 {
+	
 	if (mDoorObject.size() > 0)
 	{
 		for (std::map<std::string, std::vector<Object*>>::iterator iter = mDoorObject.begin(); iter != mDoorObject.end(); iter++)
@@ -98,10 +140,6 @@ void GameManager::Delete_SceneObject()
 	{
 		for (std::map<std::string, std::vector<Object*>>::iterator iter = mKitchenObject.begin(); iter != mKitchenObject.end(); iter++)
 		{
-			//for (Object* obj : iter->second)
-			//{
-			//	delete obj;
-			//}
 			iter->second.clear();
 		}
 	}
@@ -111,10 +149,6 @@ void GameManager::Delete_SceneObject()
 	{
 		for (std::map<std::string, std::vector<Object*>>::iterator iter = mBedRoomObject.begin(); iter != mBedRoomObject.end(); iter++)
 		{
-			//for (Object* obj : iter->second)
-			//{
-			//	delete obj;
-			//}
 			iter->second.clear();
 		}
 	}
@@ -141,9 +175,8 @@ void GameManager::Restart()
 	//수치 상태
 	m_health = 5;
 	//m_hunger = 100;
-	 m_hunger = 30;
-	m_thirst = 40;
-	//m_thirst = 50;
+	m_hunger = 30;
+	m_thirst = 50;
 	m_fatigue = 20;
 
 	//경과 시간
@@ -157,7 +190,9 @@ void GameManager::Restart()
 	m_Clock.min = 00;
 
 	//로드해온 Object 데이터 각 Scene마다 Object 관리하는 변수에 세팅
-	Delete_SceneObject();
+	Reset_SceneObject();
+	//인벤토리 리셋
+	player_ItemList.clear();
 	Initialize();
 }
 
@@ -286,8 +321,6 @@ void GameManager::Update(const FLOAT&  deltaTime)
 		//상단 상태창 삭제
 		select_Restart->SetEnable(true);
 		timeLabel->SetEnable(false);
-		//TODO::하단 창 띄우기
-		//TODO::하단 창 텍스트
 		
 		//게임 오버 화면
 		//게임 오버 화면 - 텍스트
@@ -327,29 +360,6 @@ void GameManager::LoadUnderTxt()
 		// 파일 스트림 닫기
 		load.close();
 	}
-
-	/*
-	// 파일 스트림 열기
-	std::ifstream load("Data/UnderTxt.txt");
-
-	//오브젝트 객체 하나당 데이터 설정값
-	ObjectData tmpObjectData; //하나의 가구 종류
-
-	// 파일이 성공적으로 열렸는지 확인
-	if (load.is_open()) {
-
-		// 줄 단위로 텍스트 읽어서 mUnderTxt에 저장
-		std::string line;
-		int i = UNDERTXT_START;
-
-		while (std::getline(load, line) && i < UNDERTXT_COUNT) {
-			mUnderTxt[static_cast<UNDERTXT>(i)] = line;
-			i++;
-		}
-
-		// 파일 스트림 닫기
-		load.close();
-	}*/
 }
 
 void GameManager::ShowUnderSectionTxt()
@@ -411,7 +421,7 @@ void GameManager::NextShowUnderSection(bool isNextTxt)
 		indexShowUnderTxt++;
 
 		char timeStr[100];
-		//해당 텍스트 순서 기억해두고 출력해야 한다. indexShowUnderTxt로 인덱스 관리한다 TODO::::::::::::::::::::::::::::::::::::::
+		//해당 텍스트 순서 기억해두고 출력해야 한다. indexShowUnderTxt로 인덱스 관리한다
 		sprintf_s(timeStr, sizeof(timeStr), mUnderTxt.find(nowShowUnderTxt)->second[indexShowUnderTxt].c_str());
 		txtLabel->SetText(timeStr);
 	}
@@ -524,11 +534,15 @@ void GameManager::DeepCopyMap(std::map<std::string, std::vector<Object*>>& dest,
 				Sideboard* sideboard = new Sideboard(*dynamic_cast<Sideboard*>(srcObject));
 				destObjects.push_back(sideboard);
 			}
-			
 			else if (dynamic_cast<WallHanging*>(srcObject))
 			{
 				WallHanging* sideboard = new WallHanging(*dynamic_cast<WallHanging*>(srcObject));
 				destObjects.push_back(sideboard);
+			}
+			else if (dynamic_cast<WaterCup*>(srcObject))
+			{
+				WaterCup* waterCup = new WaterCup(*dynamic_cast<WaterCup*>(srcObject));
+				destObjects.push_back(waterCup);
 			}
 		}
 
@@ -578,6 +592,7 @@ void GameManager::LoadData()
 	FileRead("FirePot");
 	FileRead("Sideboard");
 	FileRead("WallHanging");
+	FileRead("WaterCup");
 
 
 }
@@ -883,6 +898,17 @@ void GameManager::InitSceneData(int _mapIndex, std::map <std::string, std::vecto
 	}
 	_Object.insert({ "WallHanging", tmpObject }); //pair로 만들기
 
+	tmpObject.clear();	
+	
+	//WaterCup
+	for (int i = 0; i < objectData.find("WaterCup")->second.objectCount; i++)
+	{
+		//해당 맵에 배치된 Object 인지 판별
+		if (_mapIndex == objectData.find("WaterCup")->second.eachObject[i]->objectIndex.mapIndex)
+			tmpObject.push_back(new WaterCup(objectData.find("WaterCup")->second, i));
+	}
+	_Object.insert({ "WaterCup", tmpObject }); //pair로 만들기
+
 	tmpObject.clear();
 }
 
@@ -951,11 +977,13 @@ void GameManager::PlayerSleep()
 }
 
 
+
+
 //-------------------인벤토리---------------------
 
 void GameManager::Inventory(Player& player)
 {
-	std::vector<std::pair<ITEM, int>> player_ItemList;
+	//std::vector<std::pair<ITEM, int>> player_ItemList;
 	ENGINE::UIMgr->Remove("Inventory");
 	Inventory_UI = ENGINE::UIMgr->AddUI<ENGINE::UIImage>("Inventory");
 	Inventory_UI->Initialize("Inventory_panel.bmp", ENGINE::DrawType::AlphaBlend); //투명도 조절 가능하게끔
@@ -964,17 +992,19 @@ void GameManager::Inventory(Player& player)
 
 	if (Inventory_UI)
 	{
-		int i, selectBtn_X, selectBtn_Y;
+		int i, selectBtn_X, selectBtn_Y, cancel_X, cancel_Y;
 		GameMgr->Set_IsPause(true);
 
 		Inventory_UI->SetPosition(UI_INVENTORY_X, UI_INVENTORY_Y, false);
 
 		selectBtn_X = Inventory_UI->GetSize().cx * 0.5f;
 		selectBtn_Y = 17;
+		cancel_X = Inventory_UI->GetSize().cx * 0.5f;
+		cancel_Y = Inventory_UI->GetSize().cy - 10;
 
 
 		//인벤토리에 현재 있는 아이템 수만큼 아이템 칸 생성
-		for (i = 0; i < player.GetItemList().size(); i++)
+		for (i = 0; i < player_ItemList.size(); i++)
 		{
 			Item* useItem = ItemMgr->GetItemList().find(player_ItemList[i].first)->second;
 			std::string itemName = useItem->GetName();
@@ -982,7 +1012,7 @@ void GameManager::Inventory(Player& player)
 			//버튼-선택지
 			ENGINE::UIButton* btn_select = ENGINE::UIMgr->AddUI<ENGINE::UIButton>("Optional " + std::to_string(i + 1) + itemName, Inventory_UI); //파일 이름으로 구분 ex.Home_Flowerpot.bmp
 			//ENGINE::UIButton* btn_select = ENGINE::UIMgr->AddUI<ENGINE::UIButton>("Optional " + std::to_string(i + 1) + "_" + (*interObject)[i]->GetObjectName() + " Btn", Inventory_UI); //파일 이름으로 구분 ex.Home_Flowerpot.bmp
-			btn_select->Initialize("Select_Btn_Normal.bmp", "Select_Btn_Pressed.bmp", "", "", ENGINE::DrawType::Transparent);
+			btn_select->Initialize("Inventory_Btn_Normal.bmp", "Inventory_Btn_Pressed.bmp", "", "", ENGINE::DrawType::Transparent);
 			btn_select->SetLocalPosition(selectBtn_X, selectBtn_Y, true);
 			btn_select->SetListener(std::bind(&GameManager::ItemUseBtnClickHandler, this, useItem));
 
@@ -1003,8 +1033,8 @@ void GameManager::Inventory(Player& player)
 
 
 		ENGINE::UIButton* btn_Cancel = ENGINE::UIMgr->AddUI<ENGINE::UIButton>("CancelBtn_Panel_" + std::to_string(i + 1), Inventory_UI);
-		btn_Cancel->Initialize("Select_Btn_Normal.bmp", "Select_Btn_Pressed.bmp", "", "", ENGINE::DrawType::Transparent);
-		btn_Cancel->SetLocalPosition(selectBtn_X, selectBtn_Y, true);
+		btn_Cancel->Initialize("Inventory_Btn_Normal.bmp", "Inventory_Btn_Pressed.bmp", "", "", ENGINE::DrawType::Transparent);
+		btn_Cancel->SetLocalPosition(cancel_X, cancel_Y, true);
 		btn_Cancel->SetListener(std::bind(&GameManager::CancelBtnClickHandler, this));
 
 		//선택지 문구
@@ -1013,6 +1043,10 @@ void GameManager::Inventory(Player& player)
 		btnCancel_txt->Initialize("취소", RGB(255, 255, 255), ENGINE::GUIMgr->Get_Font(FONT_SELECT));
 	}
 }
+
+//void GameManager::Reset_Inventory()
+//{
+//}
 
 void GameManager::ItemUseBtnClickHandler(Item* useItem)
 {

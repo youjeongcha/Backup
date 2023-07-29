@@ -3,12 +3,12 @@
 
 Closet::Closet()
 {
+    Initialize();
 }
 
 Closet::Closet(const ObjectData& dataSet, int index) : Object(dataSet, index)
 {
-    //FSM* fsm;
-    //m_nID = fsm->Get_NextVaildID();
+    Initialize();
 }
 
 Closet::~Closet()
@@ -17,7 +17,7 @@ Closet::~Closet()
 
 VOID Closet::Initialize()
 {
-    return VOID();
+    isHaveItem = true;
 }
 
 VOID Closet::Move(const FLOAT& deltaTime)
@@ -31,10 +31,19 @@ void Closet::DetailSelect(int selectNum)
     //취소 제외 최대 선택지 개수는 3개로 제한
     switch (selectNum)
     {
-    case 0: //문 열기(Active) //TODO::수정 필요
-       // ChangeActiveState();
-        //return std::bind(&Door::ChangeActiveState, this);
-    case 1: //노크 //TODO:: 하단창 뜨고 ... 혹은 NPC 대면
+    case 0: 
+        if (isHaveItem)
+        {
+            GameMgr->SetShowUnder(CLOSET_IN_O); //아이템이 있으면 가져갈 수 있게
+            GameMgr->PlusPlayerInventory(std::make_pair(KEY, 1));
+            isHaveItem = false;
+        }
+        else
+        {
+            GameMgr->SetShowUnder(CLOSET_IN_X);
+        }
+        break;
+    defualt:
         break;
     }
 

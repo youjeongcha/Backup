@@ -3,10 +3,11 @@
 //#include "Components/SpriteAnimation.h"
 //#include "Components/InputComponent.h"
 //#include "UIManager.h"
-#include "Player.h"
-#include "Door.h"
-#include "Window.h"
+//#include "Player.h"
 #include "GameManager.h"
+
+//#include "Door.h"
+//#include "Window.h"
 //#include "Singleton.h"
 
 #ifndef DEMO_SCENE_H

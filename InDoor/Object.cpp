@@ -1,13 +1,16 @@
 #include "Object.h"
 #include "GameManager.h"
-#include "Door.h"
 
 Object::Object()
 {
+    Initialize();
 }
 
 Object::Object(const ObjectData& dataSet, int index)
 {
+    Initialize();
+
+
     eachObjectIndex.name = dataSet.eachObject[index]->objectIndex.name;
     //오브젝트 타입 설정
     typeCheck = dataSet.typeCheck;
@@ -56,6 +59,7 @@ Object::Object(const ObjectData& dataSet, int index)
     //상세 선택지
     detailSelectCount = dataSet.detailSelectCount;
     sDetailSelect = dataSet.sDetailSelect;
+
 }
 
 Object::~Object()
@@ -64,6 +68,8 @@ Object::~Object()
 
 VOID Object::Initialize()
 {
+    isUse = true;
+    isHaveItem = false;
 }
 
 VOID Object::Update(const FLOAT& deltaTime)
@@ -104,7 +110,8 @@ VOID Object::Move(const FLOAT& deltaTime)
 
 VOID Object::Draw()
 {
-	renderer->Draw();
+    if (isUse)
+	    renderer->Draw();
 }
 
 void Object::DetailSelectForm()

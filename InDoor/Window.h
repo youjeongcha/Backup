@@ -2,8 +2,6 @@
 #include "Object.h"
 
 
-
-
 class Window : public Object
 {
 private:

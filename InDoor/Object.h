@@ -76,6 +76,11 @@ protected:
     //int mapIndex, index; //mapIndex 해당 Object의 소속 Map //map + 해당 Object에서의 Index 번호
     EachObjectIndex eachObjectIndex;
 
+    //현재 보여지고 상호작용 가능한가? //현재 사용중이어야지 플레이어와 겹치는지 확인하기 위해
+    bool isUse;
+    //현재 가지고 있는 아이템이 있는지
+    bool isHaveItem;
+
     //명칭
     std::string objectName;
     //파일명
@@ -110,6 +115,9 @@ public:
     Object(const Object& other) {
         // 멤버 변수들을 깊은 복사
         eachObjectIndex = other.eachObjectIndex;
+        isUse = other.isUse;
+        isHaveItem = other.isHaveItem;
+
         objectName = other.objectName;
         fileName = other.fileName;
         SpritesX = other.SpritesX;
@@ -123,6 +131,7 @@ public:
         moveSpeed = other.moveSpeed;
         //상세 선택지
         detailSelectCount = other.detailSelectCount;
+        detailSelect_UI = other.detailSelect_UI;
         sDetailSelect = other.sDetailSelect;
 
         // renderer를 깊은 복사
@@ -203,13 +212,16 @@ public:
     virtual VOID Initialize();
     VOID Update(const FLOAT& deltaTime);
     virtual VOID Move(const FLOAT& deltaTime);
-    VOID Draw();
+    virtual VOID Draw();
     VOID Release();
 
     //컴포넌트 겹칩 판단
     RECT GetRect() { return renderer->GetRect(); } //반환형에 const 한정자 지정
     EachObjectIndex GetEachObjectIndex() { return eachObjectIndex; }
     std::string GetObjectName() { return objectName; }
+
+    //현재 사용중이어야지 플레이어와 겹치는지 확인하기 위해
+    bool GetisUse() { return isUse; }
 
     //---선택지 관련----
     void DetailSelectForm(); //세부 선택지 양식 틀

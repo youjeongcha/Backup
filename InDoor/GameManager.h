@@ -1,5 +1,5 @@
 #pragma once
-#include "Singleton.h"
+//#include "Singleton.h"
 #include "ResourceManager.h"
 #include "GUIManager.h"
 #include "ObjectManager.h"
@@ -79,6 +79,8 @@ enum UNDERTXT
 	//화로(요리)
 	COOK,
 
+	//물(컵) 가구
+	WATER_O,
 
 	UNDERTXT_COUNT,
 	UNDERTXT_NONE //맨 처음 세팅값. 하단 텍스트의 변화를 감지 해야하기 때문에
@@ -139,7 +141,12 @@ private:
 	//플레이어 상태
 	int m_health, m_hunger, m_thirst, m_fatigue;
 
-	//인벤토리를 열은 상태인지 체크
+
+	//인벤토리 관련
+	std::vector<std::pair<ITEM, int>> player_ItemList; //플레이어가 지닌 아이템들 + 수량
+
+
+	//인벤토리를 연 상태인지 체크
 	bool isInventory;
 
 
@@ -154,7 +161,7 @@ public:
 	//초기 데이터 설정 (처음 시작 데이터 and 이어하기 데이터 가능 변수에 담긴거에 따라)
 	//로드해온 Object 데이터 각 Scene마다 Object 관리하는 변수에 세팅
 	void Initialize();
-	void Delete_SceneObject();
+	void Reset_SceneObject();
 	void InitSceneData(int _mapIndex, std::map <std::string, std::vector<Object*>>& _Object);
 	
 	//씬 전환될때 Object의 데이터를 알맞은 씬의 변수에 세이브
@@ -223,9 +230,11 @@ public:
 	void PlusFatigue(int fatigue) { m_fatigue = fatigue; }
 
 	//인벤토리
+	void PlusPlayerInventory(std::pair<ITEM, int> item) { player_ItemList.push_back(item); }
+	//void Reset_Inventory();
+	//인벤토리 사용유무 체크
 	void SetIsInventory(bool _isInventory) { isInventory = _isInventory; }
 	bool GetIsInventory() { return isInventory; }
-
 
 	friend Singleton;
 #define GameMgr GameManager::GetInstance()

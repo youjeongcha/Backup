@@ -106,14 +106,17 @@ namespace ENGINE
 			mObject.find("Sideboard")->second[i]->Draw();
 		
 		for (int i = 0; i < mObject.find("WallHanging")->second.size(); i++)
-			mObject.find("WallHanging")->second[i]->Draw();	
+			mObject.find("WallHanging")->second[i]->Draw();
+		
+		for (int i = 0; i < mObject.find("WaterCup")->second.size(); i++)
+			mObject.find("WaterCup")->second[i]->Draw();	
 
 
 	}
 
 
 
-
+	/*
 	//void ObjectManager::Update(const FLOAT& deltaTime, const Clock m_Clock)
 	void ObjectManager::Update(const FLOAT& deltaTime)
 	{ //LATER::필요에 따라 Map별 업데이트 설정
@@ -125,23 +128,23 @@ namespace ENGINE
 			mObject.find("Window")->second[i]->Update(deltaTime);
 
 		/*for (int i = 0; i < mObject.find("Drawer")->second.size(); i++)
-			mObject.find("Drawer")->second[i]->Update(deltaTime);*/
+			mObject.find("Drawer")->second[i]->Update(deltaTime);
 
 		for (int i = 0; i < mObject.find("Flowerpot")->second.size(); i++)
 			mObject.find("Flowerpot")->second[i]->Update(deltaTime);
 
 /*		for (int i = 0; i < mObject.find("Bed")->second.size(); i++)
-			mObject.find("Bed")->second[i]->Update(deltaTime);*/		
+			mObject.find("Bed")->second[i]->Update(deltaTime);	
 		
 	/*	for (int i = 0; i < mObject.find("Shelf_Book")->second.size(); i++)
-			mObject.find("Shelf_Book")->second[i]->Update(deltaTime);*/
+			mObject.find("Shelf_Book")->second[i]->Update(deltaTime);
 			
 		for (int i = 0; i < mObject.find("Curtain_Red")->second.size(); i++)
 			mObject.find("Curtain_Red")->second[i]->Update(deltaTime);
 		
 		for (int i = 0; i < mObject.find("Sideboard")->second.size(); i++)
 			mObject.find("Sideboard")->second[i]->Update(deltaTime);
-	}
+	}*/
 
 
 
@@ -190,6 +193,7 @@ namespace ENGINE
 		SerachInterObject(mObject.find("Bookcase")->second, interObject, characterRect);
 		SerachInterObject(mObject.find("Stove")->second, interObject, characterRect);
 		SerachInterObject(mObject.find("Sideboard")->second, interObject, characterRect);
+		SerachInterObject(mObject.find("WaterCup")->second, interObject, characterRect);
 	}
 
 	void ObjectManager::SerachInterObject(std::vector<Object*> vObject, std::vector<Object*>* interObject, const RECT characterRect)
@@ -199,14 +203,18 @@ namespace ENGINE
 
 		for (int i = 0; i < vObject.size(); i++)
 		{
-			eachObjectIndex = vObject[i]->GetEachObjectIndex().eachObjectIndex;
+			//현재 사용중이어야지 플레이어와 겹치는지 확인하기 위해
+			if (vObject[i]->GetisUse())
+			{
+				eachObjectIndex = vObject[i]->GetEachObjectIndex().eachObjectIndex;
 
-			//해당 맵에 배치된 Object 인지 판별 애초에 해당 맵의 Object만 가지고 있음
-			objectRect = vObject[eachObjectIndex]->GetRect();
+				//해당 맵에 배치된 Object 인지 판별 애초에 해당 맵의 Object만 가지고 있음
+				objectRect = vObject[eachObjectIndex]->GetRect();
 
-			//가로폭 영역이 겹치는지 확인
-			if ((characterRect.right >= objectRect.left) && (objectRect.right >= characterRect.left))
-				interObject->push_back(vObject[eachObjectIndex]);
+				//가로폭 영역이 겹치는지 확인
+				if ((characterRect.right >= objectRect.left) && (objectRect.right >= characterRect.left))
+					interObject->push_back(vObject[eachObjectIndex]);
+			}
 		}
 	}
 }
