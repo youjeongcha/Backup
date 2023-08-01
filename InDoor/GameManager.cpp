@@ -3,6 +3,8 @@
 GameManager::GameManager()
 {
 	Inventory_UI = nullptr;
+	Inventory_UI_ItemDetaiInfo = nullptr;
+	Inventory_UI_ItemUseSelect = nullptr;
 
 	//TXT 파일 읽어오기
 	LoadData();
@@ -12,6 +14,8 @@ GameManager::GameManager()
 	ENGINE::ResourceMgr->Load("Inventory_panel.bmp");
 	ENGINE::ResourceMgr->Load("Inventory_Btn_Pressed.bmp");
 	ENGINE::ResourceMgr->Load("Inventory_Btn_Normal.bmp");
+	ENGINE::ResourceMgr->Load("Inventory_panel_Select.bmp");
+	ENGINE::ResourceMgr->Load("Inventory_panel_Detail.bmp");
 
 
 	//Night and GameOver and Sleep
@@ -174,8 +178,8 @@ void GameManager::Restart()
 
 	//수치 상태
 	m_health = 5;
-	//m_hunger = 100;
-	m_hunger = 30;
+	m_hunger = 100;
+	//m_hunger = 30;
 	m_thirst = 50;
 	m_fatigue = 20;
 
@@ -979,9 +983,11 @@ void GameManager::PlayerSleep()
 
 
 
+
+
 //-------------------인벤토리---------------------
 
-void GameManager::Inventory(Player& player)
+void GameManager::Inventory_Panel(Player& player)
 {
 	//std::vector<std::pair<ITEM, int>> player_ItemList;
 	ENGINE::UIMgr->Remove("Inventory");
@@ -997,7 +1003,7 @@ void GameManager::Inventory(Player& player)
 
 		Inventory_UI->SetPosition(UI_INVENTORY_X, UI_INVENTORY_Y, false);
 
-		selectBtn_X = Inventory_UI->GetSize().cx * 0.5f;
+		selectBtn_X = Inventory_UI->GetSize().cx * 0.2f;
 		selectBtn_Y = 17;
 		cancel_X = Inventory_UI->GetSize().cx * 0.5f;
 		cancel_Y = Inventory_UI->GetSize().cy - 10;
@@ -1006,7 +1012,8 @@ void GameManager::Inventory(Player& player)
 		//인벤토리에 현재 있는 아이템 수만큼 아이템 칸 생성
 		for (i = 0; i < player_ItemList.size(); i++)
 		{
-			Item* useItem = ItemMgr->GetItemList().find(player_ItemList[i].first)->second;
+			Item* useItem = ItemMgr->GetItemList().find(player_ItemList[i].itemID)->second;
+
 			std::string itemName = useItem->GetName();
 
 			//버튼-선택지
@@ -1014,19 +1021,20 @@ void GameManager::Inventory(Player& player)
 			//ENGINE::UIButton* btn_select = ENGINE::UIMgr->AddUI<ENGINE::UIButton>("Optional " + std::to_string(i + 1) + "_" + (*interObject)[i]->GetObjectName() + " Btn", Inventory_UI); //파일 이름으로 구분 ex.Home_Flowerpot.bmp
 			btn_select->Initialize("Inventory_Btn_Normal.bmp", "Inventory_Btn_Pressed.bmp", "", "", ENGINE::DrawType::Transparent);
 			btn_select->SetLocalPosition(selectBtn_X, selectBtn_Y, true);
-			btn_select->SetListener(std::bind(&GameManager::ItemUseBtnClickHandler, this, useItem));
+			//btn_select->SetListener(std::bind(&GameManager::ItemUseBtnClickHandler, this, useItem));
+			btn_select->SetListener(std::bind(&GameManager::ItemUse_Panel, this, useItem));
 
 			//선택지 문구
-			ENGINE::UILabel* btn_txt = ENGINE::UIMgr->AddUI<ENGINE::UILabel>(itemName + "Txt", btn_select);
+			ENGINE::UILabel* btn_txt = ENGINE::UIMgr->AddUI<ENGINE::UILabel>(itemName + "ShowList Txt", btn_select);
 			btn_txt->SetLocalPosition(FONT_SELECT_X, FONT_SELECT_Y, true);
-			btn_txt->Initialize(itemName, RGB(255, 255, 205), ENGINE::GUIMgr->Get_Font(FONT_SELECT));
+			btn_txt->Initialize(itemName + " * " + std::to_string(GetCountPlayerItem(useItem->GetItemID())), RGB(255, 255, 255), ENGINE::GUIMgr->Get_Font(FONT_SELECT));
 
-			selectBtn_X += 25;
+			selectBtn_X += btn_select->GetSize().cx + 10;
 
 			//인벤토리 칸 3개 넘으면 다음 줄로 내려서 배치
-			if (selectBtn_X >= 75)
+			if (selectBtn_X >= Inventory_UI->GetSize().cx)
 			{
-				selectBtn_X = 0;
+				selectBtn_X = Inventory_UI->GetSize().cx * 0.2f;
 				selectBtn_Y += 25;
 			}
 		}
@@ -1035,7 +1043,7 @@ void GameManager::Inventory(Player& player)
 		ENGINE::UIButton* btn_Cancel = ENGINE::UIMgr->AddUI<ENGINE::UIButton>("CancelBtn_Panel_" + std::to_string(i + 1), Inventory_UI);
 		btn_Cancel->Initialize("Inventory_Btn_Normal.bmp", "Inventory_Btn_Pressed.bmp", "", "", ENGINE::DrawType::Transparent);
 		btn_Cancel->SetLocalPosition(cancel_X, cancel_Y, true);
-		btn_Cancel->SetListener(std::bind(&GameManager::CancelBtnClickHandler, this));
+		btn_Cancel->SetListener(std::bind(&GameManager::Cancel_InventoryBtnClickHandler, this));
 
 		//선택지 문구
 		ENGINE::UILabel* btnCancel_txt = ENGINE::UIMgr->AddUI<ENGINE::UILabel>("Cancel_Txt" + std::to_string(i + 1), btn_Cancel);
@@ -1044,19 +1052,176 @@ void GameManager::Inventory(Player& player)
 	}
 }
 
+void GameManager::Cancel_InventoryBtnClickHandler()
+{
+	//아이템 사용/취소 판넬이 떠있지 않을 경우에만 인벤토리 판넬 취소 가능 + (아이템 사용 창은 떠있고 게임 재생 + 인벤토리 창 켜져있는 것 방지)
+	//아이템 사용하고 하단 창 뜨면, 하단 창만 클릭 가능하게(인벤토리 취소 창 못 누르게끔)
+	if (!Inventory_UI_ItemUseSelect->GetEnable() && !underTxt_Section->GetEnable())
+	{
+		Inventory_UI->SetEnable(FALSE); //아이템 종류 보여주는 판넬
+		isPause = false;
+		isInventory = false; //인벤토리가 관리된다.(인벤토리 끔)
+	}
+}
+
+void GameManager::PlusPlayerInventory(InventoryItem item)
+{
+	for (auto iter = player_ItemList.begin(); iter != player_ItemList.end(); ++iter)
+	{
+		//인벤토리에 해당 아이템이 이미 존재 > 수량 증가
+		if (iter->itemID == item.itemID)
+			iter->itemCount++;
+	}
+
+	//인벤토리에 해당 아이템이 없는 경우 추가
+	player_ItemList.push_back(item);
+}
+
+void GameManager::MinusPlayerItem(ITEM_ID itemID)
+{
+	for (auto iter = player_ItemList.begin(); iter != player_ItemList.end(); ++iter)
+	{
+		if (iter->itemID == itemID)
+		{
+			//아이템 사용 1개
+			iter->itemCount--;
+
+			//아이템 수량이 0이 되면 인벤토리에서 삭제한다.
+			if (iter->itemCount == 0)
+			{
+				player_ItemList.erase(iter);
+				break;
+			}
+		}
+	}
+
+
+
+	//// 아이템 찾기 위해 람다 함수를 사용하여 검색
+	//auto it = std::find_if(player_ItemList.begin(), player_ItemList.end(),
+	//	[&item](const std::pair<ITEM, int>& element) {
+	//		return element.first == item;
+	//	});
+
+	//// 아이템을 찾았을 때만 삭제
+	//if (it != player_ItemList.end()) {
+	//	player_ItemList.erase(it);
+	//}
+}
+
+int GameManager::GetCountPlayerItem(ITEM_ID itemID)
+{
+	for (auto iter = player_ItemList.begin(); iter != player_ItemList.end(); ++iter)
+	{
+		if (iter->itemID == itemID)
+		{
+			return iter->itemCount;
+		}
+	}
+}
+
 //void GameManager::Reset_Inventory()
 //{
 //}
 
+//void GameManager::ItemDetaiInfo_Panel(Item* useItem)
+//{
+//}
+
+void GameManager::ItemUse_Panel(Item* useItem)
+{
+	//------------아이템 이미지 + 상세정보 판넬--------------
+	ENGINE::UIMgr->Remove("ItemDetail");
+	Inventory_UI_ItemDetaiInfo = ENGINE::UIMgr->AddUI<ENGINE::UIImage>("ItemDetail");
+	Inventory_UI_ItemDetaiInfo->Initialize("Inventory_panel_Detail.bmp", ENGINE::DrawType::Transparent); //투명도 조절 가능하게끔
+	//Inventory_UI_ItemDetaiInfo->Set_Transparency(ITEM_TRANSPARENCY); //투명화 원하는 값(0 ~ 255)
+
+
+	if (Inventory_UI_ItemDetaiInfo)
+	{
+		int i, selectBtn_X, selectBtn_Y;//, cancel_X, cancel_Y;
+		GameMgr->Set_IsPause(true);
+
+		Inventory_UI_ItemDetaiInfo->SetPosition(UI_INVENTORY_ITEMDETAIL_X, UI_INVENTORY_ITEMDETAIL_Y, false);
+
+		selectBtn_X = Inventory_UI_ItemDetaiInfo->GetSize().cx * 0.5f;
+		selectBtn_Y = 17;
+
+		std::string itemName = useItem->GetName();
+
+		//아이템 이미지
+		ENGINE::UIImage* itemImage;
+		itemImage = ENGINE::UIMgr->AddUI<ENGINE::UIImage>("ItemDetail_Image", Inventory_UI_ItemDetaiInfo);
+		itemImage->Initialize(useItem->GetImageBmp(), ENGINE::DrawType::Transparent);
+		//itemImage->Initialize("Inventory_Btn_Normal.bmp", ENGINE::DrawType::Transparent);
+		//Inventory_UI_ItemDetaiInfo->Set_Transparency(ITEM_TRANSPARENCY); //투명화 원하는 값(0 ~ 255)
+		if (itemImage)
+		{
+			itemImage->SetPosition(UI_INVENTORY_ITEMIMAGE_X, UI_INVENTORY_ITEMIMAGE_Y, false);
+		}
+
+
+		//아이템 상세 설명 문구
+		ENGINE::UILabel* btn_txt = ENGINE::UIMgr->AddUI<ENGINE::UILabel>(itemName + "Detail Txt", Inventory_UI_ItemDetaiInfo);
+		btn_txt->SetLocalPosition(FONT_ITEM_DETAL_X, Inventory_UI_ItemDetaiInfo->GetSize().cy - 20, true);
+		btn_txt->Initialize(useItem->GetDetailInfo(), RGB(255, 255, 255), ENGINE::GUIMgr->Get_Font(FONT_SELECT));
+	}
+	
+	//------------아이템 사용/취소 판넬--------------
+
+	ENGINE::UIMgr->Remove("ItemUse");
+	Inventory_UI_ItemUseSelect = ENGINE::UIMgr->AddUI<ENGINE::UIImage>("ItemUse");
+	Inventory_UI_ItemUseSelect->Initialize("Inventory_panel_Select.bmp", ENGINE::DrawType::AlphaBlend); //투명도 조절 가능하게끔
+	Inventory_UI_ItemUseSelect->Set_Transparency(ITEM_TRANSPARENCY); //투명화 원하는 값(0 ~ 255)
+
+
+	if (Inventory_UI_ItemUseSelect)
+	{
+		int i, selectBtn_X, selectBtn_Y;//, cancel_X, cancel_Y;
+		GameMgr->Set_IsPause(true);
+
+		Inventory_UI_ItemUseSelect->SetPosition(UI_INVENTORY_ITEMUSE_X, UI_INVENTORY_ITEMUSE_Y, false);
+
+		selectBtn_X = Inventory_UI_ItemUseSelect->GetSize().cx * 0.5f;
+		selectBtn_Y = 17;
+
+		std::string itemName = useItem->GetName();
+
+		//버튼-선택지
+		ENGINE::UIButton* btn_select = ENGINE::UIMgr->AddUI<ENGINE::UIButton>("Optional Selete Use" + itemName, Inventory_UI_ItemUseSelect); //파일 이름으로 구분 ex.Home_Flowerpot.bmp
+		//ENGINE::UIButton* btn_select = ENGINE::UIMgr->AddUI<ENGINE::UIButton>("Optional " + std::to_string(i + 1) + "_" + (*interObject)[i]->GetObjectName() + " Btn", Inventory_UI); //파일 이름으로 구분 ex.Home_Flowerpot.bmp
+		btn_select->Initialize("Inventory_Btn_Normal.bmp", "Inventory_Btn_Pressed.bmp", "", "", ENGINE::DrawType::Transparent);
+		btn_select->SetLocalPosition(selectBtn_X, selectBtn_Y, true);
+		btn_select->SetListener(std::bind(&GameManager::ItemUseBtnClickHandler, this, useItem));
+
+		//선택지 문구
+		ENGINE::UILabel* btn_txt = ENGINE::UIMgr->AddUI<ENGINE::UILabel>(itemName + "Txt", btn_select);
+		btn_txt->SetLocalPosition(FONT_SELECT_X, FONT_SELECT_Y, true);
+		btn_txt->Initialize("사용", RGB(255, 255, 255), ENGINE::GUIMgr->Get_Font(FONT_SELECT));
+
+		selectBtn_Y += 25;
+
+		ENGINE::UIButton* btn_Cancel = ENGINE::UIMgr->AddUI<ENGINE::UIButton>("CancelBtn_Panel_", Inventory_UI_ItemUseSelect);
+		btn_Cancel->Initialize("Inventory_Btn_Normal.bmp", "Inventory_Btn_Pressed.bmp", "", "", ENGINE::DrawType::Transparent);
+		btn_Cancel->SetLocalPosition(selectBtn_X, selectBtn_Y, true);
+		btn_Cancel->SetListener(std::bind(&GameManager::Cancel_ItemUseSelectBtnClickHandler, this));
+
+		//선택지 문구
+		ENGINE::UILabel* btnCancel_txt = ENGINE::UIMgr->AddUI<ENGINE::UILabel>("Cancel_Txt", btn_Cancel);
+		btnCancel_txt->SetLocalPosition(FONT_SELECT_X, FONT_SELECT_Y, true);
+		btnCancel_txt->Initialize("취소", RGB(255, 255, 255), ENGINE::GUIMgr->Get_Font(FONT_SELECT));
+	}
+}
+
 void GameManager::ItemUseBtnClickHandler(Item* useItem)
 {
 	useItem->Use();
-	Inventory_UI->SetEnable(FALSE);
+	Cancel_ItemUseSelectBtnClickHandler();
 }
 
-void GameManager::CancelBtnClickHandler()
+
+void GameManager::Cancel_ItemUseSelectBtnClickHandler()
 {
-	Inventory_UI->SetEnable(FALSE);
-	isPause = false;
-	isInventory = false; //인벤토리가 관리된다.(인벤토리 끔)
+	Inventory_UI_ItemDetaiInfo->SetEnable(FALSE); //아이템 이미지 + 상세정보
+	Inventory_UI_ItemUseSelect->SetEnable(FALSE); //아이템 사용/취소 판넬
 }

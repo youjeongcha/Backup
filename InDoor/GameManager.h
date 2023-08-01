@@ -30,7 +30,8 @@ enum TimeLine
 enum TRANSPARENCY
 {
 	UNDER_SECTION_TRANSPARENCY = 95,
-	INVENTORY_TRANSPARENCY = 200
+	INVENTORY_TRANSPARENCY = 200,
+	ITEM_TRANSPARENCY = 100
 };
 
 enum UNDERTXT
@@ -82,6 +83,11 @@ enum UNDERTXT
 	//물(컵) 가구
 	WATER_O,
 
+
+	//----------아이템 사용이후 뜰 텍스트-----------
+	USE_WATER,
+	USE_KEY,
+
 	UNDERTXT_COUNT,
 	UNDERTXT_NONE //맨 처음 세팅값. 하단 텍스트의 변화를 감지 해야하기 때문에
 };
@@ -132,6 +138,8 @@ private:
 	TimeLine nowTimeLine, oldTimeLine; //시간이 바뀐 순간을 감지하기 위해서
 
 	ENGINE::UIImage* Inventory_UI; //인벤토리
+	ENGINE::UIImage* Inventory_UI_ItemDetaiInfo; //인벤토리 > 아이템 이미지 + 상세 정보
+	ENGINE::UIImage* Inventory_UI_ItemUseSelect; //인벤토리 > 아이템 사용/취소
 	ENGINE::UILabel* timeLabel;
 	ENGINE::UIButton* underTxt_Section; //투명 버튼으로 누르면 다음 텍스트를 띄우거나 일시정지 해제되도록
 	ENGINE::UILabel* txtLabel;
@@ -143,7 +151,8 @@ private:
 
 
 	//인벤토리 관련
-	std::vector<std::pair<ITEM, int>> player_ItemList; //플레이어가 지닌 아이템들 + 수량
+	//std::vector<std::pair<ITEM, int>> player_ItemList; //플레이어가 지닌 아이템들 + 수량
+	std::vector<InventoryItem> player_ItemList; //플레이어가 지닌 아이템 //InventoryItem 아이템 + 수량
 
 
 	//인벤토리를 연 상태인지 체크
@@ -169,11 +178,6 @@ public:
 	void DeepCopyMap(std::map<std::string, std::vector<Object*>>& dest, const std::map<std::string, std::vector<Object*>>& src);
 	//DemoScene쪽에서 사용할 현재 씬의 데이터를 전달해주는데 사용
 	std::map <std::string, std::vector<Object*>> ApplySceneData(SCENE applyScene);
-
-	//인벤토리
-	void Inventory(Player& player);
-	void ItemUseBtnClickHandler(Item* useItem);
-	void CancelBtnClickHandler();
 	
 	//하단 텍스트창
 	void LoadUnderTxt();
@@ -224,13 +228,23 @@ public:
 	int GetThirst() const { return m_thirst; }
 	int GetFatigue() const { return m_fatigue; }
 
-	void PlusHealth(int health) { m_health = health; }
-	void PlusHunger(int hunger) { m_hunger = hunger; }
-	void PlusThirst(int thirst) { m_thirst = thirst; }
-	void PlusFatigue(int fatigue) { m_fatigue = fatigue; }
+	void PlusHealth(int health) { m_health += health; if (m_health < 0) m_health = 0; else if (m_health > 100) m_health = 100; }
+	void PlusHunger(int hunger) { m_hunger += hunger; if (m_hunger < 0) m_hunger = 0; else if (m_hunger > 100) m_hunger = 100; }
+	void PlusThirst(int thirst) { m_thirst += thirst; if (m_thirst < 0) m_thirst = 0; else if (m_thirst > 100) m_thirst = 100; }
+	void PlusFatigue(int fatigue) { m_fatigue += fatigue; if (m_fatigue < 0) m_fatigue = 0; else if (m_fatigue > 100) m_fatigue = 100; }
 
 	//인벤토리
-	void PlusPlayerInventory(std::pair<ITEM, int> item) { player_ItemList.push_back(item); }
+	void Inventory_Panel(Player& player);
+	//void PlusPlayerInventory(std::pair<ITEM, int> item) { player_ItemList.push_back(item); }
+	void PlusPlayerInventory(InventoryItem item);
+	void MinusPlayerItem(ITEM_ID itemID); //아이템 사용 1개 감소
+	int GetCountPlayerItem(ITEM_ID itemID);	
+	void ItemUseBtnClickHandler(Item* useItem); //인벤토리 에서 아이템 상세정보 + 사용/취소 판넬 띄우기
+	void Cancel_InventoryBtnClickHandler(); //인벤토리 창 끄기
+	//아이템 사용
+	//void ItemDetaiInfo_Panel(Item* useItem); //아이템 이미지 + 상세정보 있는 판넬
+	void ItemUse_Panel(Item* useItem); //아이템 이미지 + 상세정보 있는 판넬 //아이템 사용/취소 버튼 있는 판넬
+	void Cancel_ItemUseSelectBtnClickHandler(); //아이템 상세정보 판넬 끄기
 	//void Reset_Inventory();
 	//인벤토리 사용유무 체크
 	void SetIsInventory(bool _isInventory) { isInventory = _isInventory; }

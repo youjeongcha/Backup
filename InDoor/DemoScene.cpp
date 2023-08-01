@@ -60,6 +60,9 @@ VOID DemoScene::Update(const FLOAT& deltaTime)
         GameMgr->SetisReset_OneTime(false);
         return;
     }
+    else if (GameMgr->GetIsGameOver()) //게임 오버되면 플레이어가 인벤토리와 가구에 상호작용 못해야 한다.
+        return;
+
 
     Clock _Clock = GameMgr->GetClock();
 
@@ -187,7 +190,7 @@ void DemoScene::ChangeScene()
     }
     else if (GameMgr->GetIsInventory())
     {
-        GameMgr->Inventory(*player);
+        GameMgr->Inventory_Panel(*player);
     }
 }
 

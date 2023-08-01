@@ -33,8 +33,9 @@ void WaterCup::DetailSelect(int selectNum)
     switch (selectNum)
     {
     case 0:
+        //InventoryItem item = { WATER,1 };
         GameMgr->SetShowUnder(WATER_O); //아이템이 있으면 가져갈 수 있게
-        GameMgr->PlusPlayerInventory(std::make_pair(WATER, 1));
+        GameMgr->PlusPlayerInventory({ WATER, 1 });
         isUse = false;
         break;
     }

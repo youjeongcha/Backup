@@ -35,7 +35,7 @@ void Closet::DetailSelect(int selectNum)
         if (isHaveItem)
         {
             GameMgr->SetShowUnder(CLOSET_IN_O); //아이템이 있으면 가져갈 수 있게
-            GameMgr->PlusPlayerInventory(std::make_pair(KEY, 1));
+            GameMgr->PlusPlayerInventory({ KEY, 1 });
             isHaveItem = false;
         }
         else

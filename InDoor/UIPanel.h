@@ -51,6 +51,7 @@ namespace ENGINE
 		// 변경된 자신의 위치를 중심으로 자식 UI의 위치를 재배치.
 		VOID RefreshPos(); 
 		VOID SetEnable(BOOL enable) { isEnable = enable; }
+		BOOL GetEnable() { return isEnable; }
 
 		BOOL Enable() CONST { return isEnable; }
 		UINT32 GetChildCount() CONST { return child.size(); }

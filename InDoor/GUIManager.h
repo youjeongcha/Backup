@@ -10,8 +10,18 @@ enum UI_SELECT
 
 enum UI_INVENTORY
 {
+	//인벤토리 좌표 설정값
 	UI_INVENTORY_X = ENGINE::ClientSize_Width / 8,
 	UI_INVENTORY_Y = 25,
+	//인벤토리 내에 아이템 사용/취소 좌표 설정값
+	UI_INVENTORY_ITEMUSE_X = UI_INVENTORY_X + 200,
+	UI_INVENTORY_ITEMUSE_Y = UI_INVENTORY_Y + 25,
+	//인벤토리 내에 아이템 이미지 + 상세정보 좌표 설정값
+	UI_INVENTORY_ITEMDETAIL_X = UI_INVENTORY_X + 5,
+	UI_INVENTORY_ITEMDETAIL_Y = UI_INVENTORY_Y + 5,
+	//인벤토리 내에 아이템 이미지 위치
+	UI_INVENTORY_ITEMIMAGE_X = UI_INVENTORY_ITEMUSE_X - 105,
+	UI_INVENTORY_ITEMIMAGE_Y = UI_INVENTORY_ITEMUSE_Y
 };
 
 enum FONT
@@ -31,8 +41,12 @@ enum FONT
 
 enum FONT_XY
 {
+	//기본 선택지나 버튼의 텍스트
 	FONT_SELECT_X = 40,
 	FONT_SELECT_Y = 11,
+
+	//인벤토리 > 아이템의 텍스트
+	FONT_ITEM_DETAL_X = 100,
 };
 
 enum FONTSIZE
