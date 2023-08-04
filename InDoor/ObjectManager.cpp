@@ -16,16 +16,9 @@ namespace ENGINE
 
 	void ObjectManager::Delete_mObject()
 	{
-		if (mObject.size() > 0)
+		for (Object* obj : mObject)
 		{
-			for (std::map<std::string, std::vector<Object*>>::iterator iter = mObject.begin(); iter != mObject.end(); iter++)
-			{
-				for (Object* obj : iter->second)
-				{
-					delete obj;
-				}
-				iter->second.clear();
-			}
+			delete obj;
 		}
 		mObject.clear();
 	}
@@ -34,7 +27,7 @@ namespace ENGINE
 	void ObjectManager::InitSetting(int now_MapIndex, int change_MapIndex, bool isDrak)
 	{
 		if (mObject.size())
-			GameMgr->RenewalSceneData((SCENE)now_MapIndex, mObject);
+			GameMgr-> RenewalSceneData((SCENE)now_MapIndex, mObject);
 
 		//map 변경될때마다 객체 설정 다시 하기
 		Delete_mObject();
@@ -43,75 +36,107 @@ namespace ENGINE
 		mObject = GameMgr->ApplySceneData((SCENE)change_MapIndex);
 
 		//해당 씬의 Object 비트맵 상태 설정(밤,낮)
-		TimeChangeBitmap(isDrak);
+		TimeChangeBitmap();
 	}
 
 
-	void ObjectManager::TimeChangeBitmap(bool isDrak)
+	void ObjectManager::TimeChangeBitmap()
 	{//시간의 경과에 따라 변화하는 Object의 Bitmap을 전환한다.
 		//TIP::만약 오브젝트의 이름을 기존과 다르게 하면 if 문에 or로 추가하면 된다.
 
-		for (int i = 0; i < mObject.find("Window")->second.size(); i++)
+		for (auto object : mObject)
 		{
-			mObject.find("Window")->second[i]->TimeChangeBitmap(isDrak);
+			object->TimeChangeBitmap();
 		}
+
+		//for (int i = 0; i < mObject.find("Window")->second.size(); i++)
+		//{
+		//	mObject.find("Window")->second[i]->TimeChangeBitmap(isDrak);
+		//}
 	}
 	
 	void ObjectManager::Draw()
 	{ //맵 인덱스 따라 그리도록
 
-		for (int i = 0; i < mObject.find("Door")->second.size(); i++)
-			mObject.find("Door")->second[i]->Draw();
+		for (auto object : mObject)
+		{
+			object->Draw();
+		}
 
-		for (int i = 0; i < mObject.find("Window")->second.size(); i++)
-			mObject.find("Window")->second[i]->Draw();
+		//for (auto pair : mObject)
+		//{
+		//	for (auto object : pair.second)
+		//	{
+		//		object->Draw();
+		//	}
+		//}
 
-		for (int i = 0; i < mObject.find("Drawer")->second.size(); i++)
-			mObject.find("Drawer")->second[i]->Draw();
+		//for (int i = 0; i < mObject.find("Door")->second.size(); i++)
+		//	mObject.find("Door")->second[i]->Draw();
 
-		for (int i = 0; i < mObject.find("Flowerpot")->second.size(); i++)
-			mObject.find("Flowerpot")->second[i]->Draw();
+		//for (int i = 0; i < mObject.find("Window")->second.size(); i++)
+		//	mObject.find("Window")->second[i]->Draw();
 
-		for (int i = 0; i < mObject.find("Bed")->second.size(); i++)
-			mObject.find("Bed")->second[i]->Draw();	
+		//for (int i = 0; i < mObject.find("Drawer")->second.size(); i++)
+		//	mObject.find("Drawer")->second[i]->Draw();
 
-		for (int i = 0; i < mObject.find("Table_Vertical")->second.size(); i++)
-			mObject.find("Table_Vertical")->second[i]->Draw();
-		
-		for (int i = 0; i < mObject.find("Shelf_Book")->second.size(); i++)
-			mObject.find("Shelf_Book")->second[i]->Draw();	
-		
-		for (int i = 0; i < mObject.find("Curtain_Red")->second.size(); i++)
-			mObject.find("Curtain_Red")->second[i]->Draw();	
-		
-		for (int i = 0; i < mObject.find("Table_Red")->second.size(); i++)
-			mObject.find("Table_Red")->second[i]->Draw();
+		//for (int i = 0; i < mObject.find("Flowerpot")->second.size(); i++)
+		//	mObject.find("Flowerpot")->second[i]->Draw();
 
-		for (int i = 0; i < mObject.find("Closet")->second.size(); i++)
-			mObject.find("Closet")->second[i]->Draw();	
+		//for (int i = 0; i < mObject.find("Bed")->second.size(); i++)
+		//	mObject.find("Bed")->second[i]->Draw();	
 
-		for (int i = 0; i < mObject.find("Bookcase")->second.size(); i++)
-			mObject.find("Bookcase")->second[i]->Draw();	
-				
-		for (int i = 0; i < mObject.find("Stove")->second.size(); i++)
-			mObject.find("Stove")->second[i]->Draw();			
-		
-		for (int i = 0; i < mObject.find("KitchenCounter")->second.size(); i++)
-			mObject.find("KitchenCounter")->second[i]->Draw();
-		
-		for (int i = 0; i < mObject.find("FirePot")->second.size(); i++)
-			mObject.find("FirePot")->second[i]->Draw();			
-		
-		for (int i = 0; i < mObject.find("Sideboard")->second.size(); i++)
-			mObject.find("Sideboard")->second[i]->Draw();
-		
-		for (int i = 0; i < mObject.find("WallHanging")->second.size(); i++)
-			mObject.find("WallHanging")->second[i]->Draw();
-		
-		for (int i = 0; i < mObject.find("WaterCup")->second.size(); i++)
-			mObject.find("WaterCup")->second[i]->Draw();	
+		//for (int i = 0; i < mObject.find("Table_Vertical")->second.size(); i++)
+		//	mObject.find("Table_Vertical")->second[i]->Draw();
+		//
+		//for (int i = 0; i < mObject.find("Shelf_Book")->second.size(); i++)
+		//	mObject.find("Shelf_Book")->second[i]->Draw();	
+		//
+		//for (int i = 0; i < mObject.find("Curtain_Red")->second.size(); i++)
+		//	mObject.find("Curtain_Red")->second[i]->Draw();	
+		//
+		//for (int i = 0; i < mObject.find("Table_Red")->second.size(); i++)
+		//	mObject.find("Table_Red")->second[i]->Draw();
+
+		//for (int i = 0; i < mObject.find("Closet")->second.size(); i++)
+		//	mObject.find("Closet")->second[i]->Draw();	
+
+		//for (int i = 0; i < mObject.find("Bookcase")->second.size(); i++)
+		//	mObject.find("Bookcase")->second[i]->Draw();	
+		//		
+		//for (int i = 0; i < mObject.find("Stove")->second.size(); i++)
+		//	mObject.find("Stove")->second[i]->Draw();			
+		//
+		//for (int i = 0; i < mObject.find("KitchenCounter")->second.size(); i++)
+		//	mObject.find("KitchenCounter")->second[i]->Draw();
+		//
+		//for (int i = 0; i < mObject.find("FirePot")->second.size(); i++)
+		//	mObject.find("FirePot")->second[i]->Draw();			
+		//
+		//for (int i = 0; i < mObject.find("Sideboard")->second.size(); i++)
+		//	mObject.find("Sideboard")->second[i]->Draw();
+		//
+		//for (int i = 0; i < mObject.find("WallHanging")->second.size(); i++)
+		//	mObject.find("WallHanging")->second[i]->Draw();
+		//
+		//for (int i = 0; i < mObject.find("WaterCup")->second.size(); i++)
+		//	mObject.find("WaterCup")->second[i]->Draw();	
+
+		//for (int i = 0; i < mObject.find("OneCandle")->second.size(); i++)
+		//	mObject.find("OneCandle")->second[i]->Draw();	
 
 
+	}
+
+
+	void ObjectManager::Animation(const FLOAT& deltaTime)
+	{
+		for (auto object : mObject)
+		{
+			object->Animation(deltaTime);
+		}
+		//for (int i = 0; i < mObject.find("OneCandle")->second.size(); i++)
+		//	mObject.find("OneCandle")->second[i]->Animation(deltaTime);
 	}
 
 
@@ -183,7 +208,10 @@ namespace ENGINE
 
 	void ObjectManager::InteractiveCheck_toPlayer(std::vector<Object*>* interObject, const RECT characterRect)
 	{ //현재 맵의 인덱스에 속하고 플레이어와 상호작용 가능한 모든 Object를 검사해야 한다.
-		SerachInterObject(mObject.find("Door")->second, interObject, characterRect);
+		SerachInterObject(mObject, interObject, characterRect);
+
+
+		/*SerachInterObject(mObject.find("Door")->second, interObject, characterRect);
 		SerachInterObject(mObject.find("Window")->second, interObject, characterRect);
 		SerachInterObject(mObject.find("Drawer")->second, interObject, characterRect);
 		SerachInterObject(mObject.find("Flowerpot")->second, interObject, characterRect);
@@ -194,26 +222,27 @@ namespace ENGINE
 		SerachInterObject(mObject.find("Stove")->second, interObject, characterRect);
 		SerachInterObject(mObject.find("Sideboard")->second, interObject, characterRect);
 		SerachInterObject(mObject.find("WaterCup")->second, interObject, characterRect);
+		SerachInterObject(mObject.find("OneCandle")->second, interObject, characterRect);*/
 	}
 
 	void ObjectManager::SerachInterObject(std::vector<Object*> vObject, std::vector<Object*>* interObject, const RECT characterRect)
 	{//vObject에는 현재 맵에 위치한 Object 한 종류가 들어있다.
 		RECT objectRect;
-		int eachObjectIndex;
+		//int eachObjectIndex;
 
 		for (int i = 0; i < vObject.size(); i++)
 		{
-			//현재 사용중이어야지 플레이어와 겹치는지 확인하기 위해
-			if (vObject[i]->GetisUse())
+			//현재 사용중이어야지 플레이어와 겹치는지 확인하기 위해 //상호작용 가능한 Object인지 확인
+			if (vObject[i]->GetisUse() && vObject[i]->IsInteractive())
 			{
-				eachObjectIndex = vObject[i]->GetEachObjectIndex().eachObjectIndex;
+				//eachObjectIndex = vObject[i]->GetEachObjectIndex().eachObjectIndex;
 
 				//해당 맵에 배치된 Object 인지 판별 애초에 해당 맵의 Object만 가지고 있음
-				objectRect = vObject[eachObjectIndex]->GetRect();
-
+				//objectRect = vObject[eachObjectIndex]->GetRect();
+				objectRect = vObject[i]->GetRect();
 				//가로폭 영역이 겹치는지 확인
 				if ((characterRect.right >= objectRect.left) && (objectRect.right >= characterRect.left))
-					interObject->push_back(vObject[eachObjectIndex]);
+					interObject->push_back(vObject[i]);
 			}
 		}
 	}

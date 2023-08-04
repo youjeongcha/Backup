@@ -19,8 +19,8 @@
 #include "Sideboard.h"
 #include "WallHanging.h"
 #include "WaterCup.h"
+#include "OneCandle.h"
 //#include "RoundTable.h"
-//#include "WallHanging.h"
 
 
 
@@ -51,7 +51,8 @@ namespace ENGINE
 
 		//함축
 		//std::vector<Object> object;
-		std::map <std::string, std::vector<Object*>> mObject; //현재 맵에 있는 Object들의 모음
+		//std::map <std::string, std::vector<Object*>> mObject; //현재 맵에 있는 Object들의 모음
+		std::vector<Object*> mObject; //현재 맵에 있는 Object들의 모음
 
 		//std::vector<Door*> door;
 		//std::vector<Window*> window;
@@ -73,7 +74,8 @@ namespace ENGINE
 		void InitSetting(int now_MapIndex, int change_MapIndex, bool isDrak);
 
 		void Draw();
-		void Update(const FLOAT& deltaTime);
+		//void Update(const FLOAT& deltaTime);
+		void Animation(const FLOAT& deltaTime);
 		//상호작용이 가능한 object의 인덱스를 리턴
 
 		//int SerachInterObject(std::vector<Object*> vObject, Object* interObject, const RECT characterRect, int interCount); //Player와 겹치는 Object를 interObject에 저장(각 Object 세분화를 함수화)
@@ -84,7 +86,7 @@ namespace ENGINE
 
 
 		//시간의 흐름에 따라 변화하는 Bitmap을 전환한다. ex)창밖의 이미지
-		void TimeChangeBitmap(bool isDrak); //굳이 int 쓴다면 ex.바람이 불어서 모든 촛불이 꺼진다.
+		void TimeChangeBitmap(); //굳이 int 쓴다면 ex.바람이 불어서 모든 촛불이 꺼진다.
 
 		//EachObjectIndex* InteractiveCheck_toPlayer( const RECT characterRect);
 		//bool InteractiveCheck_toPlayer(const RECT characterRect);

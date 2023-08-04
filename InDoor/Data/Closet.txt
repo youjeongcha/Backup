@@ -1,4 +1,4 @@
-true false false false
+true false false false true
 1 1
 Home_Closet.bmp
 1 ¿­±â

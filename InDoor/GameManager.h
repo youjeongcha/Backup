@@ -83,6 +83,10 @@ enum UNDERTXT
 	//물(컵) 가구
 	WATER_O,
 
+	//양초
+	ONECANDLE_O,
+	ONECANDLE_X,
+
 
 	//----------아이템 사용이후 뜰 텍스트-----------
 	USE_WATER,
@@ -107,11 +111,18 @@ private:
 	//Object 파일 입출력 불러온 데이터
 	std::map <std::string, ObjectData> objectData; //새로하기, 이어하기 따라 담는 데이터 달라질 예정
 	//현관 Object 수정 데이터
-	std::map <std::string, std::vector<Object*>> mDoorObject;
+	std::vector<Object*> mDoorObject;
 	//부엌 Object 수정 데이터
-	std::map <std::string, std::vector<Object*>> mKitchenObject;
+	std::vector<Object*> mKitchenObject;
 	//침실 Object 수정 데이터
-	std::map <std::string, std::vector<Object*>> mBedRoomObject;
+	std::vector<Object*> mBedRoomObject;
+
+	//현관 Object 수정 데이터
+	//std::map <std::string, std::vector<Object*>> mDoorObject;
+	////부엌 Object 수정 데이터
+	//std::map <std::string, std::vector<Object*>> mKitchenObject;
+	////침실 Object 수정 데이터
+	//std::map <std::string, std::vector<Object*>> mBedRoomObject;
 
 	ENGINE::Bitmap* night = nullptr;
 	ENGINE::Bitmap* gameOver = nullptr;
@@ -171,13 +182,16 @@ public:
 	//로드해온 Object 데이터 각 Scene마다 Object 관리하는 변수에 세팅
 	void Initialize();
 	void Reset_SceneObject();
-	void InitSceneData(int _mapIndex, std::map <std::string, std::vector<Object*>>& _Object);
+	//void InitSceneData(int _mapIndex, std::map <std::string, std::vector<Object*>>& _Object);
+	void InitSceneData(int _mapIndex, std::vector<Object*>& _Object);
 	
 	//씬 전환될때 Object의 데이터를 알맞은 씬의 변수에 세이브
-	void RenewalSceneData(SCENE saveScene, const std::map <std::string, std::vector<Object*>>& nowSceneObject);
-	void DeepCopyMap(std::map<std::string, std::vector<Object*>>& dest, const std::map<std::string, std::vector<Object*>>& src);
+	void RenewalSceneData(SCENE saveScene, const std::vector<Object*>& nowSceneObject);
+	//void DeepCopyMap(std::map<std::string, std::vector<Object*>>& saveData, const std::vector<Object*>& nowSceneObject);
+	void DeepCopyMap(std::vector<Object*> &saveData, const std::vector<Object*>& nowSceneObject);
 	//DemoScene쪽에서 사용할 현재 씬의 데이터를 전달해주는데 사용
-	std::map <std::string, std::vector<Object*>> ApplySceneData(SCENE applyScene);
+	//std::map <std::string, std::vector<Object*>> ApplySceneData(SCENE applyScene);
+	std::vector<Object*> ApplySceneData (SCENE applyScene);
 	
 	//하단 텍스트창
 	void LoadUnderTxt();

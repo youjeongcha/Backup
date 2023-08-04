@@ -7,12 +7,13 @@
 #include "Components/InputComponent.h"
 #include "UIManager.h"
 
-enum class OBJECT_TYPE
+enum OBJECT_TYPE
 {
     NORMAL,
-    MOVE,
+    TIMECHANGE, //밤낮에 따라 이미지 전환
     ANIM,
     ACTIVE,
+    INTERACTIVE, //상호작용 가능
     TYPE_COUNT
 };
 
@@ -87,7 +88,7 @@ protected:
     std::string fileName;
 
     //리소스
-    int SpritesX, SpritesY;
+    int spritesX, spritesY;
 
     ENGINE::SpriteRenderer* renderer;
     ENGINE::AnimationComponent* anim;
@@ -120,8 +121,8 @@ public:
 
         objectName = other.objectName;
         fileName = other.fileName;
-        SpritesX = other.SpritesX;
-        SpritesY = other.SpritesY;
+        spritesX = other.spritesX;
+        spritesY = other.spritesY;
         Available = other.Available;
         isMove = other.isMove;
         isAnim = other.isAnim;
@@ -135,7 +136,13 @@ public:
         sDetailSelect = other.sDetailSelect;
 
         // renderer를 깊은 복사
-        renderer = new ENGINE::SpriteRenderer(*other.renderer);
+        AddComponent(renderer = new ENGINE::SpriteRenderer(*other.renderer));
+
+        if (typeCheck.find(ANIM)->second) //TODO::애니메이션 속도 조절 부분은 AnimationComponent
+            AddComponent(anim = new ENGINE::SpriteAnimation(spritesX , spritesY));
+        else
+            anim = NULL;
+        //renderer = new ENGINE::SpriteRenderer(*other.renderer);
         // anim도 필요한 경우 깊은 복사
         //if (other.anim)
         //    anim = new ENGINE::AnimationComponent(*other.anim);
@@ -211,6 +218,7 @@ public:
 
     virtual VOID Initialize();
     VOID Update(const FLOAT& deltaTime);
+    void Animation(const FLOAT& deltaTime);
     virtual VOID Move(const FLOAT& deltaTime);
     virtual VOID Draw();
     VOID Release();
@@ -229,9 +237,10 @@ public:
     //상태 변경
     void ChangeActiveState(); //TODO::낀다, 끈다, 닫다의 개념. 현재 상태 판단도 필요하다.
     void CancelBtnClickHandler();
+    bool IsInteractive() { return typeCheck.find(INTERACTIVE)->second; } //상호작용 가능한 Object인지 확인
 
     //밤낮 세팅
-    void TimeChangeBitmap(bool isDrak);
+    void TimeChangeBitmap();
     //ENGINE::RECT* GetRect() { return &renderer->GetRect(); }
     //Vector2 GetPos() { return renderer->GetPos(); }
     //SIZE GetSize() { return renderer->GetDrawSize(); }

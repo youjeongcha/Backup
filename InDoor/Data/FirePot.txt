@@ -1,4 +1,4 @@
-false false false false
+false false false false true
 1 1
 Home_FirePot.bmp
 0

@@ -49,6 +49,7 @@ namespace ENGINE
 	{
 	private:
 		std::map<ComponentType, Component*> components;
+		//std::vector<std::pair<ComponentType, Component*>> components;
 	protected:
 		Transform* transform;
 
@@ -111,9 +112,14 @@ namespace ENGINE
 		//}
 
 		virtual ~AnimationComponent() { }
+		//~AnimationComponent() { }
 
 		VOID SetSpeed(FLOAT speed);
-		VOID Play(UINT index) { this->index = clamp(index, 0, maxSize - 1); isPlaying = TRUE; }
+		VOID Play(UINT index) 
+		{ 
+			this->index = clamp(index, 0, maxSize - 1);
+			isPlaying = TRUE;
+		}
 		//VOID Idle(UINT index) { this->index = clamp(index, 0, maxSize - 1); isPlaying = TRUE; }
 		VOID Stop() { isPlaying = FALSE; }
 		// Component을(를) 통해 상속됨

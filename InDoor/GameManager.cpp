@@ -5,6 +5,8 @@ GameManager::GameManager()
 	Inventory_UI = nullptr;
 	Inventory_UI_ItemDetaiInfo = nullptr;
 	Inventory_UI_ItemUseSelect = nullptr;
+	underTxt_Section = nullptr;
+
 
 	//TXT 파일 읽어오기
 	LoadData();
@@ -85,35 +87,23 @@ GameManager::GameManager()
 GameManager::~GameManager()
 {
 	// mDoorObject 해제
-	for (std::map<std::string, std::vector<Object*>>::iterator iter = mDoorObject.begin(); iter != mDoorObject.end(); ++iter)
+	for (std::vector<Object*>::iterator iter = mDoorObject.begin(); iter != mDoorObject.end(); ++iter)
 	{
-		for (Object* obj : iter->second)
-		{
-			delete obj;
-		}
-		iter->second.clear();
+		delete *iter;
 	}
 	mDoorObject.clear();
 
 	// mKitchenObject 해제
-	for (std::map<std::string, std::vector<Object*>>::iterator iter = mKitchenObject.begin(); iter != mKitchenObject.end(); ++iter)
+	for (std::vector<Object*>::iterator iter = mKitchenObject.begin(); iter != mKitchenObject.end(); ++iter)
 	{
-		for (Object* obj : iter->second)
-		{
-			delete obj;
-		}
-		iter->second.clear();
+		delete* iter;
 	}
 	mKitchenObject.clear();
 
 	// mBedRoomObject 해제
-	for (std::map<std::string, std::vector<Object*>>::iterator iter = mBedRoomObject.begin(); iter != mBedRoomObject.end(); ++iter)
+	for (std::vector<Object*>::iterator iter = mBedRoomObject.begin(); iter != mBedRoomObject.end(); ++iter)
 	{
-		for (Object* obj : iter->second)
-		{
-			delete obj;
-		}
-		iter->second.clear();
+		delete* iter;
 	}
 	mBedRoomObject.clear();
 
@@ -122,40 +112,80 @@ GameManager::~GameManager()
 
 	// player_ItemList 해제
 	player_ItemList.clear();
+
+
+	//// mDoorObject 해제
+	//for (std::map<std::string, std::vector<Object*>>::iterator iter = mDoorObject.begin(); iter != mDoorObject.end(); ++iter)
+	//{
+	//	for (Object* obj : iter->second)
+	//	{
+	//		delete obj;
+	//	}
+	//	iter->second.clear();
+	//}
+	//mDoorObject.clear();
+
+	//// mKitchenObject 해제
+	//for (std::map<std::string, std::vector<Object*>>::iterator iter = mKitchenObject.begin(); iter != mKitchenObject.end(); ++iter)
+	//{
+	//	for (Object* obj : iter->second)
+	//	{
+	//		delete obj;
+	//	}
+	//	iter->second.clear();
+	//}
+	//mKitchenObject.clear();
+
+	//// mBedRoomObject 해제
+	//for (std::map<std::string, std::vector<Object*>>::iterator iter = mBedRoomObject.begin(); iter != mBedRoomObject.end(); ++iter)
+	//{
+	//	for (Object* obj : iter->second)
+	//	{
+	//		delete obj;
+	//	}
+	//	iter->second.clear();
+	//}
+	//mBedRoomObject.clear();
+
+	//// mUnderTxt 해제
+	//mUnderTxt.clear();
+
+	//// player_ItemList 해제
+	//player_ItemList.clear();
 }
 
 void GameManager::Reset_SceneObject()
 {
 	
-	if (mDoorObject.size() > 0)
-	{
-		for (std::map<std::string, std::vector<Object*>>::iterator iter = mDoorObject.begin(); iter != mDoorObject.end(); iter++)
-		{
-			//for (Object* obj : iter->second)
-			//{
-			//	delete obj;
-			//}
-			iter->second.clear();
-		}
-	}
+	//if (mDoorObject.size() > 0)
+	//{
+	//	for (std::map<std::string, std::vector<Object*>>::iterator iter = mDoorObject.begin(); iter != mDoorObject.end(); iter++)
+	//	{
+	//		//for (Object* obj : iter->second)
+	//		//{
+	//		//	delete obj;
+	//		//}
+	//		iter->second.clear();
+	//	}
+	//}
 	mDoorObject.clear();
 
-	if (mKitchenObject.size() > 0)
-	{
-		for (std::map<std::string, std::vector<Object*>>::iterator iter = mKitchenObject.begin(); iter != mKitchenObject.end(); iter++)
-		{
-			iter->second.clear();
-		}
-	}
+	//if (mKitchenObject.size() > 0)
+	//{
+	//	for (std::map<std::string, std::vector<Object*>>::iterator iter = mKitchenObject.begin(); iter != mKitchenObject.end(); iter++)
+	//	{
+	//		iter->second.clear();
+	//	}
+	//}
 	mKitchenObject.clear();
 
-	if (mBedRoomObject.size() > 0)
-	{
-		for (std::map<std::string, std::vector<Object*>>::iterator iter = mBedRoomObject.begin(); iter != mBedRoomObject.end(); iter++)
-		{
-			iter->second.clear();
-		}
-	}
+	//if (mBedRoomObject.size() > 0)
+	//{
+	//	for (std::map<std::string, std::vector<Object*>>::iterator iter = mBedRoomObject.begin(); iter != mBedRoomObject.end(); iter++)
+	//	{
+	//		iter->second.clear();
+	//	}
+	//}
 	mBedRoomObject.clear();
 }
 
@@ -281,12 +311,12 @@ void GameManager::Update(const FLOAT&  deltaTime)
     if ((nowTimeLine == TimeLine_NIGHT) && (oldTimeLine == TimeLine_MORING))
     {//낮 > 밤
 		isDark = true;
-        ENGINE::ObjectMgr->TimeChangeBitmap(isDark);
+        ENGINE::ObjectMgr->TimeChangeBitmap();
     }
     else if ((nowTimeLine == TimeLine_MORING) && (oldTimeLine == TimeLine_NIGHT))
     {//밤 > 낮
 		isDark = false;
-		ENGINE::ObjectMgr->TimeChangeBitmap(isDark);
+		ENGINE::ObjectMgr->TimeChangeBitmap();
     }
 
 
@@ -432,7 +462,8 @@ void GameManager::NextShowUnderSection(bool isNextTxt)
 }
 
 
-void GameManager::RenewalSceneData(SCENE saveScene, const std::map<std::string, std::vector<Object*>>& nowSceneObject)
+//void GameManager::RenewalSceneData(SCENE saveScene, const std::map<std::string, std::vector<Object*>>& nowSceneObject)
+void GameManager::RenewalSceneData(SCENE saveScene, const std::vector<Object*>& nowSceneObject)
 {
 	switch (saveScene)
 	{
@@ -448,114 +479,98 @@ void GameManager::RenewalSceneData(SCENE saveScene, const std::map<std::string, 
 	}
 }
 
-void GameManager::DeepCopyMap(std::map<std::string, std::vector<Object*>>& dest, const std::map<std::string, std::vector<Object*>>& src)
+void GameManager::DeepCopyMap(std::vector<Object*>& saveData, const std::vector<Object*>& nowSceneObject)
 {
-	dest.clear();
+	saveData.clear();
 
-	for (const auto& pair : src)
+	for (Object* srcObject : nowSceneObject)
 	{
-		const std::string& key = pair.first;
-		const std::vector<Object*>& srcObjects = pair.second;
+		Object* newObj = nullptr;
 
-		std::vector<Object*> destObjects;
-		destObjects.reserve(srcObjects.size());
-
-		for (Object* srcObject : srcObjects)
+		// 추상 클래스인 Object 대신 동일한 타입으로 객체를 생성하여 캐스팅
+		if (dynamic_cast<Door*>(srcObject))
 		{
-			// 추상 클래스인 Object 대신 동일한 타입으로 객체를 생성하여 캐스팅
-			if (dynamic_cast<Door*>(srcObject))
-			{
-				Door* door = new Door(*dynamic_cast<Door*>(srcObject));
-				destObjects.push_back(door);
-			}
-			else if (dynamic_cast<Window*>(srcObject))
-			{
-				Window* window = new Window(*dynamic_cast<Window*>(srcObject));
-				destObjects.push_back(window);
-			}
-			else if (dynamic_cast<Drawer*>(srcObject))
-			{
-				Drawer* drawer = new Drawer(*dynamic_cast<Drawer*>(srcObject));
-				destObjects.push_back(drawer);
-			}
-			else if (dynamic_cast<Flowerpot*>(srcObject))
-			{
-				Flowerpot* ploerpot = new Flowerpot(*dynamic_cast<Flowerpot*>(srcObject));
-				destObjects.push_back(ploerpot);
-			}
-			else if (dynamic_cast<Bed*>(srcObject))
-			{
-				Bed* window = new Bed(*dynamic_cast<Bed*>(srcObject));
-				destObjects.push_back(window);
-			}
-			else if (dynamic_cast<Shelf_Book*>(srcObject))
-			{
-				Shelf_Book* shelfBook = new Shelf_Book(*dynamic_cast<Shelf_Book*>(srcObject));
-				destObjects.push_back(shelfBook);
-			}
-			else if (dynamic_cast<Table_Vertical*>(srcObject))
-			{
-				Table_Vertical* tableVertical = new Table_Vertical(*dynamic_cast<Table_Vertical*>(srcObject));
-				destObjects.push_back(tableVertical);
-			}
-			else if (dynamic_cast<Curtain_Red*>(srcObject))
-			{
-				Curtain_Red* curtainRed = new Curtain_Red(*dynamic_cast<Curtain_Red*>(srcObject));
-				destObjects.push_back(curtainRed);
-			}
-			else if (dynamic_cast<Closet*>(srcObject))
-			{
-				Closet* closet = new Closet(*dynamic_cast<Closet*>(srcObject));
-				destObjects.push_back(closet);
-			}
-			else if (dynamic_cast<Table_Red*>(srcObject))
-			{
-				Table_Red* tableRed = new Table_Red(*dynamic_cast<Table_Red*>(srcObject));
-				destObjects.push_back(tableRed);
-			}
-			else if (dynamic_cast<Bookcase*>(srcObject))
-			{
-				Bookcase* bookcase = new Bookcase(*dynamic_cast<Bookcase*>(srcObject));
-				destObjects.push_back(bookcase);
-			}
-			else if (dynamic_cast<Stove*>(srcObject))
-			{
-				Stove* stove = new Stove(*dynamic_cast<Stove*>(srcObject));
-				destObjects.push_back(stove);
-			}
-			else if (dynamic_cast<KitchenCounter*>(srcObject))
-			{
-				KitchenCounter* counter = new KitchenCounter(*dynamic_cast<KitchenCounter*>(srcObject));
-				destObjects.push_back(counter);
-			}			
-			else if (dynamic_cast<FirePot*>(srcObject))
-			{
-				FirePot* firepot = new FirePot(*dynamic_cast<FirePot*>(srcObject));
-				destObjects.push_back(firepot);
-			}
-			else if (dynamic_cast<Sideboard*>(srcObject))
-			{
-				Sideboard* sideboard = new Sideboard(*dynamic_cast<Sideboard*>(srcObject));
-				destObjects.push_back(sideboard);
-			}
-			else if (dynamic_cast<WallHanging*>(srcObject))
-			{
-				WallHanging* sideboard = new WallHanging(*dynamic_cast<WallHanging*>(srcObject));
-				destObjects.push_back(sideboard);
-			}
-			else if (dynamic_cast<WaterCup*>(srcObject))
-			{
-				WaterCup* waterCup = new WaterCup(*dynamic_cast<WaterCup*>(srcObject));
-				destObjects.push_back(waterCup);
-			}
+			newObj = new Door(*dynamic_cast<Door*>(srcObject));
+		}
+		else if (dynamic_cast<Window*>(srcObject))
+		{
+			newObj = new Window(*dynamic_cast<Window*>(srcObject));
+		}
+		else if (dynamic_cast<Drawer*>(srcObject))
+		{
+			newObj = new Drawer(*dynamic_cast<Drawer*>(srcObject));
+		}
+		else if (dynamic_cast<Flowerpot*>(srcObject))
+		{
+			newObj = new Flowerpot(*dynamic_cast<Flowerpot*>(srcObject));
+		}
+		else if (dynamic_cast<Bed*>(srcObject))
+		{
+			newObj = new Bed(*dynamic_cast<Bed*>(srcObject));
+		}
+		else if (dynamic_cast<Shelf_Book*>(srcObject))
+		{
+			newObj = new Shelf_Book(*dynamic_cast<Shelf_Book*>(srcObject));
+		}
+		else if (dynamic_cast<Table_Vertical*>(srcObject))
+		{
+			newObj = new Table_Vertical(*dynamic_cast<Table_Vertical*>(srcObject));
+		}
+		else if (dynamic_cast<Curtain_Red*>(srcObject))
+		{
+			newObj = new Curtain_Red(*dynamic_cast<Curtain_Red*>(srcObject));
+		}
+		else if (dynamic_cast<Closet*>(srcObject))
+		{
+			newObj = new Closet(*dynamic_cast<Closet*>(srcObject));
+		}
+		else if (dynamic_cast<Table_Red*>(srcObject))
+		{
+			newObj = new Table_Red(*dynamic_cast<Table_Red*>(srcObject));
+		}
+		else if (dynamic_cast<Bookcase*>(srcObject))
+		{
+			newObj = new Bookcase(*dynamic_cast<Bookcase*>(srcObject));
+		}
+		else if (dynamic_cast<Stove*>(srcObject))
+		{
+			newObj = new Stove(*dynamic_cast<Stove*>(srcObject));
+		}
+		else if (dynamic_cast<KitchenCounter*>(srcObject))
+		{
+			newObj = new KitchenCounter(*dynamic_cast<KitchenCounter*>(srcObject));
+		}
+		else if (dynamic_cast<FirePot*>(srcObject))
+		{
+			newObj = new FirePot(*dynamic_cast<FirePot*>(srcObject));
+		}
+		else if (dynamic_cast<Sideboard*>(srcObject))
+		{
+			newObj = new Sideboard(*dynamic_cast<Sideboard*>(srcObject));
+		}
+		else if (dynamic_cast<WallHanging*>(srcObject))
+		{
+			newObj = new WallHanging(*dynamic_cast<WallHanging*>(srcObject));
+		}
+		else if (dynamic_cast<WaterCup*>(srcObject))
+		{
+			newObj = new WaterCup(*dynamic_cast<WaterCup*>(srcObject));
+		}
+		else if (dynamic_cast<OneCandle*>(srcObject))
+		{
+			newObj = new OneCandle(*dynamic_cast<OneCandle*>(srcObject));
 		}
 
-		dest[key] = destObjects;
+		if (newObj)
+		{
+			saveData.push_back(newObj);
+		}
 	}
 }
 
 
-std::map<std::string, std::vector<Object*>> GameManager::ApplySceneData(SCENE applyScene)
+//std::map<std::string, std::vector<Object*>> GameManager::ApplySceneData(SCENE applyScene)
+std::vector<Object*> GameManager::ApplySceneData(SCENE applyScene)
 {
 	switch (applyScene)
 	{
@@ -567,7 +582,7 @@ std::map<std::string, std::vector<Object*>> GameManager::ApplySceneData(SCENE ap
 		return mBedRoomObject;
 	}
 
-	return std::map<std::string, std::vector<Object*>>();
+	return std::vector<Object*> ();
 }
 
 
@@ -597,6 +612,7 @@ void GameManager::LoadData()
 	FileRead("Sideboard");
 	FileRead("WallHanging");
 	FileRead("WaterCup");
+	FileRead("OneCandle");
 
 
 }
@@ -621,7 +637,7 @@ void GameManager::FileRead(const std::string& file) {
 			std::istringstream typeStream(line);
 
 			std::string typeCheckValue;
-			for (int i = 0; i < 4; i++) {
+			for (int i = 0; i < TYPE_COUNT; i++) {
 				typeStream >> typeCheckValue;
 				if (typeCheckValue == "true") //문자열을 전부 false로 판단
 					tmpObjectData.typeCheck[static_cast<OBJECT_TYPE>(i)] = true;
@@ -723,20 +739,24 @@ void GameManager::FileRead(const std::string& file) {
 
 
 
-void GameManager::InitSceneData(int _mapIndex, std::map <std::string, std::vector<Object*>>& _Object)
+//void GameManager::InitSceneData(int _mapIndex, std::map <std::string, std::vector<Object*>>& _Object)
+void GameManager::InitSceneData(int _mapIndex, std::vector<Object*> & tmpObject)
 { //로드해온 Object 데이터 각 Scene마다 Object 관리하는 변수에 세팅
 
 	//Door
-	std::vector<Object*> tmpObject;
-	for (int i = 0; i < objectData.find("Door")->second.objectCount; i++)
+	//std::vector<Object*> tmpObject;
+
+	ObjectData data = objectData.find("Door")->second;
+	for (int i = 0; i < data.objectCount; i++)
 	{
 		//해당 맵에 배치된 Object 인지 판별
-		if (_mapIndex == objectData.find("Door")->second.eachObject[i]->objectIndex.mapIndex)
-			tmpObject.push_back(new Door(objectData.find("Door")->second, i));
+		if (_mapIndex == data.eachObject[i]->objectIndex.mapIndex)
+			tmpObject.push_back(new Door(data, i));
 	}
-	_Object.insert({ "Door", tmpObject }); //pair로 만들기
+	//_Object.push_back(tmpObject);
+	//_Object.insert({ "Door", tmpObject }); //pair로 만들기
 
-	tmpObject.clear();
+	//tmpObject.clear();
 
 	//Window
 	for (int i = 0; i < objectData.find("Window")->second.objectCount; i++)
@@ -745,9 +765,9 @@ void GameManager::InitSceneData(int _mapIndex, std::map <std::string, std::vecto
 		if (_mapIndex == objectData.find("Window")->second.eachObject[i]->objectIndex.mapIndex)
 			tmpObject.push_back(new Window(objectData.find("Window")->second, i));
 	}
-	_Object.insert({ "Window", tmpObject }); //pair로 만들기
+	//_Object.insert({ "Window", tmpObject }); //pair로 만들기
 
-	tmpObject.clear();
+	//tmpObject.clear();
 
 	//Drawer
 	for (int i = 0; i < objectData.find("Drawer")->second.objectCount; i++)
@@ -756,9 +776,9 @@ void GameManager::InitSceneData(int _mapIndex, std::map <std::string, std::vecto
 		if (_mapIndex == objectData.find("Drawer")->second.eachObject[i]->objectIndex.mapIndex)
 			tmpObject.push_back(new Drawer(objectData.find("Drawer")->second, i));
 	}
-	_Object.insert({ "Drawer", tmpObject }); //pair로 만들기
+	//_Object.insert({ "Drawer", tmpObject }); //pair로 만들기
 
-	tmpObject.clear();
+	//tmpObject.clear();
 
 
 	//Flowerpot
@@ -768,9 +788,9 @@ void GameManager::InitSceneData(int _mapIndex, std::map <std::string, std::vecto
 		if (_mapIndex == objectData.find("Flowerpot")->second.eachObject[i]->objectIndex.mapIndex)
 			tmpObject.push_back(new Flowerpot(objectData.find("Flowerpot")->second, i));
 	}
-	_Object.insert({ "Flowerpot", tmpObject }); //pair로 만들기
+	//_Object.insert({ "Flowerpot", tmpObject }); //pair로 만들기
 
-	tmpObject.clear();
+	//tmpObject.clear();
 
 	//Bed
 	for (int i = 0; i < objectData.find("Bed")->second.objectCount; i++)
@@ -779,9 +799,9 @@ void GameManager::InitSceneData(int _mapIndex, std::map <std::string, std::vecto
 		if (_mapIndex == objectData.find("Bed")->second.eachObject[i]->objectIndex.mapIndex)
 			tmpObject.push_back(new Bed(objectData.find("Bed")->second, i));
 	}
-	_Object.insert({ "Bed", tmpObject }); //pair로 만들기
+	//_Object.insert({ "Bed", tmpObject }); //pair로 만들기
 
-	tmpObject.clear();
+	//tmpObject.clear();
 
 	//Shelf_Book
 	for (int i = 0; i < objectData.find("Shelf_Book")->second.objectCount; i++)
@@ -790,9 +810,9 @@ void GameManager::InitSceneData(int _mapIndex, std::map <std::string, std::vecto
 		if (_mapIndex == objectData.find("Shelf_Book")->second.eachObject[i]->objectIndex.mapIndex)
 			tmpObject.push_back(new Shelf_Book(objectData.find("Shelf_Book")->second, i));
 	}
-	_Object.insert({ "Shelf_Book", tmpObject }); //pair로 만들기
+	//_Object.insert({ "Shelf_Book", tmpObject }); //pair로 만들기
 
-	tmpObject.clear();
+	//tmpObject.clear();
 
 	//Table_Vertical
 	for (int i = 0; i < objectData.find("Table_Vertical")->second.objectCount; i++)
@@ -801,9 +821,9 @@ void GameManager::InitSceneData(int _mapIndex, std::map <std::string, std::vecto
 		if (_mapIndex == objectData.find("Table_Vertical")->second.eachObject[i]->objectIndex.mapIndex)
 			tmpObject.push_back(new Table_Vertical(objectData.find("Table_Vertical")->second, i));
 	}
-	_Object.insert({ "Table_Vertical", tmpObject }); //pair로 만들기
+	//_Object.insert({ "Table_Vertical", tmpObject }); //pair로 만들기
 
-	tmpObject.clear();
+	//tmpObject.clear();
 
 	//Curtain_Red
 	for (int i = 0; i < objectData.find("Curtain_Red")->second.objectCount; i++)
@@ -812,9 +832,9 @@ void GameManager::InitSceneData(int _mapIndex, std::map <std::string, std::vecto
 		if (_mapIndex == objectData.find("Curtain_Red")->second.eachObject[i]->objectIndex.mapIndex)
 			tmpObject.push_back(new Curtain_Red(objectData.find("Curtain_Red")->second, i));
 	}
-	_Object.insert({ "Curtain_Red", tmpObject }); //pair로 만들기
+	//_Object.insert({ "Curtain_Red", tmpObject }); //pair로 만들기
 
-	tmpObject.clear();
+	//tmpObject.clear();
 
 	//Closet
 	for (int i = 0; i < objectData.find("Closet")->second.objectCount; i++)
@@ -823,9 +843,9 @@ void GameManager::InitSceneData(int _mapIndex, std::map <std::string, std::vecto
 		if (_mapIndex == objectData.find("Closet")->second.eachObject[i]->objectIndex.mapIndex)
 			tmpObject.push_back(new Closet(objectData.find("Closet")->second, i));
 	}
-	_Object.insert({ "Closet", tmpObject }); //pair로 만들기
+	//_Object.insert({ "Closet", tmpObject }); //pair로 만들기
 
-	tmpObject.clear();
+	//tmpObject.clear();
 
 	//Table_Red
 	for (int i = 0; i < objectData.find("Table_Red")->second.objectCount; i++)
@@ -834,9 +854,9 @@ void GameManager::InitSceneData(int _mapIndex, std::map <std::string, std::vecto
 		if (_mapIndex == objectData.find("Table_Red")->second.eachObject[i]->objectIndex.mapIndex)
 			tmpObject.push_back(new Table_Red(objectData.find("Table_Red")->second, i));
 	}
-	_Object.insert({ "Table_Red", tmpObject }); //pair로 만들기
+	//_Object.insert({ "Table_Red", tmpObject }); //pair로 만들기
 
-	tmpObject.clear();	
+	//tmpObject.clear();	
 	
 	//Bookcase
 	for (int i = 0; i < objectData.find("Bookcase")->second.objectCount; i++)
@@ -845,9 +865,9 @@ void GameManager::InitSceneData(int _mapIndex, std::map <std::string, std::vecto
 		if (_mapIndex == objectData.find("Bookcase")->second.eachObject[i]->objectIndex.mapIndex)
 			tmpObject.push_back(new Bookcase(objectData.find("Bookcase")->second, i));
 	}
-	_Object.insert({ "Bookcase", tmpObject }); //pair로 만들기
+	//_Object.insert({ "Bookcase", tmpObject }); //pair로 만들기
 
-	tmpObject.clear();	
+	//tmpObject.clear();	
 	
 	//Stove
 	for (int i = 0; i < objectData.find("Stove")->second.objectCount; i++)
@@ -856,9 +876,9 @@ void GameManager::InitSceneData(int _mapIndex, std::map <std::string, std::vecto
 		if (_mapIndex == objectData.find("Stove")->second.eachObject[i]->objectIndex.mapIndex)
 			tmpObject.push_back(new Stove(objectData.find("Stove")->second, i));
 	}
-	_Object.insert({ "Stove", tmpObject }); //pair로 만들기
+	//_Object.insert({ "Stove", tmpObject }); //pair로 만들기
 
-	tmpObject.clear();
+	//tmpObject.clear();
 
 	//KitchenCounter
 	for (int i = 0; i < objectData.find("KitchenCounter")->second.objectCount; i++)
@@ -867,9 +887,9 @@ void GameManager::InitSceneData(int _mapIndex, std::map <std::string, std::vecto
 		if (_mapIndex == objectData.find("KitchenCounter")->second.eachObject[i]->objectIndex.mapIndex)
 			tmpObject.push_back(new KitchenCounter(objectData.find("KitchenCounter")->second, i));
 	}
-	_Object.insert({ "KitchenCounter", tmpObject }); //pair로 만들기
+	//_Object.insert({ "KitchenCounter", tmpObject }); //pair로 만들기
 
-	tmpObject.clear();
+	//tmpObject.clear();
 	
 	//FirePot
 	for (int i = 0; i < objectData.find("FirePot")->second.objectCount; i++)
@@ -878,9 +898,9 @@ void GameManager::InitSceneData(int _mapIndex, std::map <std::string, std::vecto
 		if (_mapIndex == objectData.find("FirePot")->second.eachObject[i]->objectIndex.mapIndex)
 			tmpObject.push_back(new FirePot(objectData.find("FirePot")->second, i));
 	}
-	_Object.insert({ "FirePot", tmpObject }); //pair로 만들기
+	//_Object.insert({ "FirePot", tmpObject }); //pair로 만들기
 
-	tmpObject.clear();
+	//tmpObject.clear();
 
 	//Sideboard
 	for (int i = 0; i < objectData.find("Sideboard")->second.objectCount; i++)
@@ -889,9 +909,9 @@ void GameManager::InitSceneData(int _mapIndex, std::map <std::string, std::vecto
 		if (_mapIndex == objectData.find("Sideboard")->second.eachObject[i]->objectIndex.mapIndex)
 			tmpObject.push_back(new Sideboard(objectData.find("Sideboard")->second, i));
 	}
-	_Object.insert({ "Sideboard", tmpObject }); //pair로 만들기
+	//_Object.insert({ "Sideboard", tmpObject }); //pair로 만들기
 
-	tmpObject.clear();
+	//tmpObject.clear();
 	
 	//Sideboard
 	for (int i = 0; i < objectData.find("WallHanging")->second.objectCount; i++)
@@ -900,9 +920,9 @@ void GameManager::InitSceneData(int _mapIndex, std::map <std::string, std::vecto
 		if (_mapIndex == objectData.find("WallHanging")->second.eachObject[i]->objectIndex.mapIndex)
 			tmpObject.push_back(new WallHanging(objectData.find("WallHanging")->second, i));
 	}
-	_Object.insert({ "WallHanging", tmpObject }); //pair로 만들기
+//	_Object.insert({ "WallHanging", tmpObject }); //pair로 만들기
 
-	tmpObject.clear();	
+	//tmpObject.clear();	
 	
 	//WaterCup
 	for (int i = 0; i < objectData.find("WaterCup")->second.objectCount; i++)
@@ -911,9 +931,20 @@ void GameManager::InitSceneData(int _mapIndex, std::map <std::string, std::vecto
 		if (_mapIndex == objectData.find("WaterCup")->second.eachObject[i]->objectIndex.mapIndex)
 			tmpObject.push_back(new WaterCup(objectData.find("WaterCup")->second, i));
 	}
-	_Object.insert({ "WaterCup", tmpObject }); //pair로 만들기
+//	_Object.insert({ "WaterCup", tmpObject }); //pair로 만들기
 
-	tmpObject.clear();
+	//tmpObject.clear();
+
+	//OneCandle
+	for (int i = 0; i < objectData.find("OneCandle")->second.objectCount; i++)
+	{
+		//해당 맵에 배치된 Object 인지 판별
+		if (_mapIndex == objectData.find("OneCandle")->second.eachObject[i]->objectIndex.mapIndex)
+			tmpObject.push_back(new OneCandle(objectData.find("OneCandle")->second, i));
+	}
+//	_Object.insert({ "OneCandle", tmpObject }); //pair로 만들기
+
+	//tmpObject.clear();
 }
 
 void GameManager::SetPlusHour(int plusHour)
@@ -1054,9 +1085,35 @@ void GameManager::Inventory_Panel(Player& player)
 
 void GameManager::Cancel_InventoryBtnClickHandler()
 {
+	bool active = false;
+
 	//아이템 사용/취소 판넬이 떠있지 않을 경우에만 인벤토리 판넬 취소 가능 + (아이템 사용 창은 떠있고 게임 재생 + 인벤토리 창 켜져있는 것 방지)
 	//아이템 사용하고 하단 창 뜨면, 하단 창만 클릭 가능하게(인벤토리 취소 창 못 누르게끔)
-	if (!Inventory_UI_ItemUseSelect->GetEnable() && !underTxt_Section->GetEnable())
+	if (Inventory_UI_ItemUseSelect == nullptr && underTxt_Section == nullptr) //하단창과 아이템 상태창 한번도 뜬 적 없는 경우
+	{
+		active = true;
+	}
+	else if (Inventory_UI_ItemUseSelect != nullptr && underTxt_Section == nullptr) //하단창 뜬 적 있는지 판별
+	{
+		//하단창 떠있는 상테에서 취소 버튼 못누르게
+		if (!Inventory_UI_ItemUseSelect->GetEnable() && underTxt_Section == nullptr)
+			active = true;
+	}
+	else if (Inventory_UI_ItemUseSelect == nullptr && underTxt_Section != nullptr) //아이템 상세창 뜬 적 있는지 판별
+	{
+		//아이템 상세창 떠있는 상테에서 취소 버튼 못누르게
+		if (Inventory_UI_ItemUseSelect == nullptr && !underTxt_Section->GetEnable())
+			active = true;
+	}
+	else if (Inventory_UI_ItemUseSelect != nullptr && underTxt_Section != nullptr) //아이템 상세창 한번 띄웠다가 인벤토리 창 지울 경우
+	{
+		if (!Inventory_UI_ItemUseSelect->GetEnable() && !underTxt_Section->GetEnable())
+			active = true;
+	}
+
+
+
+	if (active)
 	{
 		Inventory_UI->SetEnable(FALSE); //아이템 종류 보여주는 판넬
 		isPause = false;
@@ -1166,6 +1223,8 @@ void GameManager::ItemUse_Panel(Item* useItem)
 		btn_txt->SetLocalPosition(FONT_ITEM_DETAL_X, Inventory_UI_ItemDetaiInfo->GetSize().cy - 20, true);
 		btn_txt->Initialize(useItem->GetDetailInfo(), RGB(255, 255, 255), ENGINE::GUIMgr->Get_Font(FONT_SELECT));
 	}
+
+	//Inventory_UI_ItemDetaiInfo->SetEnable(true);
 	
 	//------------아이템 사용/취소 판넬--------------
 
@@ -1211,6 +1270,8 @@ void GameManager::ItemUse_Panel(Item* useItem)
 		btnCancel_txt->SetLocalPosition(FONT_SELECT_X, FONT_SELECT_Y, true);
 		btnCancel_txt->Initialize("취소", RGB(255, 255, 255), ENGINE::GUIMgr->Get_Font(FONT_SELECT));
 	}
+
+	//Inventory_UI_ItemUseSelect->SetEnable(true);
 }
 
 void GameManager::ItemUseBtnClickHandler(Item* useItem)

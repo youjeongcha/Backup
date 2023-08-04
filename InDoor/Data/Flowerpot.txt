@@ -1,4 +1,4 @@
-false false false false
+false false false false true
 3 2
 Home_Flowerpot.bmp
 3 씨앗심기 물주기 수확

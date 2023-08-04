@@ -1,0 +1,6 @@
+false false true true true
+8 2
+Home_OneCandle.bmp
+1 킨다/끈다
+1
+양초 2 0 true fasle false false 40 45 0 0 0

@@ -98,6 +98,9 @@ VOID DemoScene::Update(const FLOAT& deltaTime)
 
     /////player가 상호작용할 object를 선택
    // ObjectMgr->Update(deltaTime);
+   
+    //가구 애니메이션 작동
+    ObjectMgr->Animation(deltaTime);
 
 
     if (0 > playerTr->position.x) 

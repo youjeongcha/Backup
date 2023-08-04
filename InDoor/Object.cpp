@@ -14,9 +14,12 @@ Object::Object(const ObjectData& dataSet, int index)
     eachObjectIndex.name = dataSet.eachObject[index]->objectIndex.name;
     //오브젝트 타입 설정
     typeCheck = dataSet.typeCheck;
+
+
+
     //리소스
-    SpritesX = dataSet.spritesX;
-    SpritesY = dataSet.spritesY;
+    spritesX = dataSet.spritesX;
+    spritesY = dataSet.spritesY;
 
     //오브젝트 명칭
     objectName = dataSet.objectName;
@@ -34,7 +37,7 @@ Object::Object(const ObjectData& dataSet, int index)
 
     ENGINE::ResourceMgr->Load(dataSet.fileName);
 
-    renderer = new ENGINE::SpriteRenderer(dataSet.fileName.c_str(), SpritesX, SpritesY);
+    renderer = new ENGINE::SpriteRenderer(dataSet.fileName.c_str(), spritesX, spritesY);
     renderer->SetPos(dataSet.eachObject[index]->x, dataSet.eachObject[index]->y);
     renderer->SetPivot(ENGINE::Pivot::Left | ENGINE::Pivot::Top);
     renderer->SetScale(transform->scale.x, transform->scale.y);
@@ -42,13 +45,14 @@ Object::Object(const ObjectData& dataSet, int index)
         renderer->SetSrc(0, 1);
     AddComponent(renderer);
 
-    //renderer->SetRect(); //좌표 이동에 따라 Rect 변화
-
     //Anim 관련
-    if (isAnim) //TODO::애니메이션 속도 조절 부분은 AnimationComponent
-        AddComponent(anim = new ENGINE::SpriteAnimation(SpritesX, SpritesY));
+    if (typeCheck.find(ANIM)->second) //TODO::애니메이션 속도 조절 부분은 AnimationComponent
+        AddComponent(anim = new ENGINE::SpriteAnimation(spritesX, spritesY));
     else
         anim = NULL;
+
+    //renderer->SetRect(); //좌표 이동에 따라 Rect 변화
+
 
     //Move 관련
     dir = (Direction)dataSet.eachObject[index]->move_X; //TODO::이거 
@@ -73,7 +77,7 @@ VOID Object::Initialize()
 }
 
 VOID Object::Update(const FLOAT& deltaTime)
-{//TODO::애니메이션 있는 가구에 별도로 추가
+{
     //활성, 비활성화 구분해서. 활성화 상태일때
     //TODO::애니메이션 재생할지, 아니면 이미지만 바꿀지 생각해봐야 함.
 
@@ -93,19 +97,33 @@ VOID Object::Update(const FLOAT& deltaTime)
 
 }
 
+void Object::Animation(const FLOAT& deltaTime)
+{
+    //애니메이션은 가구가 활성화 상태일때 사용된다.
+    if (isAnim && isActive)
+    {
+        anim->Play(1);
+        transform->position.x += deltaTime;
+    }
+}
+
 VOID Object::Move(const FLOAT& deltaTime)
 {
-    switch (dir)
+    /*if (isAnim)
     {
-    case Direction::RIGHT:
-        anim->Play(0);
-        transform->position.x += moveSpeed * deltaTime;
-        break;
-    case Direction::LEFT:
-        anim->Play(1);
-        transform->position.x -= moveSpeed * deltaTime;
-        break;
-    }
+        switch (dir)
+        {
+        case Direction::RIGHT:
+            anim->Play(0);
+            transform->position.x += moveSpeed * deltaTime;
+            break;
+        case Direction::LEFT:
+            anim->Play(1);
+            transform->position.x -= moveSpeed * deltaTime;
+            break;
+        }
+    }*/
+
 }
 
 VOID Object::Draw()
@@ -207,22 +225,24 @@ void Object::ChangeActiveState()
         renderer->SetSrc(0, 1);
     else
         renderer->SetSrc(0, 0);
-
-    //return isActive;
 }
 
 
-void Object::TimeChangeBitmap(bool isDrak)
+void Object::TimeChangeBitmap()
 {
-    if (isDrak)
-        isActive = false;
-    else
-        isActive = true;
+    if (typeCheck.find(TIMECHANGE)->second)
+    {
+        if (GameMgr->GetIsDark())
+            isActive = false;
+        else
+            isActive = true;
 
-    if (isActive) //작동 여부에 따라 이미지 다르게
-        renderer->SetSrc(0, 1);
-    else
-        renderer->SetSrc(0, 0);
+        if (isActive) //작동 여부에 따라 이미지 다르게
+            renderer->SetSrc(0, 1);
+        else
+            renderer->SetSrc(0, 0);
+    }
+
 }
 
 VOID Object::Release()

@@ -21,14 +21,35 @@ namespace ENGINE
 	}
 	Component* GameObject::GetComponent(CONST ComponentType& type)
 	{
-		auto iter = components.find(type);
-		if (components.end() != iter) 
-			return iter->second;
+		//조건자는 람다 함수, 찾고자 하는 조건을 검사하여 true 또는 false를 반환
+		auto iter = std::find_if(components.begin(), components.end(),
+			[&](const std::pair<ComponentType, Component*>& pair) {
+				return pair.first == type;
+			});
 
-		return nullptr;
+		return (iter != components.end()) ? iter->second : nullptr;
+
+		//auto iter = std::find_if(components.begin(), components.end(),
+		//	[&](const std::pair<ComponentType, Component*>& pair) {
+		//		return pair.second;
+		//	});
+
+		//return nullptr;
+
+		//auto iter = components.find(type);
+		//if (components.end() != iter) 
+		//	return iter->second;
+
+		//return nullptr;
 	}
 	BOOL GameObject::AddComponent(Component* component)
 	{
+		//if (!component || GetComponent(component->GetType()))
+		//	return FALSE;
+
+		//components.push_back(std::make_pair(component->GetType(), component));
+		//return TRUE;
+
 		if (!component || GetComponent(component->GetType())) 
 			return FALSE;
 
