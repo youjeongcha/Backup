@@ -5,7 +5,7 @@
 #include "Door.h"
 #include "Window.h"
 #include "Drawer.h"
-#include "Flowerpot.h"
+#include "Flowerbundle_Blue.h"
 #include "Bed.h"
 #include "Shelf_Book.h"
 #include "Table_Vertical.h"
@@ -20,6 +20,9 @@
 #include "WallHanging.h"
 #include "WaterCup.h"
 #include "OneCandle.h"
+#include "Flowerbundle_Red.h"
+#include "Flowerbundle_Orange.h"
+#include "Flowerbundle_Yellow.h"
 //#include "RoundTable.h"
 
 
@@ -75,18 +78,20 @@ namespace ENGINE
 
 		void Draw();
 		//void Update(const FLOAT& deltaTime);
-		void Animation(const FLOAT& deltaTime);
+		void Update(const FLOAT& deltaTime);
 		//상호작용이 가능한 object의 인덱스를 리턴
 
 		//int SerachInterObject(std::vector<Object*> vObject, Object* interObject, const RECT characterRect, int interCount); //Player와 겹치는 Object를 interObject에 저장(각 Object 세분화를 함수화)
 		//vObject에는 현재 맵에 위치한 Object 한 종류가 들어있다.
-		void SerachInterObject(std::vector<Object*> vObject, std::vector<Object*>* interObject, const RECT characterRect); //Player와 겹치는 Object를 interObject에 저장(각 Object 세분화를 함수화)
+		//void SerachInterObject(std::vector<Object*> vObject, std::vector<Object*>* interObject, const RECT characterRect); //Player와 겹치는 Object를 interObject에 저장(각 Object 세분화를 함수화)
 		//int InteractiveCheck_toPlayer(Object* interObject, const RECT characterRect); //플레이어와 겹치는 Obejct를 가져온다.(메인)
 		void InteractiveCheck_toPlayer(std::vector<Object*>* interObject, const RECT characterRect); //플레이어와 겹치는 Obejct를 가져온다.(메인)
 
 
-		//시간의 흐름에 따라 변화하는 Bitmap을 전환한다. ex)창밖의 이미지
-		void TimeChangeBitmap(); //굳이 int 쓴다면 ex.바람이 불어서 모든 촛불이 꺼진다.
+		//(밤낮에 따라)시간의 흐름에 따라 변화하는 Bitmap을 전환한다. ex)창밖의 이미지
+		void MoringNight_TimeChangeBitmap(); //굳이 int 쓴다면 ex.바람이 불어서 모든 촛불이 꺼진다.
+
+		//void PassOfthe_TimeChangeBitmap(); //시간의 경과에 따라 이미지 변화(ex.식물 성장)
 
 		//EachObjectIndex* InteractiveCheck_toPlayer( const RECT characterRect);
 		//bool InteractiveCheck_toPlayer(const RECT characterRect);

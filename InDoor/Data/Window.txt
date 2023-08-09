@@ -1,4 +1,4 @@
-true false false true true
+true true false true true
 1 2
 Home_Window.bmp
 1 º¸±â

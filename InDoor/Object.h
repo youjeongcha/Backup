@@ -51,6 +51,15 @@ struct ObjectData
     std::vector<std::string> sDetailSelect;
 };
 
+enum FRUITS_GROWTH
+{
+    SOIL,
+    SEDDS,
+    FLOWERS,
+    FRUITS,
+    FRUITS_GROWTH_END
+};
+
 class Object;
 //상태기계 관련
 class State
@@ -138,6 +147,10 @@ public:
         // renderer를 깊은 복사
         AddComponent(renderer = new ENGINE::SpriteRenderer(*other.renderer));
 
+        //transform = other.transform;
+
+        transform->position = { other.transform->position.x,  other.transform->position.y };
+
         if (typeCheck.find(ANIM)->second) //TODO::애니메이션 속도 조절 부분은 AnimationComponent
             AddComponent(anim = new ENGINE::SpriteAnimation(spritesX , spritesY));
         else
@@ -217,8 +230,8 @@ public:
 	~Object();
 
     virtual VOID Initialize();
-    VOID Update(const FLOAT& deltaTime);
-    void Animation(const FLOAT& deltaTime);
+    //VOID Update(const FLOAT& deltaTime);
+    virtual void Update(const FLOAT& deltaTime);
     virtual VOID Move(const FLOAT& deltaTime);
     virtual VOID Draw();
     VOID Release();
@@ -228,7 +241,7 @@ public:
     EachObjectIndex GetEachObjectIndex() { return eachObjectIndex; }
     std::string GetObjectName() { return objectName; }
 
-    //현재 사용중이어야지 플레이어와 겹치는지 확인하기 위해
+    //현재 사용중(맵에서 보여)이어야지 플레이어와 겹치는지 확인하기 위해
     bool GetisUse() { return isUse; }
 
     //---선택지 관련----
@@ -239,8 +252,10 @@ public:
     void CancelBtnClickHandler();
     bool IsInteractive() { return typeCheck.find(INTERACTIVE)->second; } //상호작용 가능한 Object인지 확인
 
-    //밤낮 세팅
-    void TimeChangeBitmap();
+    //밤낮 변화에 따라 이미지 세팅
+    void MoringNight_TimeChangeBitmap();
+    //시간의 경과에 따른 이미지 세팅(ex.식물 성장)
+    virtual void PassOfthe_TimeChangeBitmap();
     //ENGINE::RECT* GetRect() { return &renderer->GetRect(); }
     //Vector2 GetPos() { return renderer->GetPos(); }
     //SIZE GetSize() { return renderer->GetDrawSize(); }

@@ -17,13 +17,22 @@ OneCandle::~OneCandle()
 
 VOID OneCandle::Initialize()
 {
-    return VOID();
 }
 
 VOID OneCandle::Move(const FLOAT& deltaTime)
 {
     return VOID();
 }
+
+//void OneCandle::Animation(const FLOAT& deltaTime)
+//{
+//    //애니메이션은 가구가 활성화 상태일때 사용된다.
+//    if ((isAnim && isActive) && (anim != nullptr))
+//    {
+//        Operate(this);
+//        anim->Play(1);
+//    }
+//}
 
 void OneCandle::DetailSelect(int selectNum)
 {//0~선택지 개수-1의 리스너를 바인딩하기 위해 리턴한다. 

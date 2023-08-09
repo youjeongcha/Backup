@@ -207,7 +207,7 @@ void GameManager::Restart()
 	prevShowUnderTxt = UNDERTXT_NONE;
 
 	//수치 상태
-	m_health = 5;
+	m_health = 20;
 	m_hunger = 100;
 	//m_hunger = 30;
 	m_thirst = 50;
@@ -221,7 +221,7 @@ void GameManager::Restart()
 	m_elapsedSec = 0.0f;
 	nowTimeLine = TimeLine_MORING; oldTimeLine = TimeLine_MORING;
 	m_Clock.hour = TimeLine_NIGHT - 1;
-	m_Clock.min = 00;
+	m_Clock.min = 0;
 
 	//로드해온 Object 데이터 각 Scene마다 Object 관리하는 변수에 세팅
 	Reset_SceneObject();
@@ -260,7 +260,7 @@ void GameManager::Draw()
 
 
 
-void GameManager::Update(const FLOAT&  deltaTime)
+void GameManager::Update(const FLOAT& deltaTime)
 {
 	if (isGameOver)
 		return;
@@ -305,18 +305,18 @@ void GameManager::Update(const FLOAT&  deltaTime)
         nowTimeLine = TimeLine_NIGHT;
 
 
-    //시간에 따라 달라지는 요소들 처리(Object, NPC등)
+
 
     //낮밤 전환에 따라 단순 BitpMap 바뀌는 요소들
     if ((nowTimeLine == TimeLine_NIGHT) && (oldTimeLine == TimeLine_MORING))
     {//낮 > 밤
 		isDark = true;
-        ENGINE::ObjectMgr->TimeChangeBitmap();
+        ENGINE::ObjectMgr->MoringNight_TimeChangeBitmap();
     }
     else if ((nowTimeLine == TimeLine_MORING) && (oldTimeLine == TimeLine_NIGHT))
     {//밤 > 낮
 		isDark = false;
-		ENGINE::ObjectMgr->TimeChangeBitmap();
+		ENGINE::ObjectMgr->MoringNight_TimeChangeBitmap();
     }
 
 
@@ -500,9 +500,9 @@ void GameManager::DeepCopyMap(std::vector<Object*>& saveData, const std::vector<
 		{
 			newObj = new Drawer(*dynamic_cast<Drawer*>(srcObject));
 		}
-		else if (dynamic_cast<Flowerpot*>(srcObject))
+		else if (dynamic_cast<Flowerbundle_Blue*>(srcObject))
 		{
-			newObj = new Flowerpot(*dynamic_cast<Flowerpot*>(srcObject));
+			newObj = new Flowerbundle_Blue(*dynamic_cast<Flowerbundle_Blue*>(srcObject));
 		}
 		else if (dynamic_cast<Bed*>(srcObject))
 		{
@@ -559,6 +559,18 @@ void GameManager::DeepCopyMap(std::vector<Object*>& saveData, const std::vector<
 		else if (dynamic_cast<OneCandle*>(srcObject))
 		{
 			newObj = new OneCandle(*dynamic_cast<OneCandle*>(srcObject));
+		}	
+		else if (dynamic_cast<Flowerbundle_Red*>(srcObject))
+		{
+			newObj = new Flowerbundle_Red(*dynamic_cast<Flowerbundle_Red*>(srcObject));
+		}		
+		else if (dynamic_cast<Flowerbundle_Orange*>(srcObject))
+		{
+			newObj = new Flowerbundle_Orange(*dynamic_cast<Flowerbundle_Orange*>(srcObject));
+		}		
+		else if (dynamic_cast<Flowerbundle_Yellow*>(srcObject))
+		{
+			newObj = new Flowerbundle_Yellow(*dynamic_cast<Flowerbundle_Yellow*>(srcObject));
 		}
 
 		if (newObj)
@@ -598,7 +610,7 @@ void GameManager::LoadData()
 	FileRead("Door");
 	FileRead("Window");
 	FileRead("Drawer");
-	FileRead("Flowerpot");
+	FileRead("Flowerbundle_Blue");
 	FileRead("Bed");
 	FileRead("Shelf_Book");
 	FileRead("Table_Vertical");
@@ -613,6 +625,9 @@ void GameManager::LoadData()
 	FileRead("WallHanging");
 	FileRead("WaterCup");
 	FileRead("OneCandle");
+	FileRead("Flowerbundle_Red");
+	FileRead("Flowerbundle_Orange");
+	FileRead("Flowerbundle_Yellow");
 
 
 }
@@ -781,12 +796,12 @@ void GameManager::InitSceneData(int _mapIndex, std::vector<Object*> & tmpObject)
 	//tmpObject.clear();
 
 
-	//Flowerpot
-	for (int i = 0; i < objectData.find("Flowerpot")->second.objectCount; i++)
+	//Flowerbundle_Blue
+	for (int i = 0; i < objectData.find("Flowerbundle_Blue")->second.objectCount; i++)
 	{
 		//해당 맵에 배치된 Object 인지 판별
-		if (_mapIndex == objectData.find("Flowerpot")->second.eachObject[i]->objectIndex.mapIndex)
-			tmpObject.push_back(new Flowerpot(objectData.find("Flowerpot")->second, i));
+		if (_mapIndex == objectData.find("Flowerbundle_Blue")->second.eachObject[i]->objectIndex.mapIndex)
+			tmpObject.push_back(new Flowerbundle_Blue(objectData.find("Flowerbundle_Blue")->second, i));
 	}
 	//_Object.insert({ "Flowerpot", tmpObject }); //pair로 만들기
 
@@ -945,6 +960,30 @@ void GameManager::InitSceneData(int _mapIndex, std::vector<Object*> & tmpObject)
 //	_Object.insert({ "OneCandle", tmpObject }); //pair로 만들기
 
 	//tmpObject.clear();
+
+	//Flowerbundle_Red
+	for (int i = 0; i < objectData.find("Flowerbundle_Red")->second.objectCount; i++)
+	{
+		//해당 맵에 배치된 Object 인지 판별
+		if (_mapIndex == objectData.find("Flowerbundle_Red")->second.eachObject[i]->objectIndex.mapIndex)
+			tmpObject.push_back(new Flowerbundle_Red(objectData.find("Flowerbundle_Red")->second, i));
+	}
+
+	//Flowerbundle_Orange
+	for (int i = 0; i < objectData.find("Flowerbundle_Orange")->second.objectCount; i++)
+	{
+		//해당 맵에 배치된 Object 인지 판별
+		if (_mapIndex == objectData.find("Flowerbundle_Orange")->second.eachObject[i]->objectIndex.mapIndex)
+			tmpObject.push_back(new Flowerbundle_Orange(objectData.find("Flowerbundle_Orange")->second, i));
+	}
+
+	//Flowerbundle_Yellow
+	for (int i = 0; i < objectData.find("Flowerbundle_Yellow")->second.objectCount; i++)
+	{
+		//해당 맵에 배치된 Object 인지 판별
+		if (_mapIndex == objectData.find("Flowerbundle_Yellow")->second.eachObject[i]->objectIndex.mapIndex)
+			tmpObject.push_back(new Flowerbundle_Yellow(objectData.find("Flowerbundle_Yellow")->second, i));
+	}
 }
 
 void GameManager::SetPlusHour(int plusHour)
@@ -1040,12 +1079,37 @@ void GameManager::Inventory_Panel(Player& player)
 		cancel_Y = Inventory_UI->GetSize().cy - 10;
 
 
+		std::vector<Item*> inventory = ItemMgr->GetItemList();
+
 		//인벤토리에 현재 있는 아이템 수만큼 아이템 칸 생성
 		for (i = 0; i < player_ItemList.size(); i++)
 		{
-			Item* useItem = ItemMgr->GetItemList().find(player_ItemList[i].itemID)->second;
+			//Item* useItem = ItemMgr->GetItemList().find(player_ItemList[i].itemID)->second;
+			ITEM_ID playerHave_itemID = player_ItemList[i].itemID;
+			Item* useItem = nullptr;
+			std::string itemName;
 
-			std::string itemName = useItem->GetName();
+			//플레이어 인벤토리에 들어있으면 ItemMgr의 아이템 데이터에 반드시 있음
+			for (int i = 0; i < inventory.size(); i++)
+			{
+				if (inventory[i]->GetItemID() == playerHave_itemID) {
+					useItem = inventory[i];
+					itemName = useItem->GetName();
+					break;
+				}
+			}
+
+			//auto iter = std::find_if(inventory.begin(), inventory.end(), [itemID, &useItem, &itemName](Item* item)
+			//{
+			//	if (item->GetItemID() == itemID)
+			//	{
+			//		useItem = item;
+			//		itemName = useItem->GetName();
+			//	}
+			//});
+
+
+
 
 			//버튼-선택지
 			ENGINE::UIButton* btn_select = ENGINE::UIMgr->AddUI<ENGINE::UIButton>("Optional " + std::to_string(i + 1) + itemName, Inventory_UI); //파일 이름으로 구분 ex.Home_Flowerpot.bmp
@@ -1123,20 +1187,39 @@ void GameManager::Cancel_InventoryBtnClickHandler()
 
 void GameManager::PlusPlayerInventory(InventoryItem item)
 {
-	for (auto iter = player_ItemList.begin(); iter != player_ItemList.end(); ++iter)
+	bool itemFound = false;
+
+	for (auto iter = player_ItemList.begin(); iter != player_ItemList.end(); iter++)
 	{
-		//인벤토리에 해당 아이템이 이미 존재 > 수량 증가
-		if (iter->itemID == item.itemID)
+		if (iter->itemID == item.itemID) 
+		{
+			//인벤토리에 해당 아이템이 이미 존재 > 수량 증가
 			iter->itemCount++;
+			itemFound = true; //아이템을 찾았음을 표시
+			break; //이미 아이템을 찾았으므로 더 이상 검색할 필요 없음
+		}
 	}
 
 	//인벤토리에 해당 아이템이 없는 경우 추가
-	player_ItemList.push_back(item);
+	if (!itemFound)
+		player_ItemList.push_back(item);
+
+
+	//for (auto iter = player_ItemList.begin(); iter != player_ItemList.end(); ++iter)
+	//{
+	//	//인벤토리에 해당 아이템이 이미 존재 > 수량 증가
+	//	if (iter->itemID == item.itemID)
+	//		iter->itemCount++;
+
+	//	if (iter == player_ItemList.end())
+	//		//인벤토리에 해당 아이템이 없는 경우 추가
+	//		player_ItemList.push_back(item);
+	//}
 }
 
-void GameManager::MinusPlayerItem(ITEM_ID itemID)
+bool GameManager::MinusPlayerItem(ITEM_ID itemID)
 {
-	for (auto iter = player_ItemList.begin(); iter != player_ItemList.end(); ++iter)
+	for (auto iter = player_ItemList.begin(); iter != player_ItemList.end(); iter++)
 	{
 		if (iter->itemID == itemID)
 		{
@@ -1147,10 +1230,12 @@ void GameManager::MinusPlayerItem(ITEM_ID itemID)
 			if (iter->itemCount == 0)
 			{
 				player_ItemList.erase(iter);
-				break;
 			}
+			return true;
 		}
 	}
+
+	return false;
 
 
 
@@ -1230,8 +1315,8 @@ void GameManager::ItemUse_Panel(Item* useItem)
 
 	ENGINE::UIMgr->Remove("ItemUse");
 	Inventory_UI_ItemUseSelect = ENGINE::UIMgr->AddUI<ENGINE::UIImage>("ItemUse");
-	Inventory_UI_ItemUseSelect->Initialize("Inventory_panel_Select.bmp", ENGINE::DrawType::AlphaBlend); //투명도 조절 가능하게끔
-	Inventory_UI_ItemUseSelect->Set_Transparency(ITEM_TRANSPARENCY); //투명화 원하는 값(0 ~ 255)
+	Inventory_UI_ItemUseSelect->Initialize("Inventory_panel_Select.bmp", ENGINE::DrawType::Transparent); //투명도 조절 가능하게끔
+	//Inventory_UI_ItemUseSelect->Set_Transparency(ITEM_TRANSPARENCY); //투명화 원하는 값(0 ~ 255)
 
 
 	if (Inventory_UI_ItemUseSelect)

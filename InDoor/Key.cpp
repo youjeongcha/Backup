@@ -6,14 +6,14 @@ Key::Key()
 	itemID = KEY;
 	itemType = NONE;
 
-	itemUseTxt = USE_KEY;
+	itemUseTxt = UNDERTXT_NONE;
 	name = "열쇠";
 	ImageBmp = "Key.bmp";
 	detailInfo = "은색 열쇠. 어디에 맞는 열쇠일까.";
 	ENGINE::ResourceMgr->Load(ImageBmp);
 
-	useCount = USE_PERMANENT;
-	isUsing = true;
+	useCount = USE_NONE;
+	isUsing = false;
 
 	//음식류 아니면 다 0 으로 고정
 	m_health = 0;

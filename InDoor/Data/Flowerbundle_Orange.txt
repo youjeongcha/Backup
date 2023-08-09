@@ -1,0 +1,6 @@
+false false false false true
+3 1
+Home_Flowerbundle_Orange.bmp
+3 씨앗심기 물주기 수확
+1
+주황꽃화분 0 0 true false false false 50 100 0 0 0

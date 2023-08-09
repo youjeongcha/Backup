@@ -36,17 +36,17 @@ namespace ENGINE
 		mObject = GameMgr->ApplySceneData((SCENE)change_MapIndex);
 
 		//해당 씬의 Object 비트맵 상태 설정(밤,낮)
-		TimeChangeBitmap();
+		MoringNight_TimeChangeBitmap();
 	}
 
 
-	void ObjectManager::TimeChangeBitmap()
+	void ObjectManager::MoringNight_TimeChangeBitmap()
 	{//시간의 경과에 따라 변화하는 Object의 Bitmap을 전환한다.
 		//TIP::만약 오브젝트의 이름을 기존과 다르게 하면 if 문에 or로 추가하면 된다.
 
 		for (auto object : mObject)
 		{
-			object->TimeChangeBitmap();
+			object->MoringNight_TimeChangeBitmap();
 		}
 
 		//for (int i = 0; i < mObject.find("Window")->second.size(); i++)
@@ -54,6 +54,14 @@ namespace ENGINE
 		//	mObject.find("Window")->second[i]->TimeChangeBitmap(isDrak);
 		//}
 	}
+
+	//void ObjectManager::PassOfthe_TimeChangeBitmap()
+	//{
+	//	for (auto object : mObject)
+	//	{
+	//		object->PassOfthe_TimeChangeBitmap();
+	//	}
+	//}
 	
 	void ObjectManager::Draw()
 	{ //맵 인덱스 따라 그리도록
@@ -129,11 +137,11 @@ namespace ENGINE
 	}
 
 
-	void ObjectManager::Animation(const FLOAT& deltaTime)
+	void ObjectManager::Update(const FLOAT& deltaTime)
 	{
 		for (auto object : mObject)
 		{
-			object->Animation(deltaTime);
+			object->Update(deltaTime);
 		}
 		//for (int i = 0; i < mObject.find("OneCandle")->second.size(); i++)
 		//	mObject.find("OneCandle")->second[i]->Animation(deltaTime);
@@ -208,8 +216,24 @@ namespace ENGINE
 
 	void ObjectManager::InteractiveCheck_toPlayer(std::vector<Object*>* interObject, const RECT characterRect)
 	{ //현재 맵의 인덱스에 속하고 플레이어와 상호작용 가능한 모든 Object를 검사해야 한다.
-		SerachInterObject(mObject, interObject, characterRect);
+		RECT objectRect;
+		//int eachObjectIndex;
 
+		for (int i = 0; i < mObject.size(); i++)
+		{
+			//현재 사용중이어야지 플레이어와 겹치는지 확인하기 위해 //상호작용 가능한 Object인지 확인
+			if (mObject[i]->GetisUse() && mObject[i]->IsInteractive())
+			{
+				//eachObjectIndex = vObject[i]->GetEachObjectIndex().eachObjectIndex;
+
+				//해당 맵에 배치된 Object 인지 판별 애초에 해당 맵의 Object만 가지고 있음
+				//objectRect = vObject[eachObjectIndex]->GetRect();
+				objectRect = mObject[i]->GetRect();
+				//가로폭 영역이 겹치는지 확인
+				if ((characterRect.right >= objectRect.left) && (objectRect.right >= characterRect.left))
+					interObject->push_back(mObject[i]);
+			}
+		}
 
 		/*SerachInterObject(mObject.find("Door")->second, interObject, characterRect);
 		SerachInterObject(mObject.find("Window")->second, interObject, characterRect);
@@ -225,25 +249,25 @@ namespace ENGINE
 		SerachInterObject(mObject.find("OneCandle")->second, interObject, characterRect);*/
 	}
 
-	void ObjectManager::SerachInterObject(std::vector<Object*> vObject, std::vector<Object*>* interObject, const RECT characterRect)
-	{//vObject에는 현재 맵에 위치한 Object 한 종류가 들어있다.
-		RECT objectRect;
-		//int eachObjectIndex;
+	//void ObjectManager::SerachInterObject(std::vector<Object*> vObject, std::vector<Object*>* interObject, const RECT characterRect)
+	//{//vObject에는 현재 맵에 위치한 Object 한 종류가 들어있다.
+	//	RECT objectRect;
+	//	//int eachObjectIndex;
 
-		for (int i = 0; i < vObject.size(); i++)
-		{
-			//현재 사용중이어야지 플레이어와 겹치는지 확인하기 위해 //상호작용 가능한 Object인지 확인
-			if (vObject[i]->GetisUse() && vObject[i]->IsInteractive())
-			{
-				//eachObjectIndex = vObject[i]->GetEachObjectIndex().eachObjectIndex;
+	//	for (int i = 0; i < vObject.size(); i++)
+	//	{
+	//		//현재 사용중이어야지 플레이어와 겹치는지 확인하기 위해 //상호작용 가능한 Object인지 확인
+	//		if (vObject[i]->GetisUse() && vObject[i]->IsInteractive())
+	//		{
+	//			//eachObjectIndex = vObject[i]->GetEachObjectIndex().eachObjectIndex;
 
-				//해당 맵에 배치된 Object 인지 판별 애초에 해당 맵의 Object만 가지고 있음
-				//objectRect = vObject[eachObjectIndex]->GetRect();
-				objectRect = vObject[i]->GetRect();
-				//가로폭 영역이 겹치는지 확인
-				if ((characterRect.right >= objectRect.left) && (objectRect.right >= characterRect.left))
-					interObject->push_back(vObject[i]);
-			}
-		}
-	}
+	//			//해당 맵에 배치된 Object 인지 판별 애초에 해당 맵의 Object만 가지고 있음
+	//			//objectRect = vObject[eachObjectIndex]->GetRect();
+	//			objectRect = vObject[i]->GetRect();
+	//			//가로폭 영역이 겹치는지 확인
+	//			if ((characterRect.right >= objectRect.left) && (objectRect.right >= characterRect.left))
+	//				interObject->push_back(vObject[i]);
+	//		}
+	//	}
+	//}
 }

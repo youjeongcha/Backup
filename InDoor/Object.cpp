@@ -45,6 +45,8 @@ Object::Object(const ObjectData& dataSet, int index)
         renderer->SetSrc(0, 1);
     AddComponent(renderer);
 
+    transform->position = { dataSet.eachObject[index]->x,  dataSet.eachObject[index]->y };
+
     //Anim 관련
     if (typeCheck.find(ANIM)->second) //TODO::애니메이션 속도 조절 부분은 AnimationComponent
         AddComponent(anim = new ENGINE::SpriteAnimation(spritesX, spritesY));
@@ -78,6 +80,13 @@ VOID Object::Initialize()
 
 VOID Object::Update(const FLOAT& deltaTime)
 {
+    // 애니메이션은 가구가 활성화 상태일때 사용된다.
+    if ((isAnim && isActive) && (anim != nullptr))
+    {
+        Operate(this);
+        anim->Play(1);
+    }
+
     //활성, 비활성화 구분해서. 활성화 상태일때
     //TODO::애니메이션 재생할지, 아니면 이미지만 바꿀지 생각해봐야 함.
 
@@ -97,15 +106,10 @@ VOID Object::Update(const FLOAT& deltaTime)
 
 }
 
-void Object::Animation(const FLOAT& deltaTime)
-{
-    //애니메이션은 가구가 활성화 상태일때 사용된다.
-    if (isAnim && isActive)
-    {
-        anim->Play(1);
-        transform->position.x += deltaTime;
-    }
-}
+//void Object::Animation(const FLOAT& deltaTime)
+//{
+//
+//}
 
 VOID Object::Move(const FLOAT& deltaTime)
 {
@@ -228,7 +232,7 @@ void Object::ChangeActiveState()
 }
 
 
-void Object::TimeChangeBitmap()
+void Object::MoringNight_TimeChangeBitmap()
 {
     if (typeCheck.find(TIMECHANGE)->second)
     {
@@ -242,7 +246,10 @@ void Object::TimeChangeBitmap()
         else
             renderer->SetSrc(0, 0);
     }
+}
 
+void Object::PassOfthe_TimeChangeBitmap()
+{
 }
 
 VOID Object::Release()

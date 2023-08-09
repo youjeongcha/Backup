@@ -13,7 +13,14 @@ enum ITEM_ID
 	//Light Object
 	//¼º³É
 	KEY,//¿­¼è
-	//²É
+	SEED_RED,//¾¾¾Ñ
+	SEED_ORANGE,//¾¾¾Ñ
+	SEED_YELLOW,//¾¾¾Ñ
+	SEED_BLUE,//¾¾¾Ñ
+	FRUIT_RED,//¿­¸Å
+	FRUIT_ORANGE,//¿­¸Å
+	FRUIT_YELLOW,//¿­¸Å
+	FRUIT_BLUE,//¿­¸Å
 
 	//Heavy Object
 	//ÀåÀÛ

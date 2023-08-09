@@ -20,11 +20,15 @@ enum Time
 };
 
 enum TimeLine
-{
+{//게임내 시간 기준
+	//기준 시간(~부터~까지)
 	TimeLine_Start = 8, //게임 시작 시간
-	TimeLine_MORING = 6,
-	TimeLine_NIGHT = 20,
-	TimeLine_ONEDAY = 24,
+	TimeLine_MORING = 6, //아침 시작
+	TimeLine_NIGHT = 20, //밤 시작
+	TimeLine_ONEDAY = 24, //하루 총 시간
+
+	//경과 시간(~동안~지나야) 
+	TimeLine_PlantGrowth = 6, //식물 성장 경과 시간
 };
 
 enum TRANSPARENCY
@@ -63,12 +67,16 @@ enum UNDERTXT
 	DRAWER_IN_X,
 
 	//화분 //해당 부분을 어떻게 할지 고민 TODO::선택지 감춰두기할지, 텍스트로 막을지. 개인전으로 선택지 막기
+	//씨앗 심기
 	FLOWERPOT_PLANTINGSEED_O,
-	FLOWERPOT_PLANTINGSEED_X,
+	FLOWERPOT_PLANTINGSEED_X, //인벤토리에 씨앗이 없음
+	//물주기
 	FLOWERPOT_WATERING_O,
-	FLOWERPOT_WATERING_X,
-	//자라야 한다.
+	FLOWERPOT_WATERING_X, //물이 이미 충분함
+	//수확 성공
 	FLOWERPOT_HARVEST,
+	//현재 성장 진도에 적합하지 않은 작업일 경우
+	FLOWERPOT_INCORRECTCHOICE,
 
 	//창문 //실행 즉시 + 실행 불가면 선택지 막기
 	WINDOW_SHOW_O,
@@ -90,10 +98,16 @@ enum UNDERTXT
 
 	//----------아이템 사용이후 뜰 텍스트-----------
 	USE_WATER,
-	USE_KEY,
+	//USE_KEY,1 보관함을 열었다.
+	USE_FRUIT,
+	
+	//-----------------------
+	//사용 가능한 아이템이 없다.
+	DONTHAVE_ITEM,
+	//사용할 수 없는 아이템입니다.
+	UNDERTXT_NONE, //맨 처음 세팅값. 하단 텍스트의 변화를 감지 해야하기 때문에
 
 	UNDERTXT_COUNT,
-	UNDERTXT_NONE //맨 처음 세팅값. 하단 텍스트의 변화를 감지 해야하기 때문에
 };
 
 struct Clock
@@ -250,8 +264,8 @@ public:
 	//인벤토리
 	void Inventory_Panel(Player& player);
 	//void PlusPlayerInventory(std::pair<ITEM, int> item) { player_ItemList.push_back(item); }
-	void PlusPlayerInventory(InventoryItem item);
-	void MinusPlayerItem(ITEM_ID itemID); //아이템 사용 1개 감소
+	void PlusPlayerInventory(InventoryItem item); //인벤토리에 아이템 추가
+	bool MinusPlayerItem(ITEM_ID itemID); //아이템 사용 1개 감소(아이템이 있으면 ture, 없으면 false;
 	int GetCountPlayerItem(ITEM_ID itemID);	
 	void ItemUseBtnClickHandler(Item* useItem); //인벤토리 에서 아이템 상세정보 + 사용/취소 판넬 띄우기
 	void Cancel_InventoryBtnClickHandler(); //인벤토리 창 끄기

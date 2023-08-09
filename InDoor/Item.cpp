@@ -38,7 +38,9 @@ void Item::Use()
 	if (useCount == USE_ONE)
 	{
 		isUsing = false;
-		GameMgr->MinusPlayerItem(itemID); //다회용 아이템은 아이템 수량 감소 처리되지 않도록 해야한다.
+
+		if (!GameMgr->MinusPlayerItem(itemID)) //다회용 아이템은 아이템 수량 감소 처리되지 않도록 해야한다.
+			GameMgr->SetShowUnder(DONTHAVE_ITEM); //보험
 	}
 
 	GameMgr->SetShowUnder((UNDERTXT)itemUseTxt);
