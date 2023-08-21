@@ -74,12 +74,17 @@ VOID DemoScene::Update(const FLOAT& deltaTime)
     //Update문에서 식물 성장 등 + 가구 애니메이션 작동
     ObjectMgr->Update(deltaTime);
 
+    if (PLAYER_MOVE_END_LEFT > playerTr->position.x)
+        playerTr->position.x = PLAYER_MOVE_END_LEFT;
 
-    if (0 > playerTr->position.x) 
+    if (PLAYER_MOVE_END_RIGHT < playerTr->position.x)
+        playerTr->position.x = PLAYER_MOVE_END_RIGHT;
+
+    /*if (0 > playerTr->position.x)
         playerTr->position.x = 0;
 
     if (bounds < playerTr->position.x) 
-        playerTr->position.x = bounds;
+        playerTr->position.x = bounds;*/
 }
 
 VOID DemoScene::Draw()
