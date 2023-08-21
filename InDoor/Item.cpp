@@ -3,21 +3,35 @@
 
 Item::Item()
 {
-	itemID = ITEM_NONE;
-	itemType = OBJECT;
+	//itemID = ITEM_NONE;
+	//itemType = OBJECT;
 
-	name = "임시";
-	itemUseTxt = UNDERTXT_NONE;
-	useCount = USE_NONE;
-	isUsing = false;
+	//name = "임시";
+	//itemUseTxt = UNDERTXT_NONE;
+	//useCount = USE_NONE;
+	//isUsing = false;
 
-	//itemCount = 0;
+	////itemCount = 0;
 
-	//음식류 아니면 다 0 으로 고정
-	m_health = 0;
-	m_hunger = 0;
-	m_thirst = 0;
-	m_fatigue = 0;
+	////음식류 아니면 다 0 으로 고정
+	//m_health = 0;
+	//m_hunger = 0;
+	//m_thirst = 0;
+	//m_fatigue = 0;
+}
+
+Item::Item(ITEM_DETAIL itemDetail, ITEM_ID _itemID)
+{
+	//name = itemDetail.name;
+	//ImageBmp = itemDetail.ImageBmp;
+	//detailInfo = itemDetail.detailInfo;
+	//ENGINE::ResourceMgr->Load(ImageBmp);
+
+	////음식류 아니면 다 0 으로 고정
+	//m_health = itemDetail.m_health;
+	//m_hunger = itemDetail.m_hunger;
+	//m_thirst = itemDetail.m_thirst;
+	//m_fatigue = itemDetail.m_fatigue;
 }
 
 Item::~Item()

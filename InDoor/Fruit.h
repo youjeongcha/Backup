@@ -5,6 +5,6 @@ class Fruit : public Item
 {
 protected:
 public:
-	Fruit(ITEM_ID _itemID);
+	Fruit(ITEM_DETAIL itemDetail, ITEM_ID _itemID);
 	~Fruit();
 };

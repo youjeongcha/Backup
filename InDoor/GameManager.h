@@ -56,6 +56,9 @@ enum UNDERTXT
 	CURTAIN_OPEN,
 	CURTAIN_CLOSE,
 
+	//창문
+	//WIDNOW_OPEN_X, //커튼에 막혀있어서 창문을 열 수 없다.
+
 	//문
 	DOOR_OPEN_O,
 	DOOR_OPEN_X,
@@ -63,8 +66,9 @@ enum UNDERTXT
 	DOOR_KNOCK_X,
 
 	//서랍
+	DRAWER_OPEN_X,
 	DRAWER_IN_O,
-	DRAWER_IN_X,
+	DRAWER_OPEN_O, //서랍 한번 열면 열쇠 부러져서 다시 못 연다.
 
 	//화분 //해당 부분을 어떻게 할지 고민 TODO::선택지 감춰두기할지, 텍스트로 막을지. 개인전으로 선택지 막기
 	//씨앗 심기
@@ -85,9 +89,6 @@ enum UNDERTXT
 	//책장(책)
 	BOOK_0,
 
-	//화로(요리)
-	COOK,
-
 	//물(컵) 가구
 	WATER_O,
 
@@ -95,19 +96,38 @@ enum UNDERTXT
 	ONECANDLE_O,
 	ONECANDLE_X,
 
+	//요리
+	COOKING_SUCCES_ALLFRIUT,
+	COOKING_SUCCES_YELLOW,
+	COOKING_SUCCES_BERRIES,
+
+
 
 	//----------아이템 사용이후 뜰 텍스트-----------
 	USE_WATER,
 	//USE_KEY,1 보관함을 열었다.
 	USE_FRUIT,
+	USE_COOKING_ALLFRIUT, //모든 과일 조림
+	USE_COOKING_YELLOW_OR_BERRIES, //노랑 과일 조림 + 베리류 과일 조림
 	
 	//-----------------------
 	//사용 가능한 아이템이 없다.
 	DONTHAVE_ITEM,
 	//사용할 수 없는 아이템입니다.
 	UNDERTXT_NONE, //맨 처음 세팅값. 하단 텍스트의 변화를 감지 해야하기 때문에
+	SHORTAGE_ITEM, //요리에 아이템 부족
 
 	UNDERTXT_COUNT,
+};
+
+enum Inventory_Page
+{
+	Inventory_OnePage = 9,
+
+	Inventory_Page_CancelBtn = 0,
+	Inventory_Page_PrevBtn,
+	Inventory_Page_NextBtn,
+	Inventory_Page_MinChlidCount,
 };
 
 struct Clock
@@ -117,6 +137,13 @@ struct Clock
 	int sec;
 };
 
+struct CookMaterial
+{
+	int RedFruit;
+	int OrangeFruit;
+	int YellowFruit;
+	int BlueFruit;
+};
 
 
 class GameManager : public Singleton<GameManager>
@@ -140,11 +167,14 @@ private:
 
 	ENGINE::Bitmap* night = nullptr;
 	ENGINE::Bitmap* gameOver = nullptr;
+	ENGINE::UIButton* window_Night = nullptr;
+	ENGINE::UIButton* window_Morning = nullptr;
 	ENGINE::UIImage* select_Restart = nullptr;
+	ENGINE::UIImage* select_End = nullptr;
 	int gameOver_X, gameOver_Y;
 
 	//게임오버 or 게임클리어(문열기 가능)
-	bool isGameOver, isGameClear;
+	bool isGameOver, isGameClear, isGameEnd; //클리어는 게임 엔딩 조건만족, 엔드는 게임 엔딩 봄 끝
 	bool isReset_OneTime; //게임오버되고 게임 리셋 함수(맵, 플레이어 위치) 1회 실행
 
 
@@ -156,6 +186,10 @@ private:
 
 	//일시정지
 	bool isPause;
+
+	//밤낮 창문 밖 보기
+	bool isCurtainOpen; //커튼이 열려있는지
+	bool isShowWindow;
 
 	//시간 흐름
 	float m_elapsedSec, m_elapsedMin; // 경과 시간 (초, 분 단위)
@@ -178,11 +212,16 @@ private:
 	//인벤토리 관련
 	//std::vector<std::pair<ITEM, int>> player_ItemList; //플레이어가 지닌 아이템들 + 수량
 	std::vector<InventoryItem> player_ItemList; //플레이어가 지닌 아이템 //InventoryItem 아이템 + 수량
-
-
+	//현재 인벤토리 페이지의 인데스
+	int Inventory_Index;
 	//인벤토리를 연 상태인지 체크
 	bool isInventory;
 
+	//---요리 상세 상호작용 관련---
+	int cookSelectCount; //상세 선택지 개수(취소 버튼은 미포함하여 카운트)
+	ENGINE::UIImage* CookSelect_UI;
+	std::vector<std::string> sCookSelect;
+	std::vector<CookMaterial> cookMaterial;
 
 	GameManager();
 public:
@@ -218,8 +257,13 @@ public:
 	void Set_IsPause(bool pauseSet) { isPause = pauseSet; }
 	bool Get_IsPause() { return isPause; }
 
+	//창문 밖을 보고 있는 상태인가
+	void Set_IsCurtainOpen(bool _isCurtainOpen) { isCurtainOpen = _isCurtainOpen; }
+	bool Get_IsCurtainOpen() { return isCurtainOpen; }
+	void Set_IsShowWindow(bool _isShowWindow) { isShowWindow = _isShowWindow; }
+
 	//시간 전달
-	Clock GetClock() { return m_Clock; }
+	//Clock GetClock() { return m_Clock; }
 	void SetPlusHour(int plusHour); //시간 추가
 
 	void Update(const FLOAT& deltaTime);
@@ -230,10 +274,14 @@ public:
 	bool GetIsGameOver() { return isGameOver; }
 
 	//게임 클리어 > 문 열기 가능
+	void GameClear();
 	bool GetIsGameClear() { return isGameClear; }
 	//게임 재시작할때 리셋 함수 한번만 실행 관리 위해
 	bool GetisReset_OneTime() { return isReset_OneTime; }
 	void SetisReset_OneTime(bool isReset) { isReset_OneTime = isReset; }
+	bool GetIsGameEnd() { return isGameEnd; }
+	void GameEnd();
+	//void SetIsGameEnd(bool _isGameEnd) { isGameEnd = _isGameEnd; }
 
 
 	//Clock GetClock() { return m_Clock; }
@@ -261,22 +309,31 @@ public:
 	void PlusThirst(int thirst) { m_thirst += thirst; if (m_thirst < 0) m_thirst = 0; else if (m_thirst > 100) m_thirst = 100; }
 	void PlusFatigue(int fatigue) { m_fatigue += fatigue; if (m_fatigue < 0) m_fatigue = 0; else if (m_fatigue > 100) m_fatigue = 100; }
 
-	//인벤토리
-	void Inventory_Panel(Player& player);
-	//void PlusPlayerInventory(std::pair<ITEM, int> item) { player_ItemList.push_back(item); }
-	void PlusPlayerInventory(InventoryItem item); //인벤토리에 아이템 추가
-	bool MinusPlayerItem(ITEM_ID itemID); //아이템 사용 1개 감소(아이템이 있으면 ture, 없으면 false;
-	int GetCountPlayerItem(ITEM_ID itemID);	
-	void ItemUseBtnClickHandler(Item* useItem); //인벤토리 에서 아이템 상세정보 + 사용/취소 판넬 띄우기
-	void Cancel_InventoryBtnClickHandler(); //인벤토리 창 끄기
-	//아이템 사용
-	//void ItemDetaiInfo_Panel(Item* useItem); //아이템 이미지 + 상세정보 있는 판넬
-	void ItemUse_Panel(Item* useItem); //아이템 이미지 + 상세정보 있는 판넬 //아이템 사용/취소 버튼 있는 판넬
+	//----인벤토리----
+	void Inventory_Panel(); //기본 인벤토리 창
+	void Cancel_InventoryBtnClickHandler(); //인벤토리 창 끄기(인벤토리 창 위에 어떤 추가 창이 있으면 취소버튼 중복으로 눌리지 않게끔)
+	void ItemUse_Detail_Panel(Item* useItem); //아이템 이미지와 상세정보 있는 판넬 + 아이템 사용/취소 버튼 있는 판넬 동시에 작동
+	void ItemUseBtnClickHandler(Item* useItem); //아이템 사용 버튼 누르면
 	void Cancel_ItemUseSelectBtnClickHandler(); //아이템 상세정보 판넬 끄기
-	//void Reset_Inventory();
+	//아이템 획득 and 사용
+	void PlusPlayerInventory(InventoryItem item); //인벤토리에 아이템 추가
+	bool MinusPlayerItem(ITEM_ID itemID); //아이템 사용 1개 감소(아이템이 있으면 ture, 없으면 false; //아이템은 영구 사용이 불가능하도록 설계되어있다.
+	int GetCountPlayerItem(ITEM_ID itemID);	
 	//인벤토리 사용유무 체크
 	void SetIsInventory(bool _isInventory) { isInventory = _isInventory; }
 	bool GetIsInventory() { return isInventory; }
+	//인벤토리 이전,다음 페이지 이동(true면 다음 false면 이전)
+	void ShowInventoryNextPage(bool isMove_NextPage);
+
+
+	//----요리----
+	void Cook(); //요리 선택
+	void Cooking(int selectMenu); //요리처리(재료 감소, 결과물 인벤토리 추가)
+	void CancelCookClickHandler(); //취소버튼
+	void LoadCook();
+
+	//창밖을 확인 (밤, 낮)
+	void CancelShowWindow();
 
 	friend Singleton;
 #define GameMgr GameManager::GetInstance()

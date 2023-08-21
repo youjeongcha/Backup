@@ -1,8 +1,4 @@
 #include "DemoScene.h"
-//#include "ResourceManager.h"
-//#include "SceneManager.h"
-//#include "ObjectManager.h"
-//#include "GUIManager.h"
 
 VOID DemoScene::Initialize()
 {
@@ -11,9 +7,7 @@ VOID DemoScene::Initialize()
     //씬의 오브젝트 재구성(현재 씬, 이동할 씬)인데 초기 화면 세팅은 nowScene으로 둘다 세팅한다.
     ENGINE::ObjectMgr->InitSetting(nowScene, nowScene, GameMgr->GetIsDark()); //게임은 아침을 배경으로 시작
 
-    //-------------추가된 것--------------
     ResourceMgr->Load("background.bmp"); 
-    //ResourceMgr->Load("Night.bmp");
     ResourceMgr->Load("Select_Panel_2.bmp");
     ResourceMgr->Load("Select_Panel_3.bmp");
     ResourceMgr->Load("Select_Panel_4.bmp");
@@ -50,7 +44,6 @@ VOID DemoScene::Release()
 
 VOID DemoScene::Update(const FLOAT& deltaTime)
 {
-
     if (GameMgr->GetIsGameOver() && GameMgr->GetisReset_OneTime()) //게임오버되고 게임 리셋 함수(맵, 플레이어 위치) 1회 실행
     {
         //씬의 오브젝트 재구성(현재 씬, 이동할 씬)
@@ -60,45 +53,24 @@ VOID DemoScene::Update(const FLOAT& deltaTime)
         GameMgr->SetisReset_OneTime(false);
         return;
     }
-    else if (GameMgr->GetIsGameOver()) //게임 오버되면 플레이어가 인벤토리와 가구에 상호작용 못해야 한다.
+    else if (GameMgr->GetIsGameOver() || GameMgr->Get_IsPause()) //게임 오버나 다른 이미지를 띄워줄때 플레이어가 인벤토리와 가구에 상호작용 못해야 한다.
         return;
-
-
-    Clock _Clock = GameMgr->GetClock();
-
-    // 시간 표시
-    char timeStr[100];
-    //sprintf_s(timeStr, "%02d:%02d:%02d", m_Clock.hour, m_Clock.min, m_Clock.sec);
-    sprintf_s(timeStr, sizeof(timeStr), "%02d:%02d  건강:%d  허기:%d  갈증:%d  피로:%d", _Clock.hour, _Clock.min, GameMgr->GetHealth(), GameMgr->GetHunger(), GameMgr->GetThirst(), GameMgr->GetFatigue());
-    GameMgr->GetTimeLabel()->SetText(timeStr);
-
 
     // 일시정지
     isPause = GameMgr->Get_IsPause();
 
     if (isPause)
         return;
-
     
     GameMgr->Update(deltaTime);
 
-    //else if ((nowTimeLine == TimeLine_MORING) && (oldTimeLinde == TimeLine_NIGHT))
-    //{
-
-    //}
-
-
-
     //시간의 경과에 따라 변화하는 Objcet의 Bitmap
-
-    player->Update(deltaTime);
+    if (!GameMgr->GetIsGameEnd())
+        player->Update(deltaTime);
 
     //Player의 위치가 좌우 끝으로 가면 씬 전환 
     ChangeScene();
 
-    /////player가 상호작용할 object를 선택
-   // ObjectMgr->Update(deltaTime);
-   
     //Update문에서 식물 성장 등 + 가구 애니메이션 작동
     ObjectMgr->Update(deltaTime);
 
@@ -112,23 +84,18 @@ VOID DemoScene::Update(const FLOAT& deltaTime)
 
 VOID DemoScene::Draw()
 {
-    if (!GameMgr->GetIsGameOver())
+    if (!GameMgr->GetIsGameOver() || !GameMgr->Get_IsPause())
     {
         background->StretchBlt(0, 0);
 
         ObjectMgr->Draw();
 
-        player->Draw();
+        if (!GameMgr->GetIsGameEnd())
+            player->Draw();
     }
 
     //밤은 맨 위에 깔아줘야 한다.
     GameMgr->Draw();
-
-    //if (GameMgr->GetIsDark())
-    //{
-    //    night->AlphaBlendBlt(0, 0, 105);
-    //    //isDrak = false;
-    //}
 }
 
 
@@ -192,16 +159,5 @@ void DemoScene::ChangeScene()
         player->SetIsSpace(false);
     }
     else if (GameMgr->GetIsInventory())
-    {
-        GameMgr->Inventory_Panel(*player);
-    }
+        GameMgr->Inventory_Panel();
 }
-
-//void DemoScene::SetPlusHour(int plusHour)
-//{
-//    m_Clock.hour += plusHour;
-//
-//    //24시간 경과 갱신
-//    if (m_Clock.hour >= TimeLine_ONEDAY)
-//        m_Clock.hour -= TimeLine_ONEDAY;
-//}

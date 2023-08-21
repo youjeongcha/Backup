@@ -6,7 +6,7 @@ class Window : public Object
 {
 private:
 	//State* m_CurrState;
-
+	bool isOpenCurtain;
 public:
 	Window();
 	Window(const ObjectData& dataSet, int index);

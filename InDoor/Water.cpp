@@ -1,24 +1,27 @@
 #include "Water.h"
 #include "GameManager.h"
 
-Water::Water()
+Water::Water(ITEM_DETAIL itemDetail, ITEM_ID _itemID)
 {
-	itemID = WATER;
+	itemID = _itemID;
 	itemType = DRINK;
 
 	itemUseTxt = USE_WATER;
-	name = "물";
-	ImageBmp = "WaterCup.bmp";
-	detailInfo = "시원한 물. 갈증 30이 해소된다.";
-	ENGINE::ResourceMgr->Load(ImageBmp);
+	//ENGINE::ResourceMgr->Load(ImageBmp);
 
 	useCount = USE_ONE;
 	isUsing = true;
 
-	m_health = 0;
-	m_hunger = 0;
-	m_thirst = -30;
-	m_fatigue = 0;
+	name = itemDetail.name;
+	ImageBmp = itemDetail.ImageBmp;
+	detailInfo = itemDetail.detailInfo;
+	ENGINE::ResourceMgr->Load(ImageBmp);
+
+	//음식류 아니면 다 0 으로 고정
+	m_health = itemDetail.m_health;
+	m_hunger = itemDetail.m_hunger;
+	m_thirst = itemDetail.m_thirst;
+	m_fatigue = itemDetail.m_fatigue;
 }
 
 Water::~Water()

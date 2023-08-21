@@ -5,6 +5,7 @@
 #include "Key.h"
 #include "Seed.h"
 #include "Fruit.h"
+#include "CookingFood.h"
 
 
 
@@ -18,9 +19,11 @@ class ItemManager : public Singleton<ItemManager>
 {
 private:
 	//std::map<ITEM_ID, Item*> itemList;
+	std::vector<ITEM_DETAIL> itemData; //파일에서 읽어온 아이템 정보
 	std::vector<Item*> itemList;
 
 	ItemManager();
+	void LoadItem();
 public:
 	~ItemManager();
 

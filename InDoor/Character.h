@@ -36,7 +36,7 @@ public:
     //Character(const std::string& charName, const std::vector<char>& items);
     ~Character();
 
-    void CheckInventory(int itemID) const;
+    //void CheckInventory(int itemID) const;
 
     //---------------------------------------------------
     // GameObject을(를) 통해 상속됨

@@ -30,7 +30,7 @@ void Stove::DetailSelect(int selectNum)
     switch (selectNum)
     {
     case 0:
-        GameMgr->SetShowUnder(COOK); //TODO::요리기능 추가
+        GameMgr->Cook();
     defualt:
         break;
     }

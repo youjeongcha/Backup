@@ -5,8 +5,8 @@ class Water : public Item
 {
 private:
 public:
-	Water();
+	//Water();
+	Water(ITEM_DETAIL itemDetail, ITEM_ID _itemID);
 	~Water();
 	//virtual void Use() override;
 };
-

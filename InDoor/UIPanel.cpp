@@ -45,8 +45,9 @@ namespace ENGINE
 		if (!isEnable)
 			return;
 
-		for (UIPanel* ui : child)
-			ui->Update();
+		//for (UIPanel* ui : child)
+		for (int i = 0; i < child.size(); i++)
+			child[i]->Update();
 	}
 
 	VOID UIPanel::Draw()
@@ -67,8 +68,8 @@ namespace ENGINE
 		ui->SetParent(this);
 
 		//중복 제거
-		std::sort(child.begin(), child.end());
-		child.erase(std::unique(child.begin(), child.end()), child.end());
+		/*std::sort(child.begin(), child.end());
+		child.erase(std::unique(child.begin(), child.end()), child.end());*/
 
 		return ui;
 	}
@@ -83,8 +84,11 @@ namespace ENGINE
 		if (child.end() != iter)
 		{
 			child.erase(iter);
-			(*iter)->SetParent(nullptr);
+			//(*iter)->SetParent(nullptr);
+			//무효화된 iter에 접근
 		}
+		// 제거된 원소의 부모를 설정해줌
+		ui->SetParent(nullptr);
 	}
 
 	VOID UIPanel::RefreshPos()

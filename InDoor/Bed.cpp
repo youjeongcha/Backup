@@ -7,8 +7,6 @@ Bed::Bed()
 
 Bed::Bed(const ObjectData& dataSet, int index) : Object(dataSet, index)
 {
-    //FSM* fsm;
-    //m_nID = fsm->Get_NextVaildID();
 }
 
 Bed::~Bed()
@@ -44,5 +42,3 @@ void Bed::Sleep()
 {
     GameMgr->PlayerSleep();
 }
-
-

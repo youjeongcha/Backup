@@ -36,9 +36,15 @@ void Curtain_Red::DetailSelect(int selectNum)
 
         //현재 상태에 따라 열고 닫고
         if (isActive)
+        {
+            GameMgr->Set_IsCurtainOpen(true);
             GameMgr->SetShowUnder(CURTAIN_OPEN);
+        }
         else
+        {
+            GameMgr->Set_IsCurtainOpen(false);
             GameMgr->SetShowUnder(CURTAIN_CLOSE);
+        }
     defualt:
         break;
     }
