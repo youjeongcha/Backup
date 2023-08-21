@@ -33,15 +33,14 @@ void Door::DetailSelect(int selectNum)
     switch (selectNum)
     {
     case 0: //문 열기
-		//ChangeActiveState();
 
-            //아이템 전부 채우기(임시 디버깅용)
-        for (int i = 0; i < ITEM_COUNT; i++)
-        {
-            GameMgr->PlusPlayerInventory({ (ITEM_ID)i, 1 });
-        }
+        //아이템 전부 채우기(임시 디버깅용)
+        //for (int i = 0; i < ITEM_COUNT; i++)
+        //{
+        //    GameMgr->PlusPlayerInventory({ (ITEM_ID)i, 1 });
+        //}
 
-        //클리어 가능 확인 //TODO::문열면 엔딩 추가.
+        //클리어 가능 확인 //문열면 엔딩
         if (GameMgr->GetIsGameClear())
         {
             GameMgr->SetShowUnder(DOOR_OPEN_O);

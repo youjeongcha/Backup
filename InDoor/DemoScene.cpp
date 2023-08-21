@@ -2,8 +2,8 @@
 
 VOID DemoScene::Initialize()
 {
-    //nowScene = SCENE_BEDROOM;
-    nowScene = SCENE_DOOR;
+    nowScene = SCENE_BEDROOM;
+    //nowScene = SCENE_DOOR;
     //씬의 오브젝트 재구성(현재 씬, 이동할 씬)인데 초기 화면 세팅은 nowScene으로 둘다 세팅한다.
     ENGINE::ObjectMgr->InitSetting(nowScene, nowScene, GameMgr->GetIsDark()); //게임은 아침을 배경으로 시작
 

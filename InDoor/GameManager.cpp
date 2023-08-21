@@ -307,8 +307,9 @@ void GameManager::Restart()
 	//시간 체크
 	m_elapsedSec = 0.0f;
 	nowTimeLine = TimeLine_MORING; oldTimeLine = TimeLine_MORING;
-	m_Clock.hour = TimeLine_NIGHT - 1;
-	m_Clock.min = 55;
+	//m_Clock.hour = TimeLine_NIGHT - 1;
+	m_Clock.hour = TimeLine_MORING + 2;
+	m_Clock.min = 0;
 
 	//로드해온 Object 데이터 각 Scene마다 Object 관리하는 변수에 세팅
 	Reset_SceneObject();
