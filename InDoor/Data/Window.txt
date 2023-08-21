@@ -3,6 +3,6 @@ true true false true true
 Home_Window.bmp
 1 보기
 3
-창문 0 0 true fasle false true 215 28 0 0 0
-창문 1 0 true fasle false true 120 28 0 0 0
-창문 2 0 true fasle false true 155 28 0 0 0
+창문 0 0 true false false true 215 28 0 0 0
+창문 1 0 true false false true 120 28 0 0 0
+창문 2 0 true false false true 155 28 0 0 0
