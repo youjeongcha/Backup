@@ -299,8 +299,8 @@ void GameManager::Restart()
 
 	//수치 상태
 	m_health = 20;
-	m_hunger = 100;
-	//m_hunger = 30;
+	//m_hunger = 100;
+	m_hunger = 30;
 	m_thirst = 50;
 	m_fatigue = 20;
 
