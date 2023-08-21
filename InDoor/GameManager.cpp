@@ -235,35 +235,39 @@ GameManager::~GameManager()
 void GameManager::Reset_SceneObject()
 {
 
-	//if (mDoorObject.size() > 0)
-	//{
-	//	for (std::map<std::string, std::vector<Object*>>::iterator iter = mDoorObject.begin(); iter != mDoorObject.end(); iter++)
-	//	{
-	//		//for (Object* obj : iter->second)
-	//		//{
-	//		//	delete obj;
-	//		//}
-	//		iter->second.clear();
-	//	}
-	//}
+	if (mDoorObject.size() > 0)
+	{
+		for (std::vector<Object*>::iterator iter = mDoorObject.begin(); iter != mDoorObject.end(); iter++)
+		//for (std::map<std::string, std::vector<Object*>>::iterator iter = mDoorObject.begin(); iter != mDoorObject.end(); iter++)
+		{
+			(*iter)->Initialize();
+			//for (Object* obj : iter->second)
+			//{
+			//	delete obj;
+			//}
+			//iter->second.clear();
+		}
+	}
 	mDoorObject.clear();
 
-	//if (mKitchenObject.size() > 0)
-	//{
-	//	for (std::map<std::string, std::vector<Object*>>::iterator iter = mKitchenObject.begin(); iter != mKitchenObject.end(); iter++)
-	//	{
-	//		iter->second.clear();
-	//	}
-	//}
+	if (mKitchenObject.size() > 0)
+	{
+		for (std::vector<Object*>::iterator iter = mKitchenObject.begin(); iter != mKitchenObject.end(); iter++)
+		{
+			(*iter)->Initialize();
+		}
+	}
 	mKitchenObject.clear();
 
-	//if (mBedRoomObject.size() > 0)
-	//{
-	//	for (std::map<std::string, std::vector<Object*>>::iterator iter = mBedRoomObject.begin(); iter != mBedRoomObject.end(); iter++)
-	//	{
-	//		iter->second.clear();
-	//	}
-	//}
+	if (mBedRoomObject.size() > 0)
+	{
+		for (std::vector<Object*>::iterator iter = mBedRoomObject.begin(); iter != mBedRoomObject.end(); iter++)
+		//for (std::map<std::string, std::vector<Object*>>::iterator iter = mBedRoomObject.begin(); iter != mBedRoomObject.end(); iter++)
+		{
+			(*iter)->Initialize();
+			//iter->second.clear();
+		}
+	}
 	mBedRoomObject.clear();
 }
 
@@ -295,8 +299,8 @@ void GameManager::Restart()
 
 	//수치 상태
 	m_health = 20;
-	//m_hunger = 100;
-	m_hunger = 30;
+	m_hunger = 100;
+	//m_hunger = 30;
 	m_thirst = 50;
 	m_fatigue = 20;
 

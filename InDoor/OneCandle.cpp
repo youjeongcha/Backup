@@ -3,12 +3,14 @@
 
 OneCandle::OneCandle()
 {
+    Initialize();
 }
 
 OneCandle::OneCandle(const ObjectData& dataSet, int index) : Object(dataSet, index)
 {
     //FSM* fsm;
     //m_nID = fsm->Get_NextVaildID();
+    Initialize();
 }
 
 OneCandle::~OneCandle()
@@ -17,6 +19,7 @@ OneCandle::~OneCandle()
 
 VOID OneCandle::Initialize()
 {
+    isActive = false;
 }
 
 VOID OneCandle::Move(const FLOAT& deltaTime)

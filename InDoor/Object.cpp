@@ -76,6 +76,8 @@ VOID Object::Initialize()
 {
     isUse = true;
     isHaveItem = false;
+    isAnim = false;
+    isActive = false;
 }
 
 VOID Object::Update(const FLOAT& deltaTime)

@@ -3,12 +3,12 @@
 
 Curtain_Red::Curtain_Red()
 {
+    Initialize();
 }
 
 Curtain_Red::Curtain_Red(const ObjectData& dataSet, int index) : Object(dataSet, index)
 {
-    //FSM* fsm;
-    //m_nID = fsm->Get_NextVaildID();
+    Initialize();
 }
 
 Curtain_Red::~Curtain_Red()
@@ -17,7 +17,7 @@ Curtain_Red::~Curtain_Red()
 
 VOID Curtain_Red::Initialize()
 {
-    return VOID();
+    isActive = false;
 }
 
 VOID Curtain_Red::Move(const FLOAT& deltaTime)
