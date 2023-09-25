@@ -1,30 +1,30 @@
 #pragma once
-#include "Mecro.h"
-
-enum TIMER_TYPE // 타이머가 일회성인지 계속 동작하는 것인지 구분
-{
-	TIMER_TYPE_ONCE, // 일회성
-	TIMER_TYPE_LOOP, // 무한반복
-	TIMER_TYPE_COUNT // 일정 횟수만 동작 //일정횟수의 기준?
-};
+#include <chrono>
+// c++11에서 추가된 시간 관련 라이브러리.
+// c의 time 보다 다양한 기능을 제공하며 사용이 쉽다.
+// 나노(nano) 밀리(milli) 초(seconds) 단위까지 측정 가능.
+// OS와 독립적으로 정밀도 높은 시간 측정이 가능.
 
 class Timer
 {
 private:
-	int m_iOldTime; // 이전시간
-	int m_iSecond; // 기준시간
-	bool m_bLive; // 타이머 ON / OFF
-	TIMER_TYPE Timer_Type;
-	int m_iMaxCount;
-	int m_iCurCount;
-	std::function<void()> m_callbackFunc; //왜 사용했는지 파악
+	bool isRunning;
+#ifdef _WIN32
+	std::chrono::time_point<std::chrono::steady_clock> start;
+	std::chrono::time_point<std::chrono::steady_clock> stop;
+#else
+	std::chrono::time_point<std::chrono::system_clock> start;
+	std::chrono::time_point<std::chrono::system_clock> stop;
+#endif
 
 public:
 	Timer();
 	~Timer();
 
-	void SetTimer(TIMER_TYPE Type, int iSecond, std::function<void()> _callbackFunc, int iMaxCount = -1); // 타이머가 설정
-	bool CheckTimer(); // 타이머 기능
+	double GetMilisecondsElapesed();
 
+	bool Start();
+	bool Stop();
+	void Restart();
 };
 
