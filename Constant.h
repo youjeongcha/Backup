@@ -12,3 +12,21 @@ struct Matrices
 	XMMATRIX world;
 	XMMATRIX viewProjection;
 };
+
+//조명 관련
+struct Material
+{
+	XMFLOAT4 ambient;
+	XMFLOAT4 diffuse;
+	XMFLOAT4 specular;
+	float specularPower;
+};
+
+struct Light
+{
+	XMFLOAT4 comPosition;
+	XMFLOAT4 light_color;
+	XMFLOAT4 light_direction;
+	XMFLOAT4 globalAmbient;
+	Material material;
+};

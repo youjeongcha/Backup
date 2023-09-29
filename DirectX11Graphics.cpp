@@ -68,15 +68,14 @@ void DirectX11Graphics::RenderFrame()
     // 백 버퍼(백 서피스)를 지운다.
     deviceContext->ClearRenderTargetView(renderTargetView.Get(), color);
 
-    // TODO::여기에 코드 작성
-
-
-
     // 3D렌더링 관련
     // 깊이/스텐실 버퍼를 지운다.
     deviceContext->ClearDepthStencilView(depthStencilView.Get(), D3D11_CLEAR_FLAG::D3D11_CLEAR_DEPTH | D3D11_CLEAR_FLAG::D3D11_CLEAR_STENCIL, 1.0f, 0);
-    deviceContext->OMSetDepthStencilState(depthStencilState.Get(), 0);
 
+    // TODO::여기에 코드 작성
+
+    deviceContext->OMSetDepthStencilState(depthStencilState.Get(), 0);
+    /*
     // 정점버퍼 관련
     // 셰이더 적용.
     deviceContext->IASetInputLayout(vertexShader.GetInputLayout());
@@ -86,19 +85,62 @@ void DirectX11Graphics::RenderFrame()
     constantMatricesBuffer.data.world = DirectX::XMMatrixIdentity();
     constantMatricesBuffer.data.viewProjection = cameraObj.GetComponent<DXCamera>()->GetViewProjectionMatrix();
     constantMatricesBuffer.ApplyChanges();
-        deviceContext->VSSetConstantBuffers(0, 1, constantMatricesBuffer.GetAddressOf());
+    deviceContext->VSSetConstantBuffers(0, 1, constantMatricesBuffer.GetAddressOf());
 
+    //텍스처 매핑 관련
+    deviceContext->PSSetShaderResources(0, 1, texture->GetTextureResourceViewAddress());*/
+    deviceContext->PSSetSamplers(0, 1, samplerState.GetAddressOf());
+
+    // =====================조명 관련========================
+    constantLightBuffer.data.material.ambient = { 1.0f, 1.0f, 1.0f, 1.0f }; // 환경광 (흰색)
+   // constantLightBuffer.data.material.diffuse = { 1.0f, 1.0f, 1.0f, 1.0f }; // 난반사광 (흰색)
+    constantLightBuffer.data.material.diffuse = { 1.5f, 0.5f, 1.5f, 1.0f }; // 난반사광(주황)
+   // constantLightBuffer.data.material.diffuse = { 0.8f, 0.75f, 1.5f, 1.5f }; // 난반사광(파랑)
+    constantLightBuffer.data.material.specular = { 1.0f, 1.0f, 1.0f, 1.0f }; // 정반사광 (흰색)
+   // constantLightBuffer.data.material.specularPower = 50.0f;
+    constantLightBuffer.data.material.specularPower = 10.0f;
+
+    //빛이 비춰지지 않는 면은 새까만 색으로 칠해져, 물체를 구별 할 수 없기 때문에 전역 환경광은 검정(0,0,0)을 사용하지 않는다.
+    constantLightBuffer.data.globalAmbient = { 0.1f, 0.1f, 0.1f, 1.0f }; // 전역 환경광(검정색)
+    //constantLightBuffer.data.light_color = { 1.0f, 1.0f, 1.0f, 1.0f }; // 빛의 색(흰색)
+    constantLightBuffer.data.light_color = { 1.5f, 1.0f, 0.0f, 1.5f }; // 빛의 색(노랑)
+    //constantLightBuffer.data.light_color = { 1.5f, 1.0f, 1.0f, 1.5f }; // 빛의 색(보라)
+    //XMStoreFloat4(&constantLightBuffer.data.light_direction, XMVector3Normalize(XMVectorSet(1.0f, -1.0f, 1.0f, 0.0f))); // 빛의 방향
+    XMStoreFloat4(&constantLightBuffer.data.light_direction, XMVector3Normalize(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f))); // 빛의 방향
+    XMStoreFloat4(&constantLightBuffer.data.comPosition, cameraObj.GetTransform()->GetPosition()); // 카메라의 위치.
+
+    if (constantLightBuffer.ApplyChanges())
+        deviceContext->PSSetConstantBuffers(0, 1, constantLightBuffer.GetAddressOf());
+   
+    //=======================================================
+    
     // 정점 버퍼 적용.
-    UINT offsets = 0;
-    deviceContext->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), vertexBuffer.StridePtr(), &offsets);
+    //UINT offsets = 0;
+    //deviceContext->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), vertexBuffer.StridePtr(), &offsets);
+    //deviceContext->IASetVertexBuffers(0, 1, texVertexBuffer.GetAddressOf(), texVertexBuffer.StridePtr(), &offsets);
+    //deviceContext->IASetVertexBuffers(0, 1, modelVertexBuffer.GetAddressOf(), modelVertexBuffer.StridePtr(), &offsets);
     // 정점 버퍼를 이용하여 그린다.
     //deviceContext->Draw(vertexBuffer.VertexCount(), 0);
 
     // 인덱스 버퍼 관련
     // 인덱스 버퍼 적용. DWORD(unsigned long) : R32_UNIT
-    deviceContext->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);
+    //deviceContext->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);
     // 인덱스 버퍼를 이용하여 그린다.
-    deviceContext->DrawIndexed(indexBuffer.IndexCount(), 0, 0);
+    //deviceContext->DrawIndexed(indexBuffer.IndexCount(), 0, 0);
+
+    //=======================================================
+    
+    //Mesh-관련 : 셰이더 적용
+    deviceContext->IASetInputLayout(vertexShader.GetInputLayout());
+    deviceContext->VSSetShader(vertexShader.GetShader(), NULL, 0);
+    deviceContext->PSSetShader(pixelShader.GetShader(), NULL, 0);
+
+    // GameObject Primitive Mesh Draw
+    //절두체 컬링 관련
+    frustum.ConstructFrustum();
+    if (frustum.IsInFrustumBoundsSphere(primitiveObj.GetTransform()->GetPosition(), XMVectorGetX(primitiveObj.GetTransform()->GetScale()/*bounds*/)))
+        primitiveObj.Draw(cameraObj.GetComponent<DXCamera>()->GetViewProjectionMatrix());
+
 
     swapChain->Present(NULL, NULL);
 }
@@ -214,6 +256,18 @@ bool DirectX11Graphics::InitializeDirectX(HWND hWnd, bool fullScreen)
         deviceContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
         // =====================================
+        
+        // 텍스처 매핑 관련
+        // ========= 샘플러 State 생성 ==========
+        CD3D11_SAMPLER_DESC samplerDesc(D3D11_DEFAULT);
+        samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
+        samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
+        samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
+        hr = device->CreateSamplerState(&samplerDesc, samplerState.GetAddressOf());
+        COM_ERROR_IF_FAILED(hr, "Failed to create sampler state.");
+
+        // =====================================
+
 
     } // try
     catch (COMException& exception)
@@ -229,13 +283,19 @@ bool DirectX11Graphics::InitializeShader()
 {
     D3D11_INPUT_ELEMENT_DESC inputLayout[] = {
         { "POSITION", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "COLOR", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0 }
+        { "COLOR", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        {"TEXCOORD", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        {"NORMAL", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0 }
     };
 
     UINT numElements = ARRAYSIZE(inputLayout);
-    if (!vertexShader.Initialize(device.Get(), L"color.vs.hlsl", inputLayout, numElements))
+    //if (!vertexShader.Initialize(device.Get(), L"color.vs.hlsl", inputLayout, numElements))
+    //if (!vertexShader.Initialize(device.Get(), L"texture.vs.hlsl", inputLayout, numElements))
+    if (!vertexShader.Initialize(device.Get(), L"light.vs.hlsl", inputLayout, numElements))
         return false;
-    if (!pixelShader.Initialize(device.Get(), L"color.ps.hlsl"))
+   // if (!pixelShader.Initialize(device.Get(), L"color.ps.hlsl"))
+    //if (!pixelShader.Initialize(device.Get(), L"texture.ps.hlsl"))
+    if (!pixelShader.Initialize(device.Get(), L"light.ps.hlsl"))
         return false;
     return true;
 }
@@ -244,7 +304,10 @@ bool DirectX11Graphics::InitializeScene()
 {
     try
     {
-        VertexColor vertices[] = {
+        //VertexColor vertices[] = {
+        //VertexTexture vertices[] = {
+        /*
+        ModelVertex vertices[] = {
             //정점버퍼 관련(삼각형 그리기)
              //VertexColor(0.0f, 0.1f, 0.0f, 1.0f, 0.0f, 0.0f), // top middle(red)
              //VertexColor(0.1f, -0.1f, 0.0f, 0.0f, 1.0f, 0.0f), // bottom right(green)
@@ -257,18 +320,36 @@ bool DirectX11Graphics::InitializeScene()
              //VertexColor(-0.3f, -0.3f, 0.0f, 1.0f, 1.0f, 0.0f), // bottom left(yellow)
 
             //3D 렌더링
-             VertexColor(-0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f),  // 0 top far left
-             VertexColor(0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f),   // 1 top far right
-             VertexColor(0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 1.0f),  // 2 top near right
-             VertexColor(-0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 0.0f), // 3 top near left
+             //VertexColor(-0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f),  // 0 top far left
+             //VertexColor(0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f),   // 1 top far right
+             //VertexColor(0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 1.0f),  // 2 top near right
+             //VertexColor(-0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 0.0f), // 3 top near left
 
-             VertexColor(-0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 1.0f),  // 4 bottom far left
-             VertexColor(0.5f,-0.5f, 0.5f, 1.0f, 0.0f, 1.0f),   // 5 bottom far right
-             VertexColor(0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f),  // 6 bottom near right
-             VertexColor(-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f), // 7 bottom near left
+             //VertexColor(-0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 1.0f),  // 4 bottom far left
+             //VertexColor(0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 1.0f),   // 5 bottom far right
+             //VertexColor(0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f),  // 6 bottom near right
+             //VertexColor(-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f), // 7 bottom near left
+
+            //텍스처 매핑
+             ModelVertex(-0.5f, 0.5f, 0.5f, 0.0f, 0.0f,     -0.5f, 0.5f, 0.5f),   // 0 top far left
+             ModelVertex(0.5f, 0.5f, 0.5f, 1.0f, 0.0f,      0.5f, 0.5f, 0.5f),    // 1 top far right
+             ModelVertex(0.5f, 0.5f, -0.5f, 1.0f, 1.0f,     0.5f, 0.5f, -0.5f),   // 2 top near right
+             ModelVertex(-0.5f, 0.5f, -0.5f, 0.0f, 1.0f,     -0.5f, 0.5f, -0.5f),  // 3 top near left
+
+             ModelVertex(-0.5f, -0.5f, 0.5f, 0.0f, 1.0f,    -0.5f, -0.5f, 0.5f),  // 4 bottom far left
+             ModelVertex(0.5f, -0.5f, 0.5f, 1.0f, 1.0f,    0.5f, -0.5f, 0.5f),   // 5 bottom far right
+             ModelVertex(0.5f, -0.5f, -0.5f, 1.0f, 0.0f,    0.5f, -0.5f, -0.5f),  // 6 bottom near right
+             ModelVertex(-0.5f, -0.5f, -0.5f, 0.0f, 0.0f,    -0.5f, -0.5f, -0.5f), // 7 bottom near left
+
+             ModelVertex(0.5f, -0.5f, 0.5f, 0.0f, 0.0f,    0.5f, -0.5f, 0.5f),   // 8 other bottom far right
+             ModelVertex(0.5f, -0.5f, -0.5f, 0.0f, 1.0f,    0.5f, -0.5f, 0.5f),  // 9 other bottom near right
+             ModelVertex(-0.5f, -0.5f, -0.5f, 1.0f, 1.0f,    -0.5f, -0.5f, -0.5f), // 10 other bottom near left
+             ModelVertex(-0.5f, -0.5f, 0.5f, 1.0f, 0.0f,    -0.5f, -0.5f, 0.5f),  // 11 other bottom far left
         };
         UINT vertexCount = ARRAYSIZE(vertices);
-        HRESULT hr = vertexBuffer.Initialize(device.Get(), vertices, vertexCount);
+       // HRESULT hr = vertexBuffer.Initialize(device.Get(), vertices, vertexCount);
+       // HRESULT hr = texVertexBuffer.Initialize(device.Get(), vertices, vertexCount);
+        HRESULT hr = modelVertexBuffer.Initialize(device.Get(), vertices, vertexCount);
         COM_ERROR_IF_FAILED(hr, "Failed to initialize vertex buffer.");
 
         
@@ -279,25 +360,67 @@ bool DirectX11Graphics::InitializeScene()
             //0, 2, 3
 
             //3D 렌더링 관련
+            //0,1,2,  0,2,3, // top
+            //7,6,5,  7,5,4, // bottom
+            //3,2,6,  3,6,7, // front
+            //1,0,4,  1,4,5, // back
+            //2,1,5,  2,5,6, // right
+            //0,3,7,  0,7,4  // left
+
+            // 텍스처 매핑
             0,1,2,  0,2,3, // top
             7,6,5,  7,5,4, // bottom
             3,2,6,  3,6,7, // front
             1,0,4,  1,4,5, // back
-            2,1,5,  2,5,6, // right
-            0,3,7,  0,7,4  // left
+            2,1,8,  2,8,9, // right
+            0,3,10,  0,10,11  // left
         };
 
         UINT indexCount ARRAYSIZE(indices);
         hr = indexBuffer.Initialize(device.Get(), indices, indexCount);
         COM_ERROR_IF_FAILED(hr, "Failed to initialize index buffer");
 
+        // 텍스처 매핑
+       // texture = std::make_unique<Texture>(device.Get(), "Textures\\box.jpg");
+        texture = std::make_unique<Texture>(device.Get(), "Textures\\ink.png");
+
+        // 조명 관련
+        hr = constantLightBuffer.Initialize(device.Get(), deviceContext.Get());
+        COM_ERROR_IF_FAILED(hr, "Failed to initalize directional light constant buffer.");
+
         //3D 렌더링 관련
         hr = constantMatricesBuffer.Initialize(device.Get(), deviceContext.Get());
         COM_ERROR_IF_FAILED(hr, "Failed to initalize world/view/projection constant buffer.");
-
+        
         cameraObj.AddComponent<DXCamera>()->SetProjection(screenWidth, screenHeight, 0.1f, 1000.0f);
         cameraObj.GetTransform()->SetPosition({ 0.0f, 1.5f, -3.0f });
         cameraObj.GetTransform()->SetLookAt({ 0.0f, 0.0f, 0.0f });
+        */
+
+        //=====================================================
+        // Mesh 관련 코드 정리
+
+        // 3D 렌더링 관련
+        HRESULT hr = constantMatricesBuffer.Initialize(device.Get(), deviceContext.Get());
+        COM_ERROR_IF_FAILED(hr, "Failed to initialize world constant buffer.");
+
+        // 조명 관련
+        hr = constantLightBuffer.Initialize(device.Get(), deviceContext.Get());
+        COM_ERROR_IF_FAILED(hr, "Failed to initalize directional light constant buffer.");
+
+        // 3D 렌더링 관련
+        cameraObj.AddComponent<DXCamera>()->SetProjection(screenWidth, screenHeight, 0.1f, 1000.0f);
+        cameraObj.GetTransform()->SetPosition({ 0.0f, 1.5f, -3.0f });
+        cameraObj.GetTransform()->SetLookAt({ 0.0f, 0, 0 });
+
+       // primitive = std::make_unique<PrimitiveCube>();
+        primitive = std::make_unique<PrimitiveShpher>();
+        primitive->Initialize(device.Get(), deviceContext.Get(), constantMatricesBuffer);
+        primitive->MakePrimitive();
+        primitiveObj.AddComponent<DXMeshRenderer>()->SetModel(primitive.get());
+
+        // =========== 절두체 컬링 =============
+        frustum.Initialize(cameraObj.GetComponent<DXCamera>());
     }
     catch (COMException& exception)
     {

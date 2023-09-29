@@ -8,12 +8,19 @@
 #include <d3d11.h>
 #include "WindowContainer.h"
 #include "Shader.h"
-#include "VertexBuffer.h"
-#include "IndexBuffer.h"
+//#include "VertexBuffer.h"
+//#include "IndexBuffer.h"
 //3D렌더링
-#include "ConstantBuffer.h"
+//#include "ConstantBuffer.h"
 #include "DXGameObject.h"
 #include "Components/DXCamera.h"
+//텍스처 매핑 관련
+//#include "Texture.h"
+//Mesh 관련
+#include "Components/DXMeshRenderer.h"
+#include "PrimitiveModel.h"
+//절두체 컬링 관련
+#include "Frustum.h"
 
 class DirectX11Graphics final : public Graphics
 {
@@ -30,16 +37,32 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depthStencilState;
 
 	//정점 버퍼 관련
-	VertexBuffer<VertexColor> vertexBuffer;
+	//VertexBuffer<VertexColor> vertexBuffer;
 	VertexShader vertexShader;
 	PixelShader pixelShader;
 
 	//인덱스 버퍼 관련
-	IndexBuffer indexBuffer;
+	//IndexBuffer indexBuffer;
 
 	//3D렌더링 관련
 	ConstantBuffer<Matrices> constantMatricesBuffer;
 	DXGameObject cameraObj;
+
+	//텍스처 매핑 관련
+	Microsoft::WRL::ComPtr<ID3D11SamplerState> samplerState;
+	//std::unique_ptr<Texture> texture;
+	//VertexBuffer<VertexTexture> texVertexBuffer;
+
+	//조명 관련
+	//VertexBuffer<ModelVertex> modelVertexBuffer;
+	ConstantBuffer<Light> constantLightBuffer;
+
+	//Mesh 관련
+	std::unique_ptr <PrimitiveModel> primitive;
+	DXGameObject primitiveObj;
+
+	// 절두체 컬링 관련
+	Frustum frustum;
 
 public:
 	virtual bool Initialize(WindowContainer* pWindowContainer) override;

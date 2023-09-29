@@ -1,0 +1,199 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Framework">
+      <UniqueIdentifier>{a71b09b7-8998-4566-9435-c3eb439207f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DirectX11_Init">
+      <UniqueIdentifier>{202d3306-f259-4907-91c4-49eca222d6f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{65514c5d-1656-4d0b-a352-f2409a93fdba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vertex">
+      <UniqueIdentifier>{2c756bce-5aa7-4179-ae09-784a626652b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IndexBuffer">
+      <UniqueIdentifier>{0af6b069-1309-4680-a1fa-6fde5d527ab7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3D_Rendering">
+      <UniqueIdentifier>{1a1dfc5d-b3e1-4843-a47e-63c55d1d8482}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3D_Rendering\Components">
+      <UniqueIdentifier>{53bf6744-a5a9-4b40-bbb1-9657db691f08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TextureMapping">
+      <UniqueIdentifier>{8597fc36-c547-496c-ab94-68526a9b9e71}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mesh">
+      <UniqueIdentifier>{7944dc61-8f2d-4419-b7c2-fdc66cef6ca7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Frustum Culling">
+      <UniqueIdentifier>{95a81ff7-a339-4455-bd7c-33f9abb9a634}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Input\Input.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Input\Keyboard\InputKeyboard.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Input\Mouse\InputMouse.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Log.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="StringHelper.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="System.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX11Graphics.cpp">
+      <Filter>DirectX11_Init</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexBuffer.h">
+      <Filter>IndexBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="Components\DXTransform.cpp">
+      <Filter>3D_Rendering\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Components\DXCamera.cpp">
+      <Filter>3D_Rendering\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Components\DXCamera.cpp">
+      <Filter>3D_Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="DXGameObject.cpp">
+      <Filter>3D_Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>TextureMapping</Filter>
+    </ClCompile>
+    <ClCompile Include="Color.cpp">
+      <Filter>TextureMapping</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="PrimitiveModel.cpp">
+      <Filter>Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Components\DXMeshRenderer.cpp">
+      <Filter>Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Frustum.cpp">
+      <Filter>Frustum Culling</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="WindowContainer.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="COMException.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Input\Input.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Input\Keyboard\InputKeyboard.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Input\Mouse\InputMouse.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Log.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="StringHelper.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="System.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics.h">
+      <Filter>DirectX11_Init</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX11Graphics.h">
+      <Filter>DirectX11_Init</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>Vertex</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexBuffer.h">
+      <Filter>Vertex</Filter>
+    </ClInclude>
+    <ClInclude Include="Constant.h">
+      <Filter>3D_Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="ConstantBuffer.h">
+      <Filter>3D_Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\DXTransform.h">
+      <Filter>3D_Rendering\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\BaseComponent.h">
+      <Filter>3D_Rendering\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\ComponentException.h">
+      <Filter>3D_Rendering\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\DXCamera.h">
+      <Filter>3D_Rendering\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\DXCamera.h">
+      <Filter>3D_Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="DXGameObject.h">
+      <Filter>3D_Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>TextureMapping</Filter>
+    </ClInclude>
+    <ClInclude Include="Color.h">
+      <Filter>TextureMapping</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="PrimitiveModel.h">
+      <Filter>Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\DXMeshRenderer.h">
+      <Filter>Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Frustum.h">
+      <Filter>Frustum Culling</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
